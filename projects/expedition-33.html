@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Expedition 33 모작 · 김석호</title>
+<meta name="description" content="DirectX 11 팀 프로젝트 Expedition 33 모작, EffectEditor와 이펙트 런타임 케이스 스터디">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">김석호</a>
+    <nav class="nav">
+      <a href="../">홈</a>
+      <a href="../ai.html">AI 협업 방식</a>
+      <a href="destiny-overclock.html">Destiny Overclock</a>
+      <a href="expedition-33.html" aria-current="page">Expedition 33</a>
+      <a href="sinkpoint.html">SinkPoint</a>
+      <a href="gunfire-reborn.html">Gunfire Reborn</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <div class="eyebrow">DirectX 11 3D 팀 프로젝트</div>
+    <h1>Expedition 33 모작</h1>
+    <p class="lead">Clair Obscur: Expedition 33을 모작한 프로그래밍 8인 팀 프로젝트에서 이펙트를 혼자 맡아, 독립 EffectEditor부터 게임 안 전투 VFX까지 만들었습니다. EffectEditor는 팀원 4명이 실제로 사용했습니다.</p>
+    <dl class="facts">
+      <dt>기간</dt><dd>2026.05 – 07 (약 2개월)</dd>
+      <dt>형태</dt><dd>프로그래밍 8인 팀 프로젝트 / 이펙트 담당 1인</dd>
+      <dt>기술</dt><dd>C++ · DirectX 11 · HLSL(Compute Shader)</dd>
+      <dt>AI</dt><dd>Codex</dd>
+      <dt>담당</dt><dd>EffectEditor · 이펙트 런타임 · 메인 전투 VFX · 일부 화면 후처리 효과(흑백 연출·Flash)</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>시연 영상</h2>
+    <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/JBuVAdqzew8" title="Expedition 33 모작 시연 영상" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  </section>
+
+  <section>
+    <h2>중점 구현</h2>
+    <ul>
+      <li>Effect → Emitter → TypeData·Module Stack·Effect Material 계층을 독립 EffectEditor로 구성</li>
+      <li>Emitter·Curve·Random Distribution·Material Instance 편집과 Preview를 한 툴에서 반복 조정하도록 연결</li>
+      <li>EffectInstance·Runtime Desc와 Pool의 Acquire·Reset·Play를 나눠 같은 Effect Asset을 반복 재생</li>
+      <li>Compute Shader 상태·이력 갱신과 Instancing 출력으로 6개 Emitter 유형(Sprite·Mesh·Trail·Ribbon·Sprite Trail·Beam) 구현</li>
+      <li>보간·거리 기반 재샘플링·Tangent Smoothing으로 빠른 무기·발사체의 Trail·Ribbon 품질 개선</li>
+      <li>Animation Notify·Socket과 Effect Asset 재생을 연결하고, Material·Emitter를 조합해 전투 VFX 제작</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>AI 협업 방식</h2>
+    <ul>
+      <li>원작 에셋 검색·분석과 EffectEditor UI 구조 구성을 AI에 맡기고, 인스턴싱 적용 범위(Sprite 우선)와 왜곡 표현(Sprite → Mesh)은 AI 제안과 비교해 직접 결정</li>
+      <li>계획서는 범위·하지 않을 것·검증 기준을 확인해 반려·승인하고, Engine 모듈·공용 API·새 패턴은 사전 승인으로 묶은 뒤 규칙이 지켜지지 않던 지점은 hook으로 차단</li>
+    </ul>
+    <h3>계획서는 반려하며 다지고, 실행은 규칙과 hook 안에서</h3>
+    <div class="flow">
+      <span>계획서 작성 (Codex)</span><i>→</i>
+      <span>검토 · 반려 (나)</span><i>→</i>
+      <span>승인 (나)</span><i>→</i>
+      <span>구현 (Codex)</span><i>→</i>
+      <span>검증 (빌드 · 실행)</span><i>→</i>
+      <span>기록 (docs/tasks)</span>
+    </div>
+    <div class="box">
+      <span class="label">글로 정한 규칙이 지켜지지 않을 때</span>
+      <p>저장소 AGENTS.md에 "셰이더는 원본과 대응 파일을 먼저 읽고 수정", "데이터 테이블은 직접 고치지 않음"을 적어 두었지만 지켜지지 않는 경우가 있었습니다. 그래서 hook(<code>.codex/hooks/pre_tool_use.py</code>)으로 원본을 읽지 않은 셰이더 수정, 데이터 테이블 쓰기, 파괴적 git 명령을 실행 직전에 거부하게 했습니다.</p>
+    </div>
+    <p class="small muted">계획 문서 211개(완료 192 · 폐기 15), 저장소 docs/tasks 기준</p>
+  </section>
+
+  <section>
+    <h2>난관과 해결: EffectEditor 저작 데이터와 게임 런타임 연결</h2>
+    <div class="steps">
+      <div class="step"><div class="k">문제</div><p>Preview와 게임 결과가 달라지지 않도록 Editor와 Runtime의 데이터 형식을 하나로 맞춰야 했습니다.</p></div>
+      <div class="step"><div class="k">해결</div><p>Engine은 EffectDefinition·EffectInstance, Editor는 Authoring·Preview, Client는 Runtime Loader를 맡도록 책임을 나눴습니다.</p></div>
+      <div class="step"><div class="k">결과</div><p>Authoring → JSON → Runtime Loader → EffectDefinition 순서로 전달하고 Preview도 같은 EffectDefinition을 쓰게 해, Editor와 게임의 데이터 계약과 확장 시 수정 경계를 추적할 수 있게 했습니다.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>링크</h2>
+    <div class="links">
+      <a class="btn" href="https://youtu.be/JBuVAdqzew8" target="_blank" rel="noopener">YouTube 영상</a>
+      <a class="btn" href="https://github.com/shKim-33/Expedition_158_Effect" target="_blank" rel="noopener">GitHub 코드</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>© 2026 김석호 · <a href="https://github.com/shKim-33" target="_blank" rel="noopener">github.com/shKim-33</a></p>
+  </div>
+</footer>
+</body>
+</html>

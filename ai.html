@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>AI 협업 방식 · 김석호</title>
+<meta name="description" content="프로젝트별로 AI 에이전트에 맡긴 것과 직접 정하고 확인한 것">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./">김석호</a>
+    <nav class="nav">
+      <a href="./">홈</a>
+      <a href="ai.html" aria-current="page">AI 협업 방식</a>
+      <a href="projects/destiny-overclock.html">Destiny Overclock</a>
+      <a href="projects/expedition-33.html">Expedition 33</a>
+      <a href="projects/sinkpoint.html">SinkPoint</a>
+      <a href="projects/gunfire-reborn.html">Gunfire Reborn</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <div class="eyebrow">AI 협업 방식</div>
+    <h1>결정은 사람이, 반복은 AI가.<br>그 경계를 프로젝트마다 다시 그었습니다</h1>
+    <p class="lead">결정은 조작해 볼 수 있는 시안으로, 지시와 기록은 마크다운 계획서로, 실행은 단계별 위임으로, 확인은 직접 플레이와 확인 보고서로 나눴습니다. 실패한 위임은 기록해 다음 지시문과 규칙에 반영했습니다.</p>
+  </section>
+
+  <section>
+    <h2>프로젝트별: AI에 맡긴 것과 제가 정하고 확인한 것</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>프로젝트 · AI</th><th>AI에 맡긴 것과 내가 정하고 확인한 것</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><a href="projects/gunfire-reborn.html">Gunfire Reborn 모작</a><br><span class="muted small">Codex</span></td>
+            <td>프레임워크를 익히는 단계라 핵심 구현은 직접 하고, 계획서 작성과 에디터 구축 같은 반복 작업을 AI에 맡김. 저장소 AGENTS.md로 작업 규칙을 고정하고 설계 결정과 작업 계획을 문서로 관리 (완료 문서 111개)</td>
+          </tr>
+          <tr>
+            <td><a href="projects/expedition-33.html">Expedition 33 모작</a><br><span class="muted small">Codex</span></td>
+            <td>계획서 작성과 구현을 AI에 맡기되 계획서는 범위·하지 않을 것·검증 기준을 확인해 반려·승인하고, 글로 정한 규칙이 지켜지지 않던 셰이더 원본 확인·데이터 테이블 보호·파괴적 git 명령은 hook으로 실행 직전에 차단</td>
+          </tr>
+          <tr>
+            <td><a href="projects/sinkpoint.html">SinkPoint</a><br><span class="muted small">Codex · Unity MCP</span></td>
+            <td>5일 일정에 맞춰 Unity MCP를 처음 도입해 씬·Prefab·참조 연결과 Play Mode 실행까지 AI에 맡기고, 그만큼 직접 플레이 검증과 디테일 검수에 시간을 씀. AI 작업은 Player 씬으로 한정 (완료 계획 22개)</td>
+          </tr>
+          <tr>
+            <td><a href="projects/destiny-overclock.html">Destiny Overclock</a><br><span class="muted small">Claude Code · Unity MCP</span></td>
+            <td>조작해 볼 수 있는 청사진·시안(아티팩트)으로 방향을 정해 계획서로 옮기고, 계획서 단계를 서브에이전트에 하나씩 맡겨 단계마다 확인. 저장소에 3인 팀 공용 AI 규칙과 Unity MCP 연결 가이드를 작성</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>SinkPoint에서 Destiny Overclock으로: 무엇이 달라졌나</h2>
+    <p>Codex 한 세션으로 일하던 방식에서, Claude Code를 주력으로 쓴 첫 프로젝트로 넘어가며 바꾼 점입니다.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>항목</th><th>SinkPoint (5일 · 2인)</th><th>Destiny Overclock (9일 · 3인)</th></tr></thead>
+        <tbody>
+          <tr><td>에이전트</td><td>Codex 한 세션 + Unity MCP</td><td>Claude Code 메인 세션 + 서브에이전트 + Unity MCP</td></tr>
+          <tr><td>AI 규칙 범위</td><td>개인 작업 문서</td><td>저장소 공용 규칙(AGENTS.md) + Unity MCP 연결 가이드, 첫날 작성</td></tr>
+          <tr><td>결정 방식</td><td>대화와 계획서</td><td>조작해 볼 수 있는 시안을 먼저 만들어 방향·수치를 정하고 확정 값만 계획서로</td></tr>
+          <tr><td>실행</td><td>메인 세션이 직접</td><td>계획서 단계를 서브에이전트에 하나씩 순차 위임, 단계마다 확인 후 커밋</td></tr>
+          <tr><td>검증 기록</td><td>작업 기록 문서(Diff·Build·Console·Play Mode)</td><td>위와 같음 + 캡처와 판정을 한 화면에 모은 확인 보고서</td></tr>
+          <tr><td>자동 테스트</td><td>없음</td><td>EditMode 테스트 152개 작성, 계획서 검증 항목에 테스트 실행 포함</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>역할 구분</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>제가 한 것</th><th>AI에 맡긴 것</th></tr></thead>
+        <tbody>
+          <tr><td>구조 원칙과 담당 경계 결정, 팀 합의</td><td>원칙에 맞춘 코드·테스트 작성, 문서 갱신</td></tr>
+          <tr><td>시안을 보고 방향 선택, 밸런스 수치 확정</td><td>시안·데모 제작, 수치 계산(경로 길이, 시야 판정 등)</td></tr>
+          <tr><td>계획서의 범위·하지 않을 것·검증 기준 확정</td><td>단계 실행(씬 구성·배치·프리팹), 캡처·보고서 작성</td></tr>
+          <tr><td>직접 플레이와 화면·체감 판단, AI 보고와 실제 대조</td><td>자동 확인(Console, 테스트, 경로·충돌 판정)</td></tr>
+          <tr><td>실패 원인 판단과 방침 전환</td><td>회고·피드백 메모 기록</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted" style="margin-top:12px">실제 키보드·마우스 입력, 소리, 웹 빌드 체감은 AI 확인으로 대신하지 않고 계획서마다 "사용자 몫"으로 남겼습니다.</p>
+  </section>
+
+  <section>
+    <h2>실패에서 바꾼 것</h2>
+    <p>AI 협업에서 가장 많이 배운 건 잘 된 위임보다 실패한 위임이었습니다. Destiny Overclock에서 있었던 일입니다.</p>
+
+    <h3>1. 자동 확인 13번을 다 통과했는데, 첫 플레이 1분 만에 화면이 고장 나 있었다</h3>
+    <div class="steps">
+      <div class="step"><div class="k">문제</div><p>2층 본 씬 구성을 서브에이전트에 13번 나눠 맡겼고, 단계마다 확인을 모두 통과했습니다. 그런데 사람이 처음 플레이하자 1분 안에 화면이 시작 지점 벽에 고정돼 보였습니다.</p></div>
+      <div class="step"><div class="k">원인</div><p>캡처용 임시 카메라 4개가 Editor 메모리에 남아 메인 카메라를 덮고 있었습니다. 씬 파일에는 없어서 저장소만 보는 확인으로는 잡히지 않았고, 서브에이전트 보고는 모두 "삭제함"이었습니다.</p></div>
+      <div class="step"><div class="k">바꾼 것</div><p>확인 단계에 Editor 상태(Play 종료, 임시 카메라 0개, Game 창 크기)를 넣고, 캡처는 한 장 이상 직접 열어 보며, 직접 플레이할 지점을 계획에 미리 넣었습니다. 다음 작업에서는 서브에이전트 보고에 없던 문제 2건을 직접 플레이로 잡았습니다.</p></div>
+    </div>
+
+    <h3>2. 위임이 하나뿐인 Editor를 붙잡았다</h3>
+    <div class="steps">
+      <div class="step"><div class="k">문제</div><p>서브에이전트가 긴 Editor 스크립트와 테스트를 실행하면서 하나뿐인 Unity Editor가 응답하지 않게 됐고, 강제 종료까지 갔습니다. 위임 하나가 10~25분이라 진행 상황도 보이지 않았습니다.</p></div>
+      <div class="step"><div class="k">바꾼 것</div><p>Editor·씬·Play 작업은 서브에이전트에 맡기지 않고 메인 세션이 체크박스 하나 단위로 짧게 직접 진행하도록 바꿨습니다. 서브에이전트는 읽기 전용 조사·코드·문서만 맡고, 계획 시작 전에 전제를 코드로 먼저 확인합니다.</p></div>
+    </div>
+
+    <h3>3. 판정할 수 있는 것만 확인하니, 사람이 보는 것을 놓쳤다</h3>
+    <div class="steps">
+      <div class="step"><div class="k">문제</div><p>서브에이전트가 숨는 복도를 고려하지 않고 엄폐물 모양을 골랐는데, 확인 항목이 콜라이더·경로처럼 코드로 판정되는 것뿐이라 통과했습니다.</p></div>
+      <div class="step"><div class="k">바꾼 것</div><p>"숨는 길에서 엄폐물로 읽히는가"를 플레이 시점으로 확인하는 항목을 넣고, 모델 선택은 후보를 보여 주면 제가 고르도록 했습니다.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>도구를 고르는 기준</h2>
+    <div class="box">
+      <span class="label">누가 몇 번 읽느냐</span>
+      <p>AI가 반복해서 읽는 계획서는 마크다운으로, 한 번 만들고 사람이 보는 시안·보고서는 공유 가능한 웹 페이지(아티팩트)로 만들었습니다. 아티팩트는 Git 밖에 있어 구현이 바뀌면 낡기 때문에, 결정의 정본은 언제나 계획서에 둡니다.</p>
+    </div>
+    <div class="box">
+      <span class="label">맡기기 좋은 일 / 사람이 해야 하는 일</span>
+      <p>씬 이전, 좌표표대로 배치, 프리팹 Variant, 문서 갱신처럼 확인 기준이 분명한 일은 AI 보고와 실제가 어긋난 적이 없었습니다. 반면 화면이 제대로 보이는지, 재미있는지, 길을 잃는지 같은 체감 판단과 밸런스 수치 확정은 사람이 해야 했습니다.</p>
+    </div>
+    <div class="box warn">
+      <span class="label">속도보다 "끊기지 않음"</span>
+      <p>서브에이전트 위임으로 얻은 것은 속도보다는, 메인 세션의 대화 기록이 차지 않아 긴 작업이 끊기지 않았다는 점입니다. 위임 하나에 드는 비용이 커서 아주 작은 단계는 직접 하는 편이 낫다는 것도 기록으로 확인했습니다.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>© 2026 김석호 · <a href="https://github.com/shKim-33" target="_blank" rel="noopener">github.com/shKim-33</a></p>
+    <p>이 사이트도 Claude Code와 함께 만들었습니다. 내용은 각 프로젝트의 저장소 기록과 문서로 확인한 것만 옮겼습니다.</p>
+  </div>
+</footer>
+</body>
+</html>

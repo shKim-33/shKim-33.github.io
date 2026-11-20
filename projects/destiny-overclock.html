@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Destiny Overclock · 김석호</title>
+<meta name="description" content="Official 2026 Unity Game Jam 출품작 Destiny Overclock 케이스 스터디">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">김석호</a>
+    <nav class="nav">
+      <a href="../">홈</a>
+      <a href="../ai.html">AI 협업 방식</a>
+      <a href="destiny-overclock.html" aria-current="page">Destiny Overclock</a>
+      <a href="expedition-33.html">Expedition 33</a>
+      <a href="sinkpoint.html">SinkPoint</a>
+      <a href="gunfire-reborn.html">Gunfire Reborn</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <div class="eyebrow">Official 2026 Unity Game Jam 출품작</div>
+    <h1>Destiny Overclock</h1>
+    <p class="lead">적의 행운(0~99 숫자)을 해킹으로 빼앗아 보안 시설을 층별로 돌파하는 Unity 6 3D SF 잠입 액션입니다. 브라우저에서 바로 플레이할 수 있습니다.</p>
+    <dl class="facts">
+      <dt>기간</dt><dd>2026.11.06 – 11.14 (9일)</dd>
+      <dt>형태</dt><dd>3인 Unity 팀 프로젝트 (게임잼)</dd>
+      <dt>엔진</dt><dd>Unity 6 · URP · C# · WebGL</dd>
+      <dt>AI</dt><dd>Claude Code (메인 세션 + 서브에이전트) · Unity MCP</dd>
+      <dt>담당</dt><dd>핵심 구조(행운·해킹 흐름·게임 상태) · 감시·경보 시스템 · 해킹 미니게임 2종 · 2층 레벨 · 전 층 분위기 설정</dd>
+    </dl>
+    <div class="links">
+      <a class="btn primary" href="https://ru-vin.itch.io/destiny-overclock" target="_blank" rel="noopener">itch.io에서 플레이</a>
+    </div>
+  </section>
+
+  <section>
+    <h2>중점 구현</h2>
+    <ul>
+      <li>행운·게임 상태·timeScale의 주인을 하나씩 두는 구조와 인터페이스 7개·C# 이벤트로 3인이 나눠 작업할 때의 접점 고정</li>
+      <li>조준 → 난이도 결정 → 미니게임 → 행운 이동 → 기절로 이어지는 해킹 흐름을 만들고, 미니게임은 성공·실패만 돌려주도록 분리</li>
+      <li>발각 즉사를 노출 게이지 → 층 경보 → 출구 잠금 흐름으로 바꾸고, CCTV·몬스터가 같은 게이지 식과 시야·경고 표시를 공유하도록 구현</li>
+      <li>끝자리 7·77에서 행운을 써 적을 멈추는 액티브 스킬을 기존 행운 소비 경로와 기절 인터페이스를 재사용해 적 코드 수정 없이 구현</li>
+      <li>해킹 미니게임 2종과 난이도 ScriptableObject를 만들고, 판 생성 규칙을 순수 로직으로 떼어 EditMode 테스트로 확인</li>
+      <li>블록아웃부터 NavMesh·조명 굽기까지 2층 레벨을 구성하고, 팀원이 1층용으로 만든 분위기 구성을 전 층·타이틀에 적용</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>AI 협업 방식</h2>
+    <ul>
+      <li>감시 방식·미니게임 시안 3차례·행운 사용 흐름을 조작해 볼 수 있는 청사진·시안(공유 가능한 웹 페이지, 아티팩트)으로 직접 해 보며 정하고, 확정한 값만 계획서로 옮겨 AI 작업 범위로 제공 (아티팩트 24개 제작)</li>
+      <li>계획서 단계를 서브에이전트에 하나씩 순차로 맡기고, 단계마다 Diff·Console·테스트·Editor 상태와 직접 플레이로 확인한 뒤 커밋 (8개 작업에서 44회 위임)</li>
+      <li>자동 확인을 모두 통과했지만 첫 직접 플레이에서 드러난 화면 문제를 기록해 Editor 상태 확인을 단계에 넣고, Editor를 오래 점유하는 씬 작업은 위임에서 빼도록 방식 수정</li>
+    </ul>
+
+    <h3>작업 한 건이 흘러가는 순서</h3>
+    <div class="flow">
+      <span>시안으로 방향 결정 (나)</span><i>→</i>
+      <span>계획서: 범위 · 하지 않을 것 · 검증 기준</span><i>→</i>
+      <span>단계별 위임 (서브에이전트)</span><i>→</i>
+      <span>확인: 저장소 · Editor 상태 · 직접 플레이 (나)</span><i>→</i>
+      <span>단계마다 커밋</span>
+    </div>
+
+    <h3>시안이 결정을 바꾼 사례: "발각 = 즉사"를 없애다</h3>
+    <p>CCTV에 발각되면 즉사하는 방식과 노출 게이지가 차오르는 방식을, 토글로 번갈아 플레이할 수 있는 시안으로 만들었습니다. 시안의 상수가 계획서 초안 값과 같아서 숫자를 바꾸면 바로 다시 해 볼 수 있었고, 링크 하나로 Unity 없이 팀과 이야기했습니다. 팀 상의 끝에 즉사를 없애고 노출 게이지 → 층 경보 → 출구 잠금 흐름으로 바꿨습니다.</p>
+    <p>2층 레이아웃도 플레이어 동선과 적·CCTV 시야까지 움직여 볼 수 있는 탑뷰 시안으로 먼저 잡았고, 시안을 만지다 머리 위 <code>?</code>(소리 들음)·<code>!</code>(발각) 마커 아이디어를 얻었습니다.</p>
+
+    <div class="box warn">
+      <span class="label">시안의 한계도 기록했습니다</span>
+      <p>탑뷰 시안에는 소품 부피가 없어, 발전기·파이프가 복도 입구를 막은 것을 Unity에서 고쳐야 했습니다. 그래서 "시안은 동선·시야 같은 논리를, Unity는 통로 폭 같은 실측을 검증한다"로 정리하고 다음 계획의 검증 항목에 "통로가 소품에 막히지 않았는지"를 넣었습니다.</p>
+    </div>
+    <p class="small muted">위임 실패와 방침 전환 사례는 <a href="../ai.html">AI 협업 방식</a> 페이지에 정리했습니다.</p>
+  </section>
+
+  <section>
+    <h2>난관과 해결: 2층 조명 굽기, 외부 모델의 라이트맵 UV 누락</h2>
+    <div class="steps">
+      <div class="step"><div class="k">상황</div><p>천장이 뚫린 2층에 실시간 해 그림자가 대각선으로 졌습니다. 웹에서 실행 중 비용을 늘리지 않으려고 미리 구운 조명을 택했습니다.</p></div>
+      <div class="step"><div class="k">문제</div><p>시험 굽기에서 렌더러 77개 중 32개가 빠졌습니다. 외부 에셋 모델에 라이트맵 UV(uv2)가 없고 uv0도 겹쳐 "invalid Mesh"로 제외된 것이었습니다.</p></div>
+      <div class="step"><div class="k">행동</div><p>메모리 안에서만 임시 UV를 넣어 다시 구워 원인을 확정했습니다. 같은 방식으로 조명 시안(스포트·점·혼합 × 밝기 3단계)을 만들어 팀 의견을 받고, 1·2·3층이 참조하는 모델 230개의 Generate Lightmap UVs를 팀 동의를 받아 켰습니다.</p></div>
+      <div class="step"><div class="k">결과</div><p>uv2 없는 모델 0개, 바뀐 파일은 <code>.meta</code> 230개뿐이었습니다. 2층은 Baked 점 조명 81개·Light Probe 490개로 "invalid Mesh" 경고 없이 구웠고, 다른 층 담당이 직접 구울 수 있도록 굽기 방식을 가이드로 넘겼습니다.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>링크</h2>
+    <div class="links">
+      <a class="btn" href="https://ru-vin.itch.io/destiny-overclock" target="_blank" rel="noopener">itch.io 플레이 페이지</a>
+      <a class="btn" href="../ai.html">AI 협업 방식</a>
+    </div>
+    <p class="small muted" style="margin-top:12px">행운 규칙(7·77·13)과 층 구성 기획, 플레이어·적 AI, 1·3·4층 레벨은 다른 팀원의 작업입니다. 커밋에는 Claude Code가 작성한 코드가 들어 있으며, 잼 제출 페이지에 생성형 AI 사용을 공개했습니다.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>© 2026 김석호 · <a href="https://github.com/shKim-33" target="_blank" rel="noopener">github.com/shKim-33</a></p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>SinkPoint · 김석호</title>
+<meta name="description" content="OpenAI Game Builders Seoul 2026 온라인 예선 제출작 SinkPoint 케이스 스터디">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">김석호</a>
+    <nav class="nav">
+      <a href="../">홈</a>
+      <a href="../ai.html">AI 협업 방식</a>
+      <a href="destiny-overclock.html">Destiny Overclock</a>
+      <a href="expedition-33.html">Expedition 33</a>
+      <a href="sinkpoint.html" aria-current="page">SinkPoint</a>
+      <a href="gunfire-reborn.html">Gunfire Reborn</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <div class="eyebrow">OpenAI Game Builders Seoul 2026 온라인 예선 제출작</div>
+    <h1>SinkPoint</h1>
+    <p class="lead">방향성 중력과 그래플 이동을 중심으로 한 Unity 3D 액션 어드벤처입니다. Codex·Unity MCP와 함께 5일간 만들었습니다.</p>
+    <dl class="facts">
+      <dt>기간</dt><dd>2026.08.22 – 08.26 (5일)</dd>
+      <dt>형태</dt><dd>2인 Unity 프로젝트</dd>
+      <dt>엔진</dt><dd>Unity · C#</dd>
+      <dt>AI</dt><dd>Codex · Unity MCP</dd>
+      <dt>담당</dt><dd>Player · Camera · 전투 연동 · 방향성 중력 · 그래플 이동</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>시연 영상</h2>
+    <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/ACLhexzNJnM" title="SinkPoint 시연 영상" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  </section>
+
+  <section>
+    <h2>중점 구현</h2>
+    <ul>
+      <li>팀장이 잡은 MVP를 5일 일정에 맞춰 이동·전투·방향성 중력·그래플 범위로 구체화하고, 팀 씬 규칙에 따라 별도 Player Scene에서 구현 후 팀원 기능과 통합</li>
+      <li>SphereCastNonAlloc 카메라 가림 처리와 카메라 조준점 → 총구 2단계 Raycast 사격 판정 구현</li>
+      <li>공용 GravityState의 PresentationUp을 Player·Camera가 함께 사용하도록 하여 방향성 중력·무중력 전환 시 이동 기준과 화면 Up을 맞춤</li>
+      <li>일반·방향성 중력 보조 상승과 무중력 그래플의 상태·앵커·당김·LineRenderer 표현을 분리</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>AI 협업 방식</h2>
+    <ul>
+      <li>Unity MCP로 씬 복제·Prefab 생성·참조 연결·Play Mode 실행까지 AI에 맡기고, 중력 전환 오차·사격 Ray 정렬 같은 상태 값을 Play Mode 자동 확인으로 수치화</li>
+      <li>전환 연출 시간·무중력 반작용 상한 같은 체감 값과 완료 판단은 직접 플레이로 정하고, MCP 작업 중 바뀐 ProjectSettings 값은 찾아 작업 전 값으로 복구</li>
+    </ul>
+    <div class="box">
+      <span class="label">처음 써 본 Unity MCP, 범위부터 정했습니다</span>
+      <p>팀장 소유 씬은 AI가 건드리지 않도록, AI 작업은 복제한 Player 씬으로 한정했습니다. 작업 기록은 항목마다 "Codex 사용처 / 사람이 직접 결정한 부분 / 검증 결과"로 나눠 남겼습니다. 완료 계획 22개.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>난관과 해결: 방향성 중력에서 플레이어·카메라·물리 정렬</h2>
+    <div class="steps">
+      <div class="step"><div class="k">문제</div><p>중력이 바뀔 때 Player 이동·Rigidbody 정렬·VisualRoot 표현·Camera Up의 기준이 서로 달라졌습니다.</p></div>
+      <div class="step"><div class="k">해결</div><p>방향·세기를 GravityState로 공유하고, PlayerController는 새 Gravity Up을 이동·접지 기준으로 쓰도록 역할을 나눴습니다.</p></div>
+      <div class="step"><div class="k">결과</div><p>고정·주기·무중력 Preset 전환에서 Player·Camera·중력 반응 오브젝트의 기준을 통일하고, 컴파일·Inspector 참조·Play Mode·Console 상태를 함께 확인하는 검증 흐름을 썼습니다.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>링크</h2>
+    <div class="links">
+      <a class="btn" href="https://youtu.be/ACLhexzNJnM" target="_blank" rel="noopener">YouTube 영상</a>
+      <a class="btn" href="https://ziofs1031.itch.io/sink" target="_blank" rel="noopener">itch.io 플레이 페이지</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>© 2026 김석호 · <a href="https://github.com/shKim-33" target="_blank" rel="noopener">github.com/shKim-33</a></p>
+  </div>
+</footer>
+</body>
+</html>

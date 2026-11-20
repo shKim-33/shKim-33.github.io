@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Gunfire Reborn 모작 · 김석호</title>
+<meta name="description" content="DirectX 11 개인 프로젝트 Gunfire Reborn 모작 케이스 스터디">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">김석호</a>
+    <nav class="nav">
+      <a href="../">홈</a>
+      <a href="../ai.html">AI 협업 방식</a>
+      <a href="destiny-overclock.html">Destiny Overclock</a>
+      <a href="expedition-33.html">Expedition 33</a>
+      <a href="sinkpoint.html">SinkPoint</a>
+      <a href="gunfire-reborn.html" aria-current="page">Gunfire Reborn</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <div class="eyebrow">DirectX 11 3D 개인 프로젝트</div>
+    <h1>Gunfire Reborn 모작</h1>
+    <p class="lead">DirectX 11 3D 수업과 병행하며, 수업 프레임워크 골격 위에 GameLogic·Editor 층과 레벨 에디터, 데이터 파이프라인, 충돌 체계를 더해 키운 개인 3D 포트폴리오입니다.</p>
+    <dl class="facts">
+      <dt>기간</dt><dd>2026.01 – 04 (약 3개월)</dd>
+      <dt>형태</dt><dd>개인 프로젝트</dd>
+      <dt>기술</dt><dd>C++ · DirectX 11 · HLSL · ImGui · Assimp · nlohmann-json · FMOD</dd>
+      <dt>AI</dt><dd>Codex</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>시연 영상</h2>
+    <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/Jpvrbx4RoCE" title="Gunfire Reborn 모작 시연 영상" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+  </section>
+
+  <section>
+    <h2>중점 구현</h2>
+    <ul>
+      <li>Engine → GameLogic → Client·Editor 의존 방향을 고정하고 GameInstance에 공용 API를 모아 실행 앱과 에디터가 같은 프레임워크 기능을 일관되게 사용하도록 구성</li>
+      <li>레벨 전환 요청을 즉시 처리하지 않고 다음 Update 경계에서 적용하고, 충돌 처리도 LateUpdate 이후 최종 단계에 두어 순회 중 구조 변경을 피함</li>
+      <li>ImGui Inspector·Picking으로 Level Object를 선택·배치·수정하고, JSON 저장·복원 및 CSV→Runtime JSON 변환으로 저작 데이터와 게임 입력을 분리</li>
+      <li>Hitscan·Projectile·Collision Channel을 공격 방식과 대상 규칙에 맞게 적용하고, 컨테이너·파츠 구조로 몸체·약점 판정을 한 경로에 모음</li>
+      <li>Assimp 의존을 오프라인 변환 툴에 한정해 Model·Animation Binary를 생성하고 Runtime은 변환 완료 데이터를 읽도록 구성</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>AI 협업 방식</h2>
+    <ul>
+      <li>프레임워크를 익히는 단계라 핵심 구조와 게임플레이는 직접 구현하고, 계획서 작성과 에디터 구축 같은 반복 작업을 AI에 맡김</li>
+      <li>저장소 AGENTS.md로 작업 규칙을 고정하고, 설계 결정과 완료·폐기 계획을 문서로 관리 (완료 문서 111개·폐기 26개)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>난관과 해결: 1인칭 팔 모델과 무기 모델의 애니메이션 동기화</h2>
+    <div class="steps">
+      <div class="step"><div class="k">문제</div><p>1인칭 팔과 무기가 서로 다른 Skeleton·Animation을 가지고 있어, 런타임에서 둘을 계속 맞춰야 하는 구조였습니다.</p></div>
+      <div class="step"><div class="k">해결</div><p>런타임에서 맞추는 대신 Unity Prefab 결합·Animator 구성·FBX 내보내기와 Assimp 기반 오프라인 변환으로 문제의 경계를 제작 단계로 옮겼습니다.</p></div>
+      <div class="step"><div class="k">결과</div><p>Runtime이 변환 완료된 단일 데이터를 재생하도록 해, 무기 전환 동작의 시각적 단절을 줄이는 기반을 마련했습니다.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>링크</h2>
+    <div class="links">
+      <a class="btn" href="https://youtu.be/Jpvrbx4RoCE" target="_blank" rel="noopener">YouTube 영상</a>
+    </div>
+    <p class="small muted" style="margin-top:12px">Device 초기화, Engine·Client 두 층, Deferred 렌더링 등 기본 골격은 수업 코드에서 출발했고, 그 위를 게임 수준에 맞춰 다듬고 확장했습니다.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>© 2026 김석호 · <a href="https://github.com/shKim-33" target="_blank" rel="noopener">github.com/shKim-33</a></p>
+  </div>
+</footer>
+</body>
+</html>

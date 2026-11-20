@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>김석호 포트폴리오</title>
+<meta name="description" content="게임 클라이언트 프로그래머 김석호의 프로젝트와 AI 협업 방식">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./">김석호</a>
+    <nav class="nav">
+      <a href="./" aria-current="page">홈</a>
+      <a href="ai.html">AI 협업 방식</a>
+      <a href="projects/destiny-overclock.html">Destiny Overclock</a>
+      <a href="projects/expedition-33.html">Expedition 33</a>
+      <a href="projects/sinkpoint.html">SinkPoint</a>
+      <a href="projects/gunfire-reborn.html">Gunfire Reborn</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">게임 클라이언트 프로그래머</div>
+    <h1>김석호</h1>
+    <p class="lead">DirectX 11 프레임워크와 툴부터 Unity 팀 프로젝트까지 만들며, AI 에이전트에게 무엇을 맡기고 무엇을 직접 정하고 확인할지 프로젝트마다 다듬어 왔습니다.</p>
+    <p class="quote">설계·결정·검증은 제가 맡고, 조사·작성·반복 작업은 AI에 단계별로 맡겼습니다.</p>
+    <div class="links">
+      <a class="btn primary" href="ai.html">AI 협업 방식 보기</a>
+      <a class="btn" href="https://github.com/shKim-33" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </section>
+
+  <section>
+    <h2>대표 프로젝트</h2>
+    <div class="cards">
+      <a class="card" href="projects/destiny-overclock.html">
+        <div class="meta">2026.11 · 9일 · Unity 3인 팀 · 게임잼</div>
+        <h3>Destiny Overclock</h3>
+        <p>적의 행운(0~99)을 해킹으로 빼앗아 보안 시설을 층별로 돌파하는 3D 잠입 액션. 핵심 구조·감시·해킹 미니게임·2층 레벨 담당.</p>
+        <div class="tags"><span class="tag">Unity 6</span><span class="tag">Claude Code</span><span class="tag">서브에이전트 위임</span><span class="tag">아티팩트</span></div>
+      </a>
+      <a class="card" href="projects/expedition-33.html">
+        <div class="meta">2026.05–07 · DirectX 11 · 8인 팀 · 이펙트 담당</div>
+        <h3>Expedition 33 모작</h3>
+        <p>독립 EffectEditor와 이펙트 런타임, 메인 전투 VFX. Editor Preview와 게임이 같은 데이터 계약을 쓰도록 구성.</p>
+        <div class="tags"><span class="tag">DirectX 11</span><span class="tag">Compute Shader</span><span class="tag">Codex</span><span class="tag">hook</span></div>
+      </a>
+      <a class="card" href="projects/sinkpoint.html">
+        <div class="meta">2026.08 · 5일 · Unity 2인 팀</div>
+        <h3>SinkPoint</h3>
+        <p>OpenAI Game Builders Seoul 2026 온라인 예선 제출작. Player·Camera·방향성 중력·그래플 이동 담당.</p>
+        <div class="tags"><span class="tag">Unity</span><span class="tag">Codex</span><span class="tag">Unity MCP</span></div>
+      </a>
+      <a class="card" href="projects/gunfire-reborn.html">
+        <div class="meta">2026.01–04 · DirectX 11 · 개인</div>
+        <h3>Gunfire Reborn 모작</h3>
+        <p>Engine → GameLogic → Client·Editor 층을 나눈 3D 프레임워크와 레벨 에디터, 히트스캔·충돌 체계.</p>
+        <div class="tags"><span class="tag">DirectX 11</span><span class="tag">ImGui</span><span class="tag">Assimp</span><span class="tag">Codex</span></div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h2>AI 협업, 이렇게 바뀌어 왔습니다</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>프로젝트 · AI</th><th>달라진 점</th></tr></thead>
+        <tbody>
+          <tr><td>Gunfire Reborn<br><span class="muted small">Codex</span></td><td>핵심 구현은 직접 하고 계획서·에디터 구축 같은 반복 작업을 AI에. 저장소 AGENTS.md로 작업 규칙 고정</td></tr>
+          <tr><td>Expedition 33<br><span class="muted small">Codex</span></td><td>계획서를 반려·승인하며 다지고, 글로 정한 규칙이 지켜지지 않던 지점은 hook으로 실행 직전에 차단</td></tr>
+          <tr><td>SinkPoint<br><span class="muted small">Codex · Unity MCP</span></td><td>Unity MCP를 처음 도입해 씬·Prefab 작업을 AI에 맡기고, 그만큼 직접 플레이 검증에 시간 사용</td></tr>
+          <tr><td>Destiny Overclock<br><span class="muted small">Claude Code · Unity MCP</span></td><td>조작해 볼 수 있는 시안으로 방향을 정하고, 계획서 단계를 서브에이전트에 하나씩 맡겨 단계마다 확인</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted" style="margin-top:12px">자세한 방식과 실패에서 바꾼 점은 <a href="ai.html">AI 협업 방식</a>에 정리했습니다.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>© 2026 김석호 · <a href="https://github.com/shKim-33" target="_blank" rel="noopener">github.com/shKim-33</a></p>
+    <p>이 사이트도 Claude Code와 함께 만들었습니다. 내용은 각 프로젝트의 저장소 기록과 문서로 확인한 것만 옮겼습니다.</p>
+  </div>
+</footer>
+</body>
+</html>
