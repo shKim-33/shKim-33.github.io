@@ -175,6 +175,10 @@ img{display:block}
 .who div + div dt{color:var(--mute)}
 .who dd{margin:0}
 .who div + div dd{color:var(--mute)}
+.proj .who > .goal{grid-column:1/-1;max-width:44em;margin-bottom:6px}
+.who .goal + div dt{color:var(--pass)}
+.who .goal + div dd{color:inherit}
+.proj .who > .goal dd{font-size:clamp(15px,1.25vw,19px);color:var(--ink)}
 .acts{display:flex;flex-wrap:wrap;align-items:center;gap:12px 26px;margin-top:clamp(24px,4vh,44px);font-size:15px;font-weight:700}
 .acts a{border-bottom:1px solid currentColor;padding-bottom:3px}
 .acts a.go{border:0;background:var(--ink);color:var(--bg);padding:13px 22px;border-radius:999px}
@@ -588,6 +592,7 @@ player_attack_ray_execution_plan.md
   <h2>Destiny<br>Overclock</h2>
   <p class="say">적의 행운(0~99 숫자)을 해킹으로 빼앗아 보안 시설을 층별로 돌파하는 Unity 6 3D SF 잠입 액션입니다.</p>
   <dl class="who">
+    <div class="goal"><dt>목적</dt><dd>9일 잼에서 3인 팀이 같은 방향으로 움직이도록, 첫날 팀 공용 AI 규칙(AGENTS.md)을 작성하고 시안·청사진·작업 정리를 아티팩트로 만들어 팀과 공유했습니다.</dd></div>
     <div><dt>맡은 것</dt><dd>핵심 구조(행운·해킹 흐름·게임 상태) · 감시·경보 시스템 · 해킹 미니게임 2종 · 2층 레벨 · 전 층 분위기 설정</dd></div>
     <div><dt>팀원이 맡은 것</dt><dd>플레이어 · 적 AI · 1·3·4층 레벨 · 타이틀 씬 구성 · 분위기 리그 코드</dd></div>
   </dl>
@@ -729,7 +734,8 @@ player_attack_ray_execution_plan.md
   </div>
   <div class="txt">
     <h3>해킹 미니게임은 시안을 세 차례(10종 → 5종 → 데모·행운 계산기) 다시 만들었고, 직접 해 보면서 "재미와 숫자 선택이 같이 있어야 한다"는 기준을 세웠습니다.</h3>
-    <p>빼앗은 행운을 길을 여는 비용과 적을 멈추는 스킬, 두 갈래로 쓰는 흐름도 시안으로 보여 주고 팀 동의를 받았습니다. 팀과는 설명 대신 시안 링크를 보내 상의했습니다.</p>
+    <p>빼앗은 행운을 길을 여는 비용과 적을 멈추는 스킬, 두 갈래로 쓰는 흐름도 시안으로 보여 주고 팀 동의를 받았습니다. 시안·청사진·작업 정리는 팀에 적극 공유하고 기획 회의에서도 함께 보며, 3인 팀 작업의 효율을 높였습니다.</p>
+    <p class="sub">첫날 저장소에 팀 공용 AI 규칙(AGENTS.md)을 두어, Claude Code와 Codex가 같은 수정 범위와 확인 기준을 읽게 했습니다.</p>
     <p class="sub">9일 동안 만든 아티팩트 24개</p>
   </div>
 </section>
@@ -798,6 +804,7 @@ player_attack_ray_execution_plan.md
   <h2 class="ex-title">Expedition<br>33 모작</h2>
   <p class="say">프로그래머 8명이 함께 만든 모작에서 이펙트를 혼자 맡았습니다. 이펙트를 만드는 툴(EffectEditor)부터 게임 안 전투 이펙트까지 직접 만들었습니다.</p>
   <dl class="who">
+    <div class="goal"><dt>목적</dt><dd>팀이 요구하는 전투 VFX를 팀원도 직접 만들 수 있게 이펙트 시스템과 툴을 갖추는 것이 목적이었고, 8인 팀 코드를 지키려고 AI 작업은 계획서 승인과 hook 안에서 진행했습니다.</dd></div>
     <div><dt>맡은 것</dt><dd>독립 EffectEditor · 이펙트 런타임 · 메인 전투 VFX · 일부 화면 후처리 효과(흑백 연출·Flash)</dd></div>
     <div><dt>팀원이 맡은 것</dt><dd>화면 효과 틀 · Stencil bit0 · 디퍼드·MRT</dd></div>
   </dl>
@@ -852,7 +859,7 @@ player_attack_ray_execution_plan.md
     </div>
     <p class="ex-file">Player_Counter.effect.json</p>
     <p class="cap">입자 설정, 곡선, 무작위 분포, 머티리얼을 고치고, 같은 툴의 미리보기로 바로 확인하며 다듬을 수 있습니다.</p>
-    <p class="ex-note">팀원 4명이 이 툴을 썼습니다.</p>
+    <p class="ex-note">쓰는 법은 문서로 정리하고 직접 설명해 안내했고, 팀원 4명이 이 툴로 직접 이펙트를 만들었습니다.</p>
   </div>
 </section>
 
@@ -938,6 +945,7 @@ player_attack_ray_execution_plan.md
   <h2>SinkPoint</h2>
   <p class="say">중력 방향이 바뀌는 공간을 그래플로 이동하는 3D 액션 어드벤처입니다. 둘이서 5일 동안 Codex·Unity MCP와 함께 만들었습니다.</p>
   <dl class="who">
+    <div class="goal"><dt>목적</dt><dd>5일 안에 플레이할 수 있는 결과물을 내기 위해, Unity MCP를 처음 도입해 에디터 작업까지 AI에 맡기고 저는 직접 플레이하며 검증하는 데 집중했습니다.</dd></div>
     <div><dt>맡은 것</dt><dd>Player · Camera · 전투 연동 · 방향성 중력 · 그래플 이동 · Unity MCP 초기 설정과 팀용 재현 가이드</dd></div>
     <div><dt>팀원이 맡은 것</dt><dd>MVP 기획 · 몬스터 · 레벨</dd></div>
   </dl>
@@ -1071,6 +1079,7 @@ TransitionProgress = transitionDuration &lt;= Mathf.Epsilon
   <h2>Gunfire<br>Reborn <small class="gf-sm">모작</small></h2>
   <p class="say">수업에서 받은 DirectX 11 골격(장치 초기화, Engine·Client 두 층, 디퍼드 렌더링)에서 출발해, 게임 로직 층과 레벨 에디터, 데이터 파이프라인, 충돌 체계를 직접 더해 키운 개인 프로젝트입니다.</p>
   <dl class="who">
+    <div class="goal"><dt>목적</dt><dd>DirectX 11과 프레임워크 구조를 익히는 것이 목적이라, 핵심 구현은 직접 하고 AI에는 계획서와 ImGui 화면 같은 반복 작업만 맡겼습니다.</dd></div>
     <div><dt>직접 구현한 것</dt><dd>GameLogic 층 분리 · 게임플레이(플레이어 행동 · 몬스터 AI · 히트스캔·충돌 판정) · 그림자·외곽선 렌더링</dd></div>
     <div><dt>AI에 맡긴 것</dt><dd>계획서 작성 · 에디터의 ImGui 화면 · 자잘한 수정과 버그 수정 일부</dd></div>
   </dl>
