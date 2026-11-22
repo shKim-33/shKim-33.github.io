@@ -387,6 +387,45 @@ img{display:block}
 @media (max-width:520px){
   .ai4{grid-template-columns:1fr}
 }
+
+/* ── 모바일(800px 이하): 글과 이미지를 겹치지 않게, 스크롤 대신 밀어서 넘기기 ── */
+.m-track{display:contents}
+.m-steps{display:none}
+@media (max-width:800px){
+  /* 프로젝트 첫 장면: 배경 이미지를 위 칸으로 빼고 글은 그 아래 ([src]는 프로젝트별 .ov 폭 규칙보다 앞서려고) */
+  .proj{justify-content:flex-start;padding-top:64px}
+  .proj img.ov[src]{position:relative;order:-2;right:auto;top:auto;transform:none;width:calc(100% + 2*var(--gut));max-width:none;margin:0 calc(-1*var(--gut));opacity:1;
+    -webkit-mask-image:linear-gradient(#000 75%,transparent);mask-image:linear-gradient(#000 75%,transparent)}
+  .proj > .ex-shade{display:none}
+  .proj > .tagr{position:static!important;order:-1;align-self:flex-end;margin:-18px 0 6px}
+
+  /* 여러 장면 무대: 고정 스크롤을 풀고 옆으로 한 장씩 */
+  .stage.m-swipe,.stage.m-step,.reel.m-reel{height:auto!important}
+  .m-swipe .pin{position:relative;height:auto;overflow:visible;display:flex;flex-direction:column;padding:72px 0 48px}
+  .m-swipe .pin > .eyebrow{position:static;order:0;padding:0 var(--gut);margin-bottom:12px}
+  .m-swipe .pin > .rail{position:static;order:1;margin:0 var(--gut) 16px}
+  .m-swipe .m-track{order:2;display:flex;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none}
+  .m-swipe .m-track::-webkit-scrollbar{display:none}
+  .m-swipe .layer{position:relative;inset:auto;flex:0 0 100%;min-width:0;justify-content:flex-start;padding:0 var(--gut);
+    scroll-snap-align:start;scroll-snap-stop:always;opacity:1;transform:none;pointer-events:auto;transition:none}
+  .m-swipe .shot::before{content:none}
+  .m-swipe .shot > img,.m-swipe .shot > video,.m-swipe .shot.doc > img,.m-swipe .shot.doc > iframe{position:relative;inset:auto;top:auto;transform:none;flex:none;
+    width:calc(100% + 2*var(--gut));max-width:none;height:auto;max-height:none;aspect-ratio:16/9;margin:0 calc(-1*var(--gut)) 18px;object-fit:contain;background:#000;border-radius:0;border:0;box-shadow:none}
+  .m-swipe .shot.doc > .code{position:relative;inset:auto;top:auto;transform:none;width:100%;max-height:none;margin-bottom:18px;overflow-x:auto;box-shadow:none}
+  .m-swipe .ticks span{background:var(--pass)}
+  .rail.m-rail span,.m-swipe .rail span,.rail.m-steps span{cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+  /* 한 장면이 단계별로 바뀌는 무대: 화면 한 칸에 두고 탭·밀기로 단계 이동 */
+  .m-step .pin{position:relative}
+  .m-step .layer{pointer-events:auto}
+  .m-step .rail.m-steps{display:grid;z-index:4;bottom:18px}
+
+  /* 옆으로 흐르는 플레이 화면: 손가락으로 직접 넘기기 */
+  .m-reel .pin{position:relative;height:auto;padding:72px 0 48px}
+  .m-reel .track{width:auto;transform:none!important;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+  .m-reel .track::-webkit-scrollbar{display:none}
+  .m-reel .track figure{flex:none;width:84vw;scroll-snap-align:center}
+}
 </style>
 <style data-part="ex">
 /* E1 · 첫 장면: 배경 이미지 왼쪽(행성·인물)을 눌러 글자를 읽히게 */
@@ -545,6 +584,8 @@ img{display:block}
   .ex-cell span{font-size:9px}
   .ex-cell b{font-size:15px}
   .ex-cell i{font-size:10px}
+  /* 모바일 단계 무대: 진행도가 한 번에 바뀌므로 맞바꿈은 전환으로 보여 준다 */
+  .m-step .ex-scroll .ex-b{transition:clip-path .7s ease}
 }
 </style>
 <style data-part="gf">
@@ -825,7 +866,7 @@ _context-&gt;<i>DrawIndexedInstancedIndirect</i>(_indirectArgsBuffer.<i>Get</i>(
 </section>
 
 <!-- E4 · 사례 02: 재생 규칙 (PPT 3·4장). 받은 시간을 구간으로 나눠 쓰는 과정이 스크롤로 진행 -->
-<section class="stage" data-p="ex" style="height:300vh">
+<section class="stage" data-p="ex" style="height:300vh" data-m-steps="0,.3,.6,.9">
   <div class="pin">
     <div class="layer ex-slice" data-ex-step="0">
       <div class="ex-slice-in">
@@ -972,7 +1013,7 @@ _context-&gt;<i>DrawIndexedInstancedIndirect</i>(_indirectArgsBuffer.<i>Get</i>(
   <p>툴에서 본 이펙트와 게임에서 나오는 이펙트가 다르면 툴을 믿을 수 없습니다. 에디터 프리뷰도 게임과 같은 이펙트 풀에서 꺼내, 저장 파일과 같은 정의 데이터로 재생하게 했습니다. 팀원 4명도 이 툴로 직접 이펙트를 만들었습니다.</p>
 </section>
 
-<section class="stage" data-p="ex" style="height:240vh">
+<section class="stage" data-p="ex" style="height:240vh" data-m-steps="0,1" data-m-labels="에디터|게임 화면">
   <div class="pin">
     <div class="layer ex-pair">
       <div class="ex-col">
@@ -1265,7 +1306,7 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
 </section>
 
 <!-- G8 · 구조: 세 층 (층 쌓기, PPT 21장) -->
-<section class="stage" data-p="gf" style="height:250vh">
+<section class="stage" data-p="gf" style="height:250vh" data-m-steps="0,.2,.55,.9">
   <div class="pin">
     <div class="layer shot doc gf-win gf-build" data-gf-step="0">
       <pre class="code gf-code"><b>class</b> ENGINE_DLL <s>CGameInstance</s> <b>final</b> : <b>public</b> <s>CBase</s>
@@ -1792,12 +1833,13 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
   function prog(el){var r=el.getBoundingClientRect();return Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)))}
   function onScroll(){
     stages.forEach(function(s){
+      if(s.el.classList.contains('m-swipe'))return;
       var n=s.layers.length,p=prog(s.el),k=Math.min(n-1,Math.floor(p*n));
       for(var i=0;i<n;i++)s.layers[i].classList.toggle('on',i===k);
       for(i=0;i<s.rail.length;i++)s.rail[i].classList.toggle('on',i===k);
       if(s.ticks){var lit=Math.min(13,Math.floor(p*n/0.8*13));for(i=0;i<13;i++)s.ticks[i].classList.toggle('on',i<lit)}
     });
-    reels.forEach(function(r){r.track.style.transform='translateX('+(-(r.track.scrollWidth-innerWidth)*prog(r.el))+'px)'});
+    reels.forEach(function(r){if(r.el.classList.contains('m-reel'))return;r.track.style.transform='translateX('+(-(r.track.scrollWidth-innerWidth)*prog(r.el))+'px)'});
   }
   addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onScroll();
 
@@ -1861,6 +1903,62 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
   addEventListener('scroll',sync,{passive:true});
   document.addEventListener('visibilitychange',sync);
 })();
+(function(){
+  // 모바일(800px 이하): 고정 스크롤 무대를 손가락 조작으로 바꾼다
+  // - 층이 여러 개인 무대: 옆으로 밀거나 위 탭을 눌러 한 장씩 (m-swipe)
+  // - 한 층이 단계별로 바뀌는 무대(data-m-steps): 화면 한 칸에 두고 탭·밀기로 단계 이동 (m-step, 진행도를 stage._mp로 덮는다)
+  // - 옆으로 흐르는 플레이 화면: 가로 스와이프 (m-reel)
+  var mq=matchMedia('(max-width:800px)'),swipes=[],steps=[],reels=[].slice.call(document.querySelectorAll('.reel'));
+  function kick(){dispatchEvent(new Event('scroll'))}
+  function bar(cls,labels,onTap){
+    var r=document.createElement('div');r.className='rail '+cls;r.style.gridTemplateColumns='repeat('+labels.length+',1fr)';
+    labels.forEach(function(t,i){var s=document.createElement('span');s.textContent=t;s.addEventListener('click',function(){onTap(i)});r.appendChild(s)});
+    return r;
+  }
+  function mark(list,k){list.forEach(function(el,i){el.classList.toggle('on',i===k)})}
+  [].forEach.call(document.querySelectorAll('.stage'),function(st){
+    var pin=st.querySelector('.pin'),layers=[].slice.call(pin.children).filter(function(c){return c.classList.contains('layer')});
+    if(layers.length>1){
+      var s={st:st,layers:layers,k:-1,track:document.createElement('div')};
+      s.track.className='m-track';pin.insertBefore(s.track,layers[0]);layers.forEach(function(l){s.track.appendChild(l)});
+      var go=function(i){s.track.scrollTo({left:i*s.track.clientWidth,behavior:'smooth'})};
+      var rail=pin.querySelector(':scope > .rail');
+      if(rail)[].forEach.call(rail.children,function(t,i){t.addEventListener('click',function(){if(st.classList.contains('m-swipe'))go(i)})});
+      else{rail=bar('m-rail',layers.map(function(_,i){return (i+1)+' / '+layers.length}),go);pin.appendChild(rail)}
+      s.tabs=[].slice.call(rail.children);
+      s.sync=function(){
+        var k=Math.round(s.track.scrollLeft/Math.max(1,s.track.clientWidth));
+        if(k!==s.k){s.k=k;mark(s.layers,k);mark(s.tabs,k);kick()}
+      };
+      s.track.addEventListener('scroll',function(){if(st.classList.contains('m-swipe'))s.sync()},{passive:true});
+      swipes.push(s);
+    }else if(st.hasAttribute('data-m-steps')){
+      var stops=st.getAttribute('data-m-steps').split(',').map(Number),
+          labels=(st.getAttribute('data-m-labels')||'').split('|').filter(Boolean),
+          t={st:st,stops:stops,k:0};
+      if(labels.length!==stops.length)labels=stops.map(function(_,i){return String(i+1)});
+      t.set=function(i){t.k=Math.max(0,Math.min(stops.length-1,i));st._mp=stops[t.k];mark(t.tabs,t.k);kick()};
+      var r=bar('m-steps',labels,t.set);pin.appendChild(r);t.tabs=[].slice.call(r.children);
+      var x0=null,y0=0;
+      pin.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+      pin.addEventListener('touchend',function(e){
+        if(x0===null||!st.classList.contains('m-step'))return;
+        var dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;
+        if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.5)t.set(t.k+(dx<0?1:-1));
+      },{passive:true});
+      steps.push(t);
+    }
+  });
+  function apply(){
+    var m=mq.matches;
+    swipes.forEach(function(s){s.st.classList.toggle('m-swipe',m);s.k=-1;if(m)s.sync()});
+    steps.forEach(function(t){t.st.classList.toggle('m-step',m);if(m)t.set(t.k);else t.st._mp=null});
+    reels.forEach(function(r){r.classList.toggle('m-reel',m);if(m)r.querySelector('.track').style.transform=''});
+    kick();
+  }
+  if(mq.addEventListener)mq.addEventListener('change',apply);else mq.addListener(apply);
+  apply();
+})();
 </script>
 <script data-part="ex">
 (function(){
@@ -1869,7 +1967,7 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
     return {stage:sw.closest('.stage'),b:sw.querySelector('.ex-b'),line:sw.querySelector('.ex-line'),layer:sw.closest('.layer')};
   });
   if(!cuts.length)return;
-  function prog(el){var r=el.getBoundingClientRect();return Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)))}
+  function prog(el){if(el._mp!=null)return el._mp;var r=el.getBoundingClientRect();return Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)))}
   function onScroll(){
     cuts.forEach(function(c){
       var r=Math.min(1,Math.max(0,(prog(c.stage)-0.25)/0.5));
@@ -1886,7 +1984,7 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
 (function(){
   // 사례 02: 고정 구간의 스크롤 진행도를 단계 번호(0~3)로 옮긴다
   var slice=document.querySelector('[data-p="ex"] .ex-slice'),stage=slice&&slice.closest('.stage');
-  function prog(el){var r=el.getBoundingClientRect();return Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)))}
+  function prog(el){if(el._mp!=null)return el._mp;var r=el.getBoundingClientRect();return Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)))}
   function upd(){if(slice){var p=prog(stage);slice.setAttribute('data-ex-step',p<.18?0:p<.45?1:p<.72?2:3)}}
   addEventListener('scroll',upd,{passive:true});addEventListener('resize',upd);upd();
 
@@ -1916,7 +2014,7 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
   // 층 쌓기(G3): 한 층 안의 스크롤 진행도를 단계 번호로 옮긴다
   var build=document.querySelectorAll('[data-p="gf"] .gf-build')[0];
   var buildStage=build&&build.closest('.stage');
-  function prog(el){var r=el.getBoundingClientRect();return Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)))}
+  function prog(el){if(el._mp!=null)return el._mp;var r=el.getBoundingClientRect();return Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)))}
   function upd(){
     if(build){var p=prog(buildStage);build.setAttribute('data-gf-step',p<.05?0:p<.38?1:p<.7?2:3)}
   }
