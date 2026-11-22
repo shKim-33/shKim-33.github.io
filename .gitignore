@@ -1,4 +1,7 @@
-# 작업용 파일 (공개하지 않음). 공개 페이지는 draft-v3.html을 합친 뒤 index.html로 복사한다.
+# 작업용 파일 (공개하지 않음).
+# 루트 index.html은 두 버전으로 안내하는 소개 페이지다.
+# AI 협업판: draft-v3.html을 합친 결과를 ai-portfolio/index.html로, 쓰는 자산을 ai-portfolio/assets/로 복사한다.
+# 구현판: ..\portfolio-site-cpp 에서 빌드한 index.html과 assets를 cpp-portfolio/로 복사한다.
 .claude/
 parts/
 parts-v3/
