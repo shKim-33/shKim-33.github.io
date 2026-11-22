@@ -1,0 +1,1927 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>김석호 포트폴리오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08090b; --ink:#f3f4f6; --mute:#8a9099; --line:rgba(255,255,255,.12);
+  --pass:#4fe3b0; --fail:#ff5a4d; --gut:clamp(20px,5vw,72px);
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",system-ui,sans-serif;line-height:1.6;word-break:keep-all;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{display:block}
+.mono{font-family:ui-monospace,Consolas,monospace;letter-spacing:.04em}
+.eyebrow{font-size:14px;font-weight:500;color:var(--mute);letter-spacing:.08em}
+
+/* 상단 목차 */
+.top{position:fixed;inset:0 0 auto 0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:24px;
+  padding:16px var(--gut);background:linear-gradient(rgba(8,9,11,.85),rgba(8,9,11,0));font-size:14px}
+.top nav{display:flex;gap:clamp(12px,2vw,28px);color:var(--mute);overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.top nav a:hover{color:var(--ink)}
+
+/* 화면 칸 (이미지·영상이 들어갈 자리) */
+.slot{position:relative;border:1px dashed rgba(255,255,255,.22);border-radius:6px;overflow:hidden;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 12px,transparent 12px 24px),#0e1013}
+.slot::after{content:attr(data-label);position:absolute;left:16px;bottom:14px;right:16px;
+  font:500 12px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.04em;color:var(--mute)}
+
+/* 첫 화면 */
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:96px var(--gut) 0}
+.hero .bg{position:absolute;inset:0;border:0;border-radius:0}
+.hero .hero-reel{inset:auto;top:50%;right:0;width:min(66vw,1500px);aspect-ratio:16/9;transform:translateY(-54%);overflow:hidden}
+.hero-reel::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--bg) 0%,rgba(8,9,11,0) 30%),linear-gradient(0deg,var(--bg) 0%,rgba(8,9,11,0) 24%),linear-gradient(180deg,var(--bg) 0%,rgba(8,9,11,0) 18%)}
+.hero-reel > video,.hero-reel > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease}
+.hero-reel > img{transition:opacity 1.2s ease,transform 6s linear}
+.hero-reel > .on{opacity:1}
+.hero-reel > img.on{transform:scale(1.03)}
+.hero-cap{position:absolute;z-index:1;bottom:16px;right:var(--gut);padding:5px 11px;border-radius:999px;background:rgba(8,9,11,.66);font-size:12px;letter-spacing:.04em;color:rgba(232,234,237,.72)}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,9,11,.62) 0%,transparent 24%),linear-gradient(90deg,rgba(8,9,11,.7) 0%,rgba(8,9,11,.3) 45%,rgba(8,9,11,0) 70%),linear-gradient(0deg,var(--bg) 0%,transparent 35%)}
+.hero > *:not(.bg):not(.shade){position:relative}
+.hero h1{font-size:clamp(96px,21vw,340px);font-weight:900;line-height:.92;letter-spacing:-.04em;margin:8px 0 0 -.04em}
+.say{font-size:clamp(22px,2.7vw,42px);font-weight:700;line-height:1.35;letter-spacing:-.02em;max-width:20em;margin-top:clamp(20px,3vw,40px)}
+.lead{font-size:clamp(15px,1.2vw,18px);color:var(--mute);max-width:38em;margin-top:16px}
+.index{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:clamp(32px,6vh,72px);padding:18px 0 26px;border-top:1px solid var(--line);font-size:14px}
+.index a{display:block;color:var(--mute)}
+.index i{font-style:normal;display:block;font-size:11px;margin-bottom:2px}
+.index strong{color:var(--ink);font-weight:700;font-size:16px;display:block}
+
+/* 장면 도입 */
+.intro{min-height:60svh;display:flex;flex-direction:column;justify-content:center;padding:96px var(--gut) 48px}
+.intro h2{font-size:clamp(34px,5.4vw,88px);font-weight:900;line-height:1.16;letter-spacing:-.035em;max-width:13em;margin-top:20px}
+.intro h2 em{font-style:normal;color:var(--fail)}
+.intro h2 u{text-decoration:none;color:var(--pass)}
+.intro > p{color:var(--mute);margin-top:28px;font-size:clamp(15px,1.3vw,19px);max-width:40em}
+.intro.two{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(28px,6vw,96px);align-items:center}
+.intro.two h2{font-size:clamp(30px,4vw,64px)}
+/* 사례·난관 제목: 빈 높이 없이 바로 아래 내용과 한 화면에 */
+.intro.head{min-height:0;justify-content:flex-start;padding:clamp(72px,12vh,140px) var(--gut) 0}
+.intro.head h2{font-size:clamp(30px,4vw,64px);max-width:20em}
+.intro.head > p{margin-top:18px}
+.intro.head + .row,.intro.head + .trio{padding-top:clamp(24px,4vh,48px)}
+
+/* 스크롤 고정 무대: 장면이 겹쳐 있다가 스크롤에 따라 바뀐다 */
+.stage{position:relative}
+.stage .pin{position:sticky;top:0;height:100svh;overflow:hidden}
+.layer{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  padding:80px var(--gut) 40px;opacity:0;transform:scale(.97);transition:opacity .5s,transform .7s cubic-bezier(.2,.7,.2,1);pointer-events:none}
+.layer.on{opacity:1;transform:none}
+.big{font-size:clamp(150px,34vw,520px);font-weight:900;line-height:.86;letter-spacing:-.06em}
+.big small{font-size:.28em;letter-spacing:-.02em;margin-left:.08em}
+.big.pass{color:var(--pass)} .big.fail{color:var(--fail)}
+.cap{font-size:clamp(20px,2.5vw,38px);font-weight:700;letter-spacing:-.02em;line-height:1.4;margin-top:clamp(16px,3vh,36px);max-width:24em}
+.ticks{display:flex;gap:clamp(5px,1vw,12px);margin-top:clamp(18px,3vh,36px)}
+.ticks span{width:clamp(14px,2.4vw,34px);height:5px;border-radius:3px;background:rgba(255,255,255,.14);transition:background .2s}
+.ticks span.on{background:var(--pass)}
+
+/* 무대 변형: 프로젝트별 변화 */
+.beat{align-items:stretch;text-align:left;display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(24px,5vw,80px);align-items:center}
+.beat h3{font-size:clamp(40px,6.4vw,112px);font-weight:900;line-height:1.02;letter-spacing:-.04em;margin:10px 0 0 -.03em}
+.beat .kw{font-size:clamp(17px,1.7vw,26px);font-weight:700;color:var(--pass);margin-top:clamp(16px,3vh,32px)}
+.beat p{font-size:clamp(16px,1.5vw,23px);color:#b9bec6;margin-top:12px;max-width:26em}
+.beat .num{font-size:clamp(110px,20vw,330px);font-weight:900;line-height:.85;letter-spacing:-.06em;text-align:right;
+  background:linear-gradient(180deg,var(--ink) 10%,rgba(243,244,246,.12) 95%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.beat .num span{display:block;font-size:15px;font-weight:500;letter-spacing:.06em;-webkit-text-fill-color:var(--mute);margin-top:18px}
+.rail{position:absolute;left:var(--gut);right:var(--gut);bottom:30px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:13px;color:var(--mute)}
+.rail span{border-top:2px solid var(--line);padding-top:10px;transition:color .3s,border-color .3s}
+.rail span.on{color:var(--ink);border-color:var(--ink)}
+
+/* 숫자 옆에 떠 있는 근거 화면 */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,64px);align-items:center;text-align:left}
+.duo .big{font-size:clamp(120px,21vw,330px)}
+.duo .cap{font-size:clamp(18px,2vw,30px)}
+.float{position:relative;height:min(66svh,44vw)}
+.float img,.float .slot{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:8px;border:1px solid var(--line);flex:none}
+/* 3장 이상: 두 줄로 맞춰 서서 위아래로 천천히 흐른다 */
+.float.roll{display:grid;grid-template-columns:1fr 1fr;gap:14px;overflow:hidden;
+  -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
+.float .col{display:flex;flex-direction:column;gap:14px;animation:rollup 36s linear infinite}
+.float .col + .col{animation-name:rolldown}
+@keyframes rollup{to{transform:translateY(calc(-50% - 7px))}}
+@keyframes rolldown{from{transform:translateY(calc(-50% - 7px))}}
+/* 1~2장: 가운데에 맞춰 세우고 살짝 오르내린다 */
+.float.few{display:flex;flex-direction:column;justify-content:center;gap:14px}
+.float.few > *{width:64%;margin-left:auto;animation:bob 6s ease-in-out infinite alternate}
+.float.few > :nth-child(2){animation-delay:-6s;animation-direction:alternate-reverse}
+.float.few > :only-child{width:100%}
+.float.few > .bare{border:0;aspect-ratio:auto;mix-blend-mode:lighten}
+@keyframes bob{from{translate:0 -6px}to{translate:0 6px}}
+.beat .num{font-size:clamp(72px,10vw,170px);text-align:left;margin-top:3vh}
+.beat .num span{display:inline-block;margin:0 0 0 18px;vertical-align:baseline}
+
+/* 무대 변형: 화면 전체 이미지 + 글 */
+.shot{align-items:flex-start;justify-content:flex-end;text-align:left;padding-bottom:9vh}
+.shot > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.shot::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,var(--bg) 4%,rgba(8,9,11,.72) 34%,rgba(8,9,11,.1) 70%)}
+.shot > *:not(img){position:relative;z-index:2}
+.shot.doc{justify-content:center;padding-bottom:40px}
+.shot.doc::before{content:none}
+.shot.doc > iframe{aspect-ratio:16/10;background:#0e2a4d;pointer-events:none}
+.shot.doc > img,.shot.doc > iframe{position:absolute;inset:auto var(--gut) auto auto;top:50%;transform:translateY(-50%);width:min(56vw,calc(76svh*1.6));height:auto;max-height:76svh;object-fit:contain;border-radius:8px;border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.shot.doc .cap{max-width:min(13em,30vw);font-size:clamp(18px,1.9vw,29px)}
+/* 캡션: 종류 표시(<b>) + 한 줄 설명. 이미지 위에 얹을 때만 배경을 깐다(.ex-swap .tag 등) */
+.tag{display:block;font-size:clamp(14px,1.05vw,17px);font-weight:500;line-height:1.5;letter-spacing:-.01em;color:#d3d7dd}
+.tag b{display:inline-block;margin-right:.7em;font-size:.78em;font-weight:700;letter-spacing:.06em;color:var(--mute)}
+.tag.k-game b{color:var(--pass)} .tag.k-art b{color:#8fb4ff} .tag.k-code b{color:#e6c07b} .tag.k-ed b{color:#c4a6ff}
+
+/* 코드 블록: 캡처 대신 페이지 안에 직접 쓴 코드 */
+.code{margin:0;text-align:left;white-space:pre;tab-size:4;overflow:hidden;background:#0c0f13;border:1px solid var(--line);border-radius:8px;
+  padding:clamp(16px,1.7vw,28px) clamp(18px,2vw,34px);font:500 clamp(12px,1.08vw,18px)/1.75 ui-monospace,"Cascadia Code",Consolas,monospace;color:#aeb4bd;letter-spacing:0;font-variant-ligatures:none}
+.code b{font-weight:500;color:#9aa8ff}
+.code i{font-style:normal;color:var(--ink)}
+.code s{text-decoration:none;color:#e6c07b}
+.code u{text-decoration:none;color:var(--mute)}
+.code mark{display:block;margin:0 calc(-1*clamp(18px,2vw,34px));padding:0 clamp(18px,2vw,34px);background:rgba(79,227,176,.09);box-shadow:inset 2px 0 var(--pass);color:var(--ink)}
+.shot.doc > .code{position:absolute;right:var(--gut);top:50%;transform:translateY(-50%);width:min(56vw,calc(76svh*1.6));box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.float > .code{aspect-ratio:auto;flex:none}
+/* 문서 발췌: 계획서·기록·AGENTS.md를 캡처 대신 페이지 안 글로. 원문 그대로 옮기고 생략은 <u>…</u> */
+.paper{margin:0;text-align:left;background:#0c0f13;border:1px solid var(--line);border-radius:8px;padding:clamp(14px,1.4vw,24px) clamp(16px,1.7vw,28px);
+  font-size:clamp(14px,1.05vw,17px);line-height:1.65;color:#aeb4bd;letter-spacing:-.005em;overflow:hidden}
+.paper-h{margin:calc(-1*clamp(14px,1.4vw,24px)) calc(-1*clamp(16px,1.7vw,28px)) clamp(10px,1.2vw,16px);padding:9px clamp(16px,1.7vw,28px);
+  border-bottom:1px solid var(--line);font:500 12px/1.4 ui-monospace,Consolas,monospace;color:var(--mute);word-break:break-all}
+.paper h5{margin:0 0 .3em;font-size:1.06em;font-weight:700;color:var(--ink)}
+.paper h5:not(:first-of-type){margin-top:.9em}
+.paper p,.paper ul{margin:0;max-width:none;font-size:inherit;line-height:inherit;color:inherit}
+.paper p + p{margin-top:.45em}
+.paper ul{padding-left:1.1em}
+.paper b{color:var(--ink);font-weight:700}
+.paper code{font:inherit;color:#d6dae0;background:rgba(255,255,255,.06);padding:0 .3em;border-radius:3px}
+.paper.mono{font-family:ui-monospace,Consolas,monospace;font-size:clamp(12px,.92vw,15px)}
+.paper.mono code{background:none;padding:0}
+.paper mark{display:block;margin:.35em calc(-1*clamp(16px,1.7vw,28px));padding:.2em clamp(16px,1.7vw,28px);background:rgba(79,227,176,.09);box-shadow:inset 2px 0 var(--pass);color:var(--ink)}
+.paper u{text-decoration:none;color:var(--mute)}
+.paper.ls{font:500 clamp(12px,.9vw,15px)/1.75 ui-monospace,Consolas,monospace;white-space:pre}
+.float > .paper{flex:none}
+.float.few > .paper{width:100%}
+.float.few > .paper:only-child{font-size:clamp(15px,1.25vw,20px)}
+.trio .paper{margin-top:22px}
+
+/* 프로젝트 첫 장면 */
+.proj{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:96px var(--gut) 64px;overflow:hidden}
+.proj > *:not(.ov){position:relative}
+.proj .ov{position:absolute;right:-8vw;top:46%;width:min(78vw,150svh);transform:translateY(-50%);mix-blend-mode:lighten;
+  -webkit-mask-image:radial-gradient(closest-side,#000 72%,transparent);mask-image:radial-gradient(closest-side,#000 72%,transparent)}
+.proj h2{font-size:clamp(60px,10.5vw,190px);font-weight:900;line-height:.95;letter-spacing:-.045em;margin:14px 0 0 -.04em;text-shadow:0 0 40px var(--bg)}
+.proj .say{font-size:clamp(19px,2vw,30px);max-width:19em;text-shadow:0 0 24px var(--bg),0 0 8px var(--bg)}
+.who{display:grid;grid-template-columns:repeat(2,minmax(0,24em));gap:8px clamp(20px,4vw,56px);margin-top:clamp(18px,3vh,32px);font-size:clamp(14px,1.1vw,16px);text-shadow:0 0 12px var(--bg)}
+.who dt{font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--pass);margin-bottom:4px}
+.who div + div dt{color:var(--mute)}
+.who dd{margin:0}
+.who div + div dd{color:var(--mute)}
+.acts{display:flex;flex-wrap:wrap;align-items:center;gap:12px 26px;margin-top:clamp(24px,4vh,44px);font-size:15px;font-weight:700}
+.acts a{border-bottom:1px solid currentColor;padding-bottom:3px}
+.acts a.go{border:0;background:var(--ink);color:var(--bg);padding:13px 22px;border-radius:999px}
+.acts span{color:var(--mute);font-weight:500}
+.tagr{position:absolute!important;right:var(--gut);bottom:28px;font-size:clamp(13px,.95vw,15px);font-weight:500;color:#aab0b8}
+
+/* 옆으로 흐르는 플레이 화면 */
+.reel{height:220vh}
+.reel .pin{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.reel .eyebrow{padding:0 var(--gut);margin-bottom:22px}
+.track{display:flex;gap:clamp(12px,2vw,32px);padding:0 var(--gut);width:max-content;will-change:transform}
+.track figure{margin:0;width:min(66vw,calc((100svh - 240px)*16/9))}
+.track img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px}
+.track figcaption{margin-top:12px;font-size:clamp(15px,1.3vw,20px);font-weight:700}
+.track figcaption i{font-style:normal;font-size:12px;color:var(--mute);margin-right:10px}
+
+/* 작업 순서 */
+.flow{list-style:none;padding:0;counter-reset:f}
+.flow li{counter-increment:f;display:grid;grid-template-columns:2.4em 1fr;align-items:baseline;padding:clamp(10px,1.6vh,18px) 0;border-top:1px solid var(--line);font-size:clamp(17px,1.7vw,26px);font-weight:700;letter-spacing:-.01em}
+.flow li::before{content:"0" counter(f);font:500 12px ui-monospace,Consolas,monospace;color:var(--mute)}
+.flow b{font-size:.62em;font-weight:500;color:var(--pass);margin-left:.5em;white-space:nowrap}
+.flow + p{margin-top:18px;color:var(--mute);font-size:15px}
+
+/* 고정 화면 + 흐르는 글 */
+.split{display:grid;grid-template-columns:1.15fr 1fr;gap:clamp(28px,5vw,88px);padding:0 var(--gut)}
+.split .view{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;justify-content:center}
+.view .note{margin-top:12px;font-size:12px;color:var(--mute)}
+.shots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%}
+.shots figure{position:relative;margin:0;overflow:hidden;border-radius:4px;background:#0e1013;aspect-ratio:16/10}
+.shots img{width:100%;height:100%;object-fit:cover}
+.shots figcaption{position:absolute;left:6px;top:6px;padding:3px 8px;border-radius:4px;background:rgba(8,9,11,.82);color:var(--ink);font-size:13px;font-weight:600;line-height:1.4}
+.step{min-height:64svh;display:flex;flex-direction:column;justify-content:center;opacity:.28;transition:opacity .4s}
+.step.on{opacity:1}
+.step .k,.row .k{font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--mute)}
+.step .k b,.row .k b{color:var(--ink);font-size:clamp(40px,5vw,76px);font-weight:900;letter-spacing:-.04em;display:block;line-height:1.1;margin-top:6px}
+.step p,.row .txt p{font-size:clamp(18px,1.75vw,27px);line-height:1.6;color:#b9bec6;margin-top:22px;letter-spacing:-.01em}
+.step p b,.row .txt p b{color:var(--ink);font-weight:700}
+
+/* 정리 구간: 화면과 글을 한 화면에 함께 (스크롤 고정 없음) */
+.row{display:grid;grid-template-columns:1.3fr 1fr;gap:clamp(28px,5vw,88px);align-items:center;padding:clamp(44px,9vh,110px) var(--gut)}
+.row.wide{grid-template-columns:1.7fr 1fr}
+.row.flip > :first-child{order:2}
+.row .media{min-width:0}
+.row .media > img,.row .media > iframe{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--line)}
+.row .media > iframe{aspect-ratio:16/10;background:#0e2a4d;pointer-events:none}
+.row .media > .tag{margin-top:12px}
+.row .txt h3{font-size:clamp(24px,2.5vw,40px);font-weight:900;line-height:1.3;letter-spacing:-.03em}
+.row .txt p + .k{margin-top:clamp(28px,5vh,56px)}
+.row .media > .tag,.row .media > .code + .tag{margin-top:12px}
+.row .txt p.sub{font-size:clamp(15px,1.2vw,18px);color:var(--mute);margin-top:16px}
+.pts{list-style:none;padding:0;margin-top:clamp(18px,3vh,30px)}
+.pts li{display:grid;grid-template-columns:7.5em 1fr;align-items:baseline;padding:11px 0;border-top:1px solid var(--line);font-size:clamp(15px,1.25vw,19px);color:#b9bec6}
+.pts b{font:500 12px ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--pass)}
+/* 숫자 세 개를 한 줄로 */
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3.4vw,60px);align-items:start;padding:clamp(30px,6vh,80px) var(--gut)}
+.trio .big{font-size:clamp(64px,10vw,168px);margin-top:10px}
+.trio .cap{font-size:clamp(16px,1.45vw,22px);margin-top:16px;max-width:none}
+.trio img,.trio .slot{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:6px;border:1px solid var(--line);margin-top:22px}
+
+/* 큰 숫자로 닫는 장면 */
+.out{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:clamp(64px,12vh,140px) var(--gut)}
+.out > *:not(.bgimg){position:relative}
+.bgimg{position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0%,rgba(8,9,11,.82) 45%,rgba(8,9,11,.35) 100%),linear-gradient(0deg,var(--bg) 0%,transparent 30%,transparent 75%,var(--bg) 100%),var(--img) center/cover}
+.bgimg::after{content:attr(data-label);position:absolute;right:var(--gut);bottom:28px;font-size:clamp(13px,.95vw,15px);font-weight:500;line-height:1.4;color:#aab0b8}
+.out .big{font-size:clamp(130px,26vw,420px)}
+.out .cap{max-width:22em}
+.out .after{max-width:34em;margin-top:clamp(16px,3vh,32px);font-size:clamp(16px,1.4vw,22px);line-height:1.6;color:#b9bec6}
+
+/* 문서 창 + 글 */
+.lit{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(28px,6vw,96px);align-items:center;min-height:100svh;padding:64px var(--gut);overflow:hidden}
+.lit p{font-size:clamp(18px,1.75vw,27px);line-height:1.6;color:#b9bec6;letter-spacing:-.01em}
+.lit p + p{margin-top:1.2em}
+.lit p b{color:var(--ink)}
+.lit figure{margin:0}
+.lit figure img{width:100%;border-radius:8px;border:1px solid var(--line);box-shadow:0 40px 100px rgba(0,0,0,.7)}
+.lit figcaption{margin-top:14px}
+
+/* 프로젝트 마무리 */
+.end{padding:12vh var(--gut) 8vh}
+.floors{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,2vw,28px)}
+.floors figure{margin:0}
+.floors img{width:100%;aspect-ratio:16/10;object-fit:contain;mix-blend-mode:lighten;opacity:.55}
+.floors .me img{opacity:1}
+.floors figcaption{font-size:clamp(13px,.95vw,15px);color:#aab0b8;margin-top:8px}
+.floors .me figcaption{color:var(--pass);font-weight:700}
+.nextp{display:block;margin-top:14vh;color:var(--mute);transition:color .3s}
+.nextp:hover{color:var(--ink)}
+.nextp h2{font-size:clamp(40px,6vw,100px);font-weight:900;letter-spacing:-.04em;line-height:1.1;margin-top:8px}
+.next{border-top:1px solid var(--line);margin:0 var(--gut);padding:28px 0 64px;color:var(--mute);font-size:14px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media (max-width:800px),(max-aspect-ratio:5/4){
+  .hero{padding-top:calc(56px + 56.25vw)}
+  .hero .hero-reel{top:56px;width:100%;transform:none}
+  .hero-cap{bottom:auto;top:10px}
+  .hero-reel::after{background:linear-gradient(0deg,var(--bg) 0%,rgba(8,9,11,0) 30%)}
+}
+@media (max-width:800px){
+  .index{grid-template-columns:repeat(2,1fr)}
+  .intro.two,.lit{grid-template-columns:1fr}
+  .beat{display:flex;align-items:flex-start;justify-content:center}
+  .beat .num{font-size:72px}
+  .duo{display:flex;flex-direction:column;align-items:flex-start;justify-content:center}
+  .float{order:-1;width:100%;height:30svh;flex:none}
+  .beat .float{order:0;margin-top:20px;height:24svh}
+  .beat .float:has(.paper){height:auto}
+  .beat .float > .paper + .paper{display:none}
+  .shot.doc{justify-content:flex-end;padding-bottom:9vh}
+  .shot.doc > img,.shot.doc > iframe{inset:84px var(--gut) auto var(--gut);transform:none;width:calc(100% - 2*var(--gut));max-height:46svh}
+  .shot.doc .cap{max-width:none}
+  .shot.doc > .code{inset:84px var(--gut) auto var(--gut);transform:none;width:auto;max-height:46svh;font-size:11px;padding:14px 16px}
+  .code mark{margin:0 -16px;padding:0 16px}
+  .who{grid-template-columns:1fr}
+  .proj .ov{opacity:.5}
+  .split{grid-template-columns:1fr;gap:0}
+  .split .view{top:52px;height:auto;padding:12px 0;background:var(--bg);z-index:2}
+  .step{min-height:60svh}
+  .row,.row.wide,.trio{grid-template-columns:1fr}
+  .row.flip > :first-child{order:0}
+  .pts li{grid-template-columns:6em 1fr}
+  .floors{grid-template-columns:repeat(2,1fr)}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+/* ── 이 사이트에서 더한 공용 부품 ── */
+/* 역량 표시: 눈썹 줄 옆 칩 */
+.sk{display:inline-block;margin-left:.9em;padding:2px 10px;border:1px solid rgba(79,227,176,.45);border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--pass);vertical-align:.08em;white-space:nowrap}
+.sk + .sk{margin-left:.4em}
+/* 영상: 화면에 보일 때만 재생 (data-auto) */
+.shot > video{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover}
+.row .media > video{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--line)}
+.track video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px}
+/* 번호 단계 목록: 제목 + 설명 */
+.steps{list-style:none;padding:0;counter-reset:s;margin-top:clamp(14px,2.4vh,26px)}
+.steps li{counter-increment:s;display:grid;grid-template-columns:2em 1fr;padding:10px 0;border-top:1px solid var(--line);font-size:clamp(14px,1.12vw,17px);line-height:1.55;color:#b9bec6}
+.steps li::before{content:counter(s);padding-top:.3em;font:500 12px ui-monospace,Consolas,monospace;color:var(--pass)}
+.steps b{display:block;font-size:1.08em;font-weight:700;color:var(--ink)}
+.row .txt h3 + .steps{margin-top:clamp(16px,2.6vh,28px)}
+.row .txt p + h3{margin-top:clamp(28px,5vh,56px)}
+.row.wide-r{grid-template-columns:1fr 1.7fr}
+.row .media > .code.code-s{font-size:clamp(10px,.78vw,14px);line-height:1.7}
+.row .media.codes > .code + .tag + .code{margin-top:22px}
+.rail.r5{grid-template-columns:repeat(5,1fr);z-index:3}
+.row .txt .eyebrow + h3{margin-top:14px}
+.row .txt p.etc-p{margin-top:clamp(18px,3vh,30px)}
+.row .txt p.etc-p i{display:block;margin-bottom:4px;font-style:normal;font-size:12px;letter-spacing:.08em;color:var(--mute)}
+.trio.two{grid-template-columns:repeat(2,1fr)}
+.trio.art3 .big small{font-size:.3em}
+.proj .who > .goal{grid-column:1/-1;max-width:44em;margin-bottom:6px}
+.who .goal + div dt{color:var(--pass)}
+.who .goal + div dd{color:inherit}
+.proj .who > .goal dd{font-size:clamp(15px,1.25vw,19px);color:var(--ink)}
+.trio.two .big{font-size:clamp(72px,12vw,200px)}
+
+/* DO 협업: 주인 / 접점 도식, 접점이 늘어난 순서 */
+.own{padding:clamp(14px,1.6vw,24px);border:1px solid var(--line);border-radius:10px;background:#0c0f13}
+.own-h{font-size:clamp(18px,1.7vw,26px);font-weight:900;letter-spacing:-.03em;margin-bottom:10px}
+.own-h span{margin-left:10px;font-size:13px;font-weight:500;letter-spacing:0;color:var(--mute)}
+.own-top,.own-bot{display:grid;gap:10px}
+.own-top{grid-template-columns:repeat(3,1fr);margin-bottom:clamp(18px,3vh,30px)}
+.own-bot{grid-template-columns:repeat(2,1fr)}
+.own-top > div,.own-bot > div{padding:12px 14px;border-radius:7px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.own-top > div{border-color:rgba(79,227,176,.45)}
+.own b{display:block;font-size:clamp(15px,1.3vw,20px);font-weight:700}
+.own-top b{color:var(--pass)}
+.own span{display:block;margin-top:4px;font-size:clamp(12px,.92vw,14px);color:var(--mute)}
+.own-bot i{display:block;margin-top:8px;font:500 clamp(11px,.85vw,13px)/1.5 ui-monospace,Consolas,monospace;font-style:normal;color:#e6c07b}
+.tl{list-style:none;padding:0;margin-top:clamp(14px,2.4vh,26px)}
+.tl li{display:grid;grid-template-columns:4em 1fr;padding:9px 0;border-top:1px solid var(--line);font-size:clamp(13px,1vw,16px);line-height:1.5}
+.tl i{font:500 12px/1.9 ui-monospace,Consolas,monospace;font-style:normal;color:var(--pass)}
+.tl span{font-family:ui-monospace,Consolas,monospace;color:#e6c07b;font-size:.9em}
+.tl b{display:block;font-family:'Noto Sans KR',sans-serif;font-size:1.12em;color:var(--ink)}
+
+/* 그 밖의 프로젝트 */
+.etc-who{margin-top:14px;font-size:clamp(14px,1.1vw,17px);color:#b9bec6}
+.etc-who b{margin-right:12px;font-size:12px;letter-spacing:.06em;color:var(--mute)}
+.etc-links{margin-top:16px;display:flex;gap:20px;flex-wrap:wrap}
+.etc-links a{font-size:15px;font-weight:700;color:var(--ink);border-bottom:1px solid var(--ink);padding-bottom:2px;text-decoration:none}
+.trio.etc-two{padding-top:clamp(56px,10vh,120px)}
+.trio.etc-two img{margin-top:0;margin-bottom:20px}
+.trio.etc-two h3{font-size:clamp(26px,3vw,46px);font-weight:900;letter-spacing:-.03em;line-height:1.2;margin-top:10px}
+
+/* AI 활용: 네 프로젝트를 한 화면에 */
+.ai4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(18px,2.6vw,44px);padding:clamp(30px,6vh,80px) var(--gut) clamp(60px,10vh,120px)}
+.ai4 > div{border-top:2px solid var(--line);padding-top:16px}
+.ai4 i{font-style:normal;font-size:12px;color:var(--mute)}
+.ai4 h3{margin-top:8px;font-size:clamp(22px,2.1vw,34px);font-weight:900;letter-spacing:-.03em;line-height:1.2}
+.ai4 .ai-goal{margin-top:10px;font-size:clamp(13px,1vw,15px);color:var(--mute)}
+.ai4 .ai-how{margin-top:6px;font-size:clamp(16px,1.35vw,21px);font-weight:700;color:var(--pass);line-height:1.4}
+.ai4 dl{margin:16px 0 0;display:grid;grid-template-columns:2.2em 1fr;row-gap:8px;font-size:clamp(13px,1.02vw,16px);line-height:1.55;color:#b9bec6}
+.ai4 dt{font-weight:700;color:var(--ink)}
+.ai4 dd{margin:0}
+.ai4 .ai-num{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:clamp(12px,.95vw,14px);line-height:1.6;color:var(--mute)}
+.ai4 .ai-num b{font-size:1.5em;font-weight:900;color:var(--ink);letter-spacing:-.02em}
+
+/* 맺음 */
+.fin{min-height:80svh;display:flex;flex-direction:column;justify-content:center;padding:clamp(80px,14vh,160px) var(--gut)}
+.fin h2{font-size:clamp(32px,5.2vw,84px);font-weight:900;line-height:1.2;letter-spacing:-.035em}
+.fin p{margin-top:clamp(28px,5vh,56px);display:flex;gap:clamp(16px,2.4vw,36px);flex-wrap:wrap;align-items:baseline;font-size:clamp(15px,1.3vw,20px)}
+.fin p b{font-weight:700}
+.fin a{color:var(--mute);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px}
+
+@media (max-width:800px){
+  .row.wide-r{grid-template-columns:1fr}
+  .row .media > .code.code-s{font-size:9px;overflow-x:auto}
+  .trio.two{grid-template-columns:1fr}
+  .own-top{grid-template-columns:1fr}
+  .own-bot{grid-template-columns:1fr}
+  .ai4{grid-template-columns:1fr 1fr}
+  .rail.r5{font-size:11px;gap:5px}
+}
+@media (max-width:520px){
+  .ai4{grid-template-columns:1fr}
+}
+</style>
+<style data-part="ex">
+/* E1 · 첫 장면: 배경 이미지 왼쪽(행성·인물)을 눌러 글자를 읽히게 */
+.proj > .ex-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(8,9,11,.88) 0%,rgba(8,9,11,.55) 38%,rgba(8,9,11,0) 66%)}
+
+/* E2~E3 · 빛 컷: 아래 25%만 어둡게, 켜질 때 흰 빛이 빠지며 드러난다 */
+.shot.ex-light::before{background:linear-gradient(180deg,rgba(8,9,11,.7) 0%,rgba(8,9,11,0) 20%),linear-gradient(0deg,var(--bg) 0%,rgba(8,9,11,.55) 12%,rgba(8,9,11,0) 25%)}
+.shot.ex-light::after{content:"";position:absolute;inset:0;z-index:3;background:#fff;opacity:0;pointer-events:none}
+.layer.on.ex-light::after{animation:ex-flash .5s ease-out}
+.layer.on.ex-light > img{animation:ex-bright .5s ease-out}
+.ex-light .cap,.ex-light .tag{text-shadow:0 0 24px var(--bg),0 0 8px var(--bg)}
+.ex-light .cap{max-width:30em}
+.ex-emit{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-top:clamp(12px,2vh,20px)}
+.ex-emit b{margin-right:4px;font-size:clamp(14px,1.05vw,17px);font-weight:700;color:var(--pass)}
+.ex-emit span{padding:3px 10px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(8,9,11,.6);font:500 clamp(12px,.9vw,14px)/1.5 ui-monospace,Consolas,monospace;color:#d6dae0}
+.ex-show-h{position:absolute;top:84px;left:var(--gut);z-index:3;color:rgba(232,234,237,.85);text-shadow:0 0 12px var(--bg),0 0 4px var(--bg)}
+.rail.ex-rail{z-index:3}
+@keyframes ex-flash{from{opacity:.85}to{opacity:0}}
+@keyframes ex-bright{from{filter:brightness(1.5)}to{filter:brightness(1)}}
+
+/* 맞바꿈 컷: 같은 자리에 A·B를 겹치고 세로 경계선이 훑는다 */
+.ex-swap{position:relative;width:100%;aspect-ratio:2560/1392;overflow:hidden;border-radius:8px;border:1px solid var(--line);background:#0e1013}
+.ex-swap > img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.ex-swap .ex-line{position:absolute;top:0;bottom:0;left:100%;z-index:2;width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 14px rgba(255,255,255,.55)}
+.ex-swap .tag{position:absolute;left:14px;top:14px;z-index:3;max-width:calc(100% - 28px);width:max-content;padding:8px 13px;border-radius:6px;background:rgba(8,9,11,.85);border:1px solid var(--line)}
+.ex-auto .tag{font-size:clamp(15px,1.25vw,20px);font-weight:700}
+.ex-auto .ex-tag-b{color:var(--pass)}
+.ex-file{margin-top:10px;font-size:13px;color:var(--mute)}
+.ex-note{margin-top:12px;font-size:clamp(14px,1.15vw,17px);color:var(--mute)}
+
+/* E4 · 적용 전/후: 자동 반복 (왼→오 2.4초, 1.6초 멈춤, 오→왼 2.4초, 1.6초 멈춤) */
+.ex-tool{min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:96px 3vw 64px}
+.ex-tool .ex-col{width:min(100%,calc((100svh - 430px)*2560/1392))}
+.ex-tool .ex-swap{margin-top:18px}
+.ex-auto .ex-b{animation:ex-wipe 8s ease-in-out infinite}
+.ex-auto .ex-line{animation:ex-sweep 8s ease-in-out infinite}
+.ex-auto .ex-tag-a{opacity:0;animation:ex-tag-a 8s linear infinite}
+.ex-auto .ex-tag-b{animation:ex-tag-b 8s linear infinite}
+@keyframes ex-wipe{0%{clip-path:inset(0 100% 0 0)}30%,50%{clip-path:inset(0 0 0 0)}80%,100%{clip-path:inset(0 100% 0 0)}}
+@keyframes ex-sweep{0%{left:0}30%,50%{left:100%}80%,100%{left:0}}
+@keyframes ex-tag-a{0%,14.9%{opacity:1}15%,64.9%{opacity:0}65%,100%{opacity:1}}
+@keyframes ex-tag-b{0%,14.9%{opacity:0}15%,64.9%{opacity:1}65%,100%{opacity:0}}
+
+/* E6 · hook 큰 글자: 4글자라 열 폭에 맞춰 줄인다 */
+.row .big.ex-hook{font-size:clamp(90px,15vw,240px);margin-bottom:clamp(14px,2.4vh,26px)}
+.ex-hookmedia{display:grid;gap:14px}
+.ex-hookmedia > .code.ex-code{font-size:clamp(11px,.95vw,17px)}
+.row .txt p.ex-note{font-size:clamp(14px,1.15vw,17px);color:var(--mute);margin-top:14px}
+
+/* E5 · 계획서 화면 칸 */
+.flow + p + p.ex-more{margin-top:10px;color:var(--mute);font-size:15px}
+.tag.ex-plan-tag{margin-top:24px}
+.paper.ex-plan{margin-top:10px}
+
+/* E8 · 툴 화면 ↔ 게임 화면: 스크롤로 맞바꿈 */
+.ex-pair .ex-col{width:min(100%,calc((100svh - 250px)*2560/1392));text-align:left}
+.ex-pair .cap{font-size:clamp(18px,1.9vw,29px);max-width:none}
+.ex-scroll .ex-b{object-fit:cover;clip-path:inset(0 100% 0 0)}
+.ex-scroll .ex-line{left:0;opacity:0}
+.ex-txt{display:grid}
+.ex-txt > .ex-cap-a,.ex-txt > .ex-cap-b{grid-area:1/1}
+.ex-pair .ex-tag-a,.ex-pair .ex-tag-b,.ex-pair .ex-cap-a,.ex-pair .ex-cap-b{transition:opacity .3s}
+.ex-pair .ex-tag-b,.ex-pair .ex-cap-b,.ex-pair.ex-past .ex-tag-a,.ex-pair.ex-past .ex-cap-a{opacity:0}
+.ex-pair.ex-past .ex-tag-b,.ex-pair.ex-past .ex-cap-b{opacity:1}
+
+@media (max-width:800px){
+  .proj > .ex-shade{background:linear-gradient(0deg,rgba(8,9,11,.7),rgba(8,9,11,.35))}
+  .proj h2.ex-title{font-size:clamp(44px,15vw,60px)}
+  .shot.ex-light::before{background:linear-gradient(0deg,var(--bg) 0%,rgba(8,9,11,.6) 24%,rgba(8,9,11,0) 42%)}
+  .ex-tool{padding:84px var(--gut) 48px}
+  .ex-tool .ex-col{width:100%}
+  .ex-swap .tag{left:8px;top:8px;max-width:calc(100% - 16px);padding:6px 10px;font-size:13px}
+}
+@media (prefers-reduced-motion:reduce){
+  /* 빛 컷은 그냥 페이드, 맞바꿈 자동 반복은 꺼지고 '적용 후'만 보인다 */
+  .layer.ex-light{transform:none;transition:opacity .5s!important}
+  .ex-auto .ex-line{display:none}
+}
+/* ── 펄어비스판에서 더한 것 ── */
+.layer.on.ex-light > video{animation:ex-bright .5s ease-out}
+.row.ex-wide-r{grid-template-columns:1fr 1.7fr}
+.row .media > .code.ex-code-s{font-size:clamp(10px,.78vw,14px);line-height:1.7}
+.row .media > .code.ex-code{font-size:clamp(11px,.95vw,17px)}
+.ex-hookmedia > .tag{margin-top:-4px}
+
+/* 사례 01 · CPU / GPU 흐름 */
+.ex-lanes{display:grid;gap:12px}
+.ex-lane{display:grid;grid-template-columns:8.5em 1fr;gap:14px;align-items:stretch;padding:14px;border:1px solid var(--line);border-radius:10px;background:#0c0f13}
+.ex-lane-h b{display:block;font-size:clamp(22px,2.2vw,34px);font-weight:900;letter-spacing:-.03em;line-height:1.1}
+.ex-lane-h span{display:block;margin-top:6px;font-size:13px;line-height:1.45;color:var(--mute)}
+.ex-lane.ex-gpu{border-color:rgba(79,227,176,.4)}
+.ex-lane.ex-gpu .ex-lane-h b{color:var(--pass)}
+.ex-boxes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.ex-gpu .ex-boxes{grid-template-columns:repeat(4,1fr)}
+.ex-box{position:relative;padding:11px 13px;border:1px solid var(--line);border-radius:7px;background:rgba(255,255,255,.03)}
+.ex-box b{display:block;font-size:clamp(13px,1.05vw,16px);font-weight:700;line-height:1.35;color:var(--ink)}
+.ex-box span{display:block;margin-top:5px;font-size:clamp(12px,.88vw,14px);line-height:1.45;color:var(--mute)}
+.ex-gpu .ex-box + .ex-box::before{content:"→";position:absolute;left:-11px;top:50%;transform:translate(-50%,-50%);font-size:13px;color:var(--pass)}
+.ex-noread{margin-top:14px;font-size:clamp(15px,1.3vw,20px);font-weight:700;color:var(--pass)}
+
+/* 사례 02 · 받은 시간을 구간으로 나눠 쓰기 (스크롤 단계) */
+.layer.ex-slice{align-items:stretch;text-align:left}
+.ex-slice-in{width:min(100%,1500px);margin:0 auto}
+.ex-slice .ex-h{font-size:clamp(28px,3.9vw,62px);font-weight:900;line-height:1.16;letter-spacing:-.035em;max-width:17em;margin-top:16px}
+.ex-slice .ex-h u{text-decoration:none;color:var(--pass)}
+.ex-time{margin-top:clamp(28px,6vh,64px)}
+.ex-frame{position:relative;margin-left:15%;width:60%;height:16px;border:1px solid rgba(255,255,255,.5);border-bottom:0;border-radius:4px 4px 0 0}
+.ex-frame span{position:absolute;left:0;right:0;bottom:22px;text-align:center;font-size:clamp(14px,1.3vw,20px);font-weight:700;white-space:nowrap}
+.ex-track{display:flex;gap:3px;height:clamp(92px,16vh,150px);margin-top:6px}
+.ex-seg{display:flex;flex-direction:column;justify-content:center;min-width:0;padding:0 clamp(6px,1vw,16px);border-radius:5px;background:rgba(255,255,255,.05);overflow:hidden;
+  transition:background .45s,color .45s}
+.ex-seg b{font-size:clamp(14px,1.9vw,30px);font-weight:900;letter-spacing:-.03em;line-height:1.15;white-space:nowrap;color:rgba(243,244,246,.35);transition:color .45s}
+.ex-seg span{font-size:clamp(11px,.95vw,15px);color:var(--mute);white-space:nowrap}
+.ex-slice[data-ex-step="1"] .ex-s1,.ex-slice[data-ex-step="2"] .ex-s1,.ex-slice[data-ex-step="3"] .ex-s1,
+.ex-slice[data-ex-step="3"] .ex-s3{background:rgba(79,227,176,.22)}
+.ex-slice[data-ex-step="2"] .ex-s2,.ex-slice[data-ex-step="3"] .ex-s2{background:rgba(230,192,123,.2)}
+.ex-slice[data-ex-step="1"] .ex-s1 b,.ex-slice[data-ex-step="2"] .ex-s1 b,.ex-slice[data-ex-step="3"] .ex-s1 b,
+.ex-slice[data-ex-step="3"] .ex-s3 b{color:var(--pass)}
+.ex-slice[data-ex-step="2"] .ex-s2 b,.ex-slice[data-ex-step="3"] .ex-s2 b{color:#e6c07b}
+.ex-says{display:grid;margin-top:clamp(20px,4vh,44px)}
+.ex-says > .cap{grid-area:1/1;margin:0;max-width:34em;font-size:clamp(17px,1.9vw,29px);opacity:0;transition:opacity .35s}
+.ex-says > .cap span{display:block;margin-top:.5em;font-size:.68em;font-weight:500;color:var(--mute)}
+.ex-slice[data-ex-step="0"] .ex-say0,.ex-slice[data-ex-step="1"] .ex-say1,
+.ex-slice[data-ex-step="2"] .ex-say2,.ex-slice[data-ex-step="3"] .ex-say3{opacity:1}
+
+/* 버스트: 프레임 칸 */
+.ex-cells{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.ex-cell{padding:clamp(10px,1.4vw,20px) clamp(8px,1vw,16px);border:1px solid var(--line);border-radius:7px;background:#0c0f13;min-height:clamp(96px,11vw,150px)}
+.ex-cell span{display:block;font:500 clamp(10px,.8vw,13px)/1.4 ui-monospace,Consolas,monospace;color:var(--mute)}
+.ex-cell b{display:block;margin-top:8px;font-size:clamp(20px,2.3vw,36px);font-weight:900;letter-spacing:-.03em;line-height:1.1;color:rgba(243,244,246,.4)}
+.ex-cell i{display:block;margin-top:4px;font-style:normal;font-size:clamp(11px,.85vw,13px);color:var(--mute)}
+.ex-cell.ex-hit{border-color:var(--pass);background:rgba(79,227,176,.1)}
+.ex-cell.ex-hit b,.ex-cell.ex-hit i{color:var(--pass)}
+
+/* 난관 · Trail 보간 전 / 후 */
+.ex-curves{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ex-curves figure{margin:0}
+.ex-curve{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:8px;background:#0c0f13}
+.ex-curve polyline{fill:none;stroke-width:9;stroke-linecap:round;stroke-linejoin:round;stroke:rgba(143,180,255,.28)}
+.ex-curve .ex-dot{fill:#8fb4ff}
+.ex-curve .ex-dot-new{fill:var(--pass)}
+.ex-curves figcaption{margin-top:10px}
+
+@media (max-width:800px){
+  .row.ex-wide-r{grid-template-columns:1fr}
+  .row .media > .code.ex-code-s{font-size:9px;overflow-x:auto}
+  .ex-lane{grid-template-columns:1fr}
+  .ex-boxes,.ex-gpu .ex-boxes{grid-template-columns:1fr 1fr}
+  .ex-gpu .ex-box + .ex-box::before{content:none}
+  .ex-frame span{font-size:13px}
+  .ex-seg{padding:0 4px}
+  .ex-seg span{display:none}
+  .ex-seg b{font-size:12px;white-space:normal}
+  .ex-cells{grid-template-columns:repeat(5,1fr);gap:4px}
+  .ex-cell{padding:8px 5px;min-height:0}
+  .ex-cell span{font-size:9px}
+  .ex-cell b{font-size:15px}
+  .ex-cell i{font-size:10px}
+}
+</style>
+<style data-part="gf">
+/* G1: 배경 이미지 폭 상한(원본 폭 1282), 제목의 작은 글자 */
+.proj .ov.gf-ov{width:min(78vw,150svh,1300px)}
+.proj h2 .gf-sm{font-size:.5em;letter-spacing:-.02em}
+
+/* G3·G5·G6 공통: 오른쪽 문서 창 폭과 그 왼쪽 글 칸 */
+.gf-win{--gf-w:min(56vw,calc(76svh*1.6),1100px)}
+.shot.doc.gf-win > img,.shot.doc.gf-win > .code{width:var(--gf-w);transition:opacity .45s .45s}
+.gf-win .gf-left{width:calc(100% - var(--gf-w) - clamp(24px,4vw,64px));display:flex;flex-direction:column}
+.gf-left .gf-h{font-size:clamp(26px,2.8vw,48px);font-weight:900;line-height:1.2;letter-spacing:-.03em;margin:12px 0 18px}
+.gf-swap{display:grid}
+.gf-swap > *{grid-area:1/1;justify-self:start;transition:opacity .25s}
+
+/* G3 층 쌓기: 아래에서부터 띠가 올라와 쌓이고 앞의 띠는 남는다 */
+.gf-build .gf-h{opacity:0;transform:translateY(12px);transition:opacity .5s .3s,transform .6s .3s}
+.gf-build[data-gf-step="3"] .gf-h{opacity:1;transform:none}
+.gf-bands{display:flex;flex-direction:column-reverse;margin-top:clamp(14px,2.4vh,28px)}
+.gf-band{border-top:1px solid var(--line);padding:clamp(10px,1.6vh,18px) 0;opacity:0;transform:translateY(16svh);
+  transition:opacity .5s,transform .7s cubic-bezier(.2,.7,.2,1)}
+.gf-band b{display:block;font-size:clamp(34px,3.2vw,64px);font-weight:900;line-height:1.05;letter-spacing:-.04em}
+.gf-band span{display:block;font-size:clamp(13px,1vw,16px);color:var(--mute);margin-top:6px}
+.gf-build[data-gf-step="1"] .gf-b1,
+.gf-build[data-gf-step="2"] .gf-b1,.gf-build[data-gf-step="2"] .gf-b2,
+.gf-build[data-gf-step="3"] .gf-band{opacity:1;transform:none}
+.gf-build > img.gf-ed{opacity:0}
+.gf-build[data-gf-step="3"] > img.gf-ed{opacity:1;transition-delay:0s}
+.gf-build[data-gf-step="3"] > .gf-code{opacity:0}
+.gf-build:not([data-gf-step="3"]) > .gf-code{transition-delay:0s}
+.gf-build .gf-t2{opacity:0}
+.gf-build[data-gf-step="3"] .gf-t1{opacity:0}
+.gf-build[data-gf-step="3"] .gf-t2{opacity:1;transition-delay:.2s}
+
+/* G4 큰 숫자와 화면 칸 (고정 없음) */
+.row .big.gf-num{font-size:clamp(100px,15vw,240px);margin-top:8px}
+.row .cap.gf-cap{font-size:clamp(18px,1.9vw,29px)}
+.gf-slots{display:grid;gap:14px}
+/* G5 히트박스 세 화면 */
+.trio.gf-three img{margin-top:0}
+.trio.gf-three .tag{margin-top:14px}
+.trio.gf-three .cap{margin-top:12px}
+
+/* G6 왼쪽 작은 이미지 */
+.gf-mini{margin:20px 0 0}
+.gf-mini img{width:min(220px,100%);height:auto;border-radius:6px;border:1px solid var(--line)}
+.gf-mini figcaption{margin-top:8px;font-size:13px;color:#aab0b8}
+
+/* G8 무기 화면: 확인 표시 끄기, 아래 작은 계층 창 */
+.row .media > img.gf-hier{width:min(340px,100%);height:auto;margin-top:10px;border-radius:4px;border:1px solid var(--line)}
+
+@media (max-width:800px){
+  .gf-win{--gf-w:calc(100% - 2*var(--gut))}
+  .gf-win .gf-left{width:auto}
+  .gf-left .gf-h{font-size:22px;margin:8px 0 12px}
+  .gf-band{padding:8px 0}
+  .gf-band b{font-size:28px}
+  .gf-band span{font-size:13px;margin-top:2px}
+  .gf-mini img{width:150px}
+  .row .media > img.gf-hier{width:200px}
+}
+@media (prefers-reduced-motion:reduce){
+  .gf-band,.gf-build .gf-h{transform:none}
+}
+/* ── 펄어비스판에서 더한 것 ── */
+.row.gf-wide-r{grid-template-columns:1fr 1.7fr}
+.row .media > .code.gf-code-s{font-size:clamp(10px,.78vw,14px);line-height:1.65}
+
+/* 사례 01 · SAT 15축 */
+.gf-sat{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;align-items:stretch}
+.gf-axes,.gf-proj{padding:16px;border:1px solid var(--line);border-radius:10px;background:#0c0f13}
+.gf-axes-h{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+.gf-axes-h b{font-size:clamp(18px,1.7vw,26px);font-weight:900;letter-spacing:-.03em}
+.gf-axes-h span{font-size:13px;color:var(--mute)}
+.gf-chips{display:grid;gap:6px;margin-bottom:18px}
+.gf-chips:last-child{margin-bottom:0}
+.gf-chips.gf-face{grid-template-columns:repeat(6,1fr)}
+.gf-chips.gf-cross{grid-template-columns:repeat(3,1fr)}
+.gf-chips i{font:500 clamp(11px,.9vw,14px)/1 ui-monospace,Consolas,monospace;font-style:normal;text-align:center;padding:9px 2px;border-radius:5px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.gf-chips.gf-face i{border-color:rgba(143,180,255,.45);color:#b9cffb}
+.gf-chips.gf-cross i{border-color:rgba(230,192,123,.4);color:#e6c07b}
+.gf-projs{display:grid;gap:14px}
+.gf-proj{margin:0;display:flex;flex-direction:column;justify-content:center}
+.gf-line{position:relative;height:64px;border-bottom:1px solid rgba(255,255,255,.4)}
+.gf-line span{position:absolute;height:22px;border-radius:4px;font-size:12px;line-height:22px;text-align:center;color:#08090b;font-weight:700}
+.gf-line .gf-self{top:6px;background:#8fb4ff}
+.gf-line .gf-target{top:32px;background:#e6c07b}
+.gf-line .gf-depth{top:0;height:64px;border-radius:0;background:rgba(79,227,176,.22);border-left:1px dashed var(--pass);border-right:1px dashed var(--pass)}
+.gf-miss .gf-depth{background:rgba(255,90,77,.16);border-color:var(--fail)}
+.gf-proj figcaption{margin-top:10px;font-size:13px;color:var(--mute)}
+.gf-proj figcaption b{display:inline-block;margin-right:8px;font-size:15px;color:var(--pass)}
+.gf-miss figcaption b{color:var(--fail)}
+.gf-rule{margin-top:14px;font-size:clamp(14px,1.2vw,18px);color:var(--mute)}
+.gf-rule b{color:var(--ink)}
+.row .txt > img.gf-dbg{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--line)}
+.row .txt > img.gf-dbg + .tag{margin-top:12px}
+
+/* 사례 01 · 삼분 탐색 */
+.gf-tern{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;align-items:center}
+.gf-tern figure{margin:0}
+.gf-tsvg{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:8px;background:#0c0f13}
+.gf-tsvg .gf-drop{fill:rgba(255,90,77,.13)}
+.gf-tsvg .gf-ax{stroke:rgba(255,255,255,.4);stroke-width:1}
+.gf-tsvg .gf-tk{stroke:rgba(255,255,255,.22);stroke-width:1;stroke-dasharray:4 4}
+.gf-tsvg .gf-crv{fill:none;stroke:#8fb4ff;stroke-width:4;stroke-linecap:round}
+.gf-tsvg .gf-pa{fill:var(--fail)}
+.gf-tsvg .gf-pb{fill:var(--pass)}
+.gf-tsvg .gf-tx{fill:#aab0b8;font-size:12px}
+.gf-tsvg .gf-txr{fill:var(--fail);font-weight:700}
+.gf-tern figcaption{margin-top:10px}
+.gf-shrink > div{display:grid;grid-template-columns:3em 1fr 3em;gap:8px;align-items:center;margin-bottom:8px;font-size:13px;color:var(--mute)}
+.gf-shrink > div b{font-weight:500}
+.gf-shrink > div i{display:block;height:14px;width:var(--w);border-radius:3px;background:var(--pass);opacity:.75}
+.gf-shrink > div span{font:500 13px/1 ui-monospace,Consolas,monospace;color:var(--ink)}
+.gf-shrink p{margin-top:14px;font-size:clamp(13px,1.05vw,16px);color:var(--mute)}
+.gf-shrink p b{color:var(--pass)}
+
+/* 사례 03 · 그림자 끔/켬 (자동 교차) */
+.gf-cmp{position:relative;aspect-ratio:1582/892;overflow:hidden;border-radius:8px;border:1px solid var(--line);background:#0c0f13}
+.gf-cmp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.gf-cmp .gf-on,.gf-cmp .gf-lab-on{animation:gf-onoff 6s infinite}
+.gf-cmp .gf-lab-off{animation:gf-offon 6s infinite}
+.gf-lab{position:absolute;left:14px;top:14px;padding:6px 12px;border-radius:5px;font-size:clamp(13px,1.1vw,17px);font-weight:700;background:rgba(8,9,11,.82);border:1px solid var(--line)}
+.gf-lab-on{color:var(--pass);border-color:rgba(79,227,176,.5)}
+.row .media > .gf-cmp + .tag{margin-top:12px}
+@keyframes gf-onoff{0%,42%{opacity:0}50%,92%{opacity:1}100%{opacity:0}}
+@keyframes gf-offon{0%,42%{opacity:1}50%,92%{opacity:0}100%{opacity:1}}
+
+@media (max-width:800px){
+  .row.gf-wide-r{grid-template-columns:1fr}
+  .row .media > .code.gf-code-s{font-size:9px;overflow-x:auto}
+  .gf-sat,.gf-tern{grid-template-columns:1fr}
+  .gf-chips i{font-size:10px;padding:7px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  .gf-cmp .gf-on,.gf-cmp .gf-lab-on{animation:none}
+  .gf-cmp .gf-lab-off{animation:none;opacity:0}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="#top"><b>김석호</b></a>
+  <nav>
+    <a href="#ex">Expedition 33</a>
+    <a href="#gf">Gunfire Reborn</a>
+    <a href="#do">Destiny Overclock</a>
+    <a href="#etc">그 밖의 프로젝트</a>
+    <a href="#ai">AI 활용</a>
+  </nav>
+</header>
+
+<!-- 첫 화면 -->
+<section class="hero" id="top">
+  <div class="bg hero-reel" aria-hidden="true">
+    <video class="on" muted playsinline preload="auto" poster="assets/video/hero_ex.webp" src="assets/video/hero_ex.mp4" data-cap="Expedition 33 모작 · 담당 이펙트"></video>
+    <video muted playsinline preload="none" poster="assets/video/hero_gf.webp" src="assets/video/hero_gf.mp4" data-cap="Gunfire Reborn 모작 · 플레이"></video>
+    <img src="assets/img/do/2F_14_run_past_stunned.webp" alt="" data-cap="Destiny Overclock · 2층 플레이">
+    <span class="hero-cap mono">Expedition 33 모작 · 담당 이펙트</span>
+  </div>
+  <div class="shade"></div>
+  <div class="eyebrow">게임 클라이언트 프로그래머</div>
+  <h1>김석호</h1>
+  <p class="say">C++과 DirectX 11을 주력으로, 프로젝트마다 다른 시스템을 만들고 새 기술을 더해 왔습니다.</p>
+  <p class="lead">수학부터 직접 구현한 충돌과 그림자, 팀이 함께 쓴 이펙트 시스템과 툴, 팀 작업에 접목한 AI까지. 프로젝트마다 가장 공들인 구현과, 막혔던 문제를 푼 과정을 골라 담았습니다.</p>
+  <div class="index">
+    <a href="#ex"><i class="mono">2026.05–07 · C++ · DirectX 11 · 8인 팀</i><strong>Expedition 33 모작</strong></a>
+    <a href="#gf"><i class="mono">2026.01–04 · C++ · DirectX 11 · 개인</i><strong>Gunfire Reborn 모작</strong></a>
+    <a href="#do"><i class="mono">2026.11 · 9일 · Unity 3인 팀</i><strong>Destiny Overclock</strong></a>
+    <a href="#etc"><i class="mono">SinkPoint · Cult of the Lamb · Skul</i><strong>그 밖의 프로젝트</strong></a>
+  </div>
+</section>
+
+<!-- PARTS -->
+<!-- PART ex -->
+<!-- E1 · 첫 장면 -->
+<section class="proj" id="ex" data-p="ex">
+  <img class="ov" src="assets/img/ex/main_sword_sun.webp" alt="" loading="lazy">
+  <div class="ex-shade"></div>
+  <div class="eyebrow">Clair Obscur: Expedition 33 모작 · 2026.05–07 · 프로그래머 8인 팀 · C++20 · DirectX 11 · HLSL(Compute Shader)</div>
+  <h2 class="ex-title">Expedition<br>33 모작</h2>
+  <p class="say">프로그래머 8명이 함께 만든 모작에서 이펙트를 혼자 맡았습니다. 이펙트 런타임 설계부터 이펙트를 만드는 툴(EffectEditor), 게임 안 전투 이펙트까지 직접 만들었습니다.</p>
+  <dl class="who">
+    <div class="goal"><dt>목적</dt><dd>팀이 요구하는 전투 VFX를 완성하기 위해 이펙트 시스템과 툴을 개발했고, 그 툴로 메인 VFX를 직접 만들며 팀원도 쓸 수 있게 다듬었습니다.</dd></div>
+    <div><dt>맡은 것</dt><dd>이펙트 런타임 · 독립 EffectEditor · 메인 전투 VFX · 일부 화면 후처리 효과(흑백 연출·Flash)</dd></div>
+    <div><dt>팀원이 맡은 것</dt><dd>화면 효과 틀 · Stencil bit0 · 디퍼드·MRT</dd></div>
+  </dl>
+  <div class="acts">
+    <a class="go" href="https://youtu.be/JBuVAdqzew8" target="_blank" rel="noopener">YouTube에서 영상 보기 ↗</a>
+    <a href="https://github.com/shKim-33/Expedition_158_Effect" target="_blank" rel="noopener">GitHub 코드 ↗</a>
+  </div>
+</section>
+
+<!-- E2 · 빛 컷: 이미터를 조합한 VFX 쇼케이스 4장 (PPT 18장) -->
+<section class="stage" data-p="ex" style="height:320vh">
+  <div class="pin">
+    <div class="layer shot ex-light">
+      <video data-auto muted loop playsinline preload="none" poster="assets/video/ex_stendhal.webp" src="assets/video/ex_stendhal.mp4"></video>
+      <span class="tag k-game"><b>게임 화면</b>스탕달</span>
+      <p class="cap">검 여섯 자루를 자루마다 Mesh 이미터 다섯 개와 Ribbon 하나로 쌓았습니다. Mesh 이미터는 살아 있는 검을 인스턴싱으로 한 번에 그립니다.</p>
+      <p class="ex-emit"><b>이미터 40개</b><span>Mesh ×30</span><span>Ribbon ×6</span><span>Sprite ×4</span></p>
+    </div>
+    <div class="layer shot ex-light">
+      <img src="assets/img/ex/showcase_skybreak.webp" alt="" loading="lazy">
+      <span class="tag k-game"><b>게임 화면</b>하늘 파괴</span>
+      <p class="cap">시작·충전·유성·빔·최종 폭발, 다섯 파일이 애니메이션의 정해진 시점에 차례로 재생됩니다. 불꽃과 빛은 Sprite, 유성과 폭발 파편은 Mesh, 하늘에서 내리는 광선은 Beam이 맡았습니다.</p>
+      <p class="ex-emit"><b>이미터 45개</b><span>Sprite ×28</span><span>Mesh ×16</span><span>Beam ×1</span></p>
+    </div>
+    <div class="layer shot ex-light">
+      <video data-auto muted loop playsinline preload="none" poster="assets/video/ex_overcharge.webp" src="assets/video/ex_overcharge.mp4"></video>
+      <span class="tag k-game"><b>게임 화면</b>과충전</span>
+      <p class="cap">손 소켓과 발사체가 지나간 자리를 SpriteTrail이 따라가며 번개 꼬리를 남깁니다. 손과 궤적은 애니메이션 노티파이 구간 내내 유지되고, 그 안에서 해방 이펙트가 터집니다.</p>
+      <p class="ex-emit"><b>이미터 16개</b><span>Sprite ×11</span><span>SpriteTrail ×5</span></p>
+    </div>
+    <div class="layer shot ex-light">
+      <video data-auto muted loop playsinline preload="none" poster="assets/video/ex_trail.webp" src="assets/video/ex_trail.mp4"></video>
+      <span class="tag k-game"><b>게임 화면</b>검의 발레</span>
+      <p class="cap">Trail 네 개가 검을 따라 띠를 그리고, SpriteTrail이 그 궤적 위에 입자를 흩뿌리고, Ribbon이 꼬리를 붙입니다. 같은 구성을 색만 바꿔 13가지로 썼습니다.</p>
+      <p class="ex-emit"><b>이미터 6개</b><span>Trail ×4</span><span>SpriteTrail ×1</span><span>Ribbon ×1</span></p>
+    </div>
+    <div class="eyebrow ex-show-h">이미터를 조합한 VFX</div>
+    <div class="rail ex-rail"><span>스탕달</span><span>하늘 파괴</span><span>과충전</span><span>검의 발레</span></div>
+  </div>
+</section>
+
+<!-- E3 · 사례 01: GPU 파티클 (PPT 6장) -->
+<section class="intro head" data-p="ex">
+  <div class="eyebrow">사례 01 <span class="sk">성능 · 최적화</span><span class="sk">렌더링</span></div>
+  <h2>파티클을 <u>GPU에서 갱신하고</u>, 그대로 그린다</h2>
+  <p>파티클 상태는 GPU 버퍼에 두고, 매 프레임 compute 셰이더가 슬롯마다 갱신해 그릴 데이터를 만듭니다. 그 결과를 GPU 안에서 복사해 Indirect Draw로 그리므로, 그리는 과정에서 CPU가 파티클을 하나씩 만지거나 되읽지 않습니다.</p>
+</section>
+
+<section class="row wide" data-p="ex">
+  <div class="media">
+    <div class="ex-lanes">
+      <div class="ex-lane">
+        <div class="ex-lane-h"><b>CPU</b><span>값을 넘기고 명령만 내린다</span></div>
+        <div class="ex-boxes">
+          <div class="ex-box"><b>상수 버퍼 갱신</b><span>스폰 요청 수 · 시간 · 재생 순번</span></div>
+          <div class="ex-box"><b>Dispatch → 복사 → Draw 호출</b><span>순서만 지정, 개수는 모른다</span></div>
+        </div>
+      </div>
+      <div class="ex-lane ex-gpu">
+        <div class="ex-lane-h"><b>GPU</b><span>갱신 · 그릴 데이터 · 그리기 인자까지</span></div>
+        <div class="ex-boxes">
+          <div class="ex-box"><b>슬롯 상태 버퍼</b><span>나이 · 수명 · 활성 · seed, 프레임 사이에도 남음</span></div>
+          <div class="ex-box"><b>Compute Shader</b><span>슬롯 1개 = 스레드 1개, 갱신 · 스폰 · 정점 기록</span></div>
+          <div class="ex-box"><b>GPU 안에서 복사</b><span>정점 버퍼 → 인스턴스 버퍼<br>인자 버퍼 → 그리기 인자</span></div>
+          <div class="ex-box"><b>Indirect Draw</b><span>GPU가 쓴 인자로 한 번에 그림</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="ex-noread">✕ 그리기 경로에 되읽기 없음</p>
+  </div>
+  <div class="txt">
+    <p>CPU가 넘기는 것은 <b>스폰 요청 수, 시간, 재생 순번 같은 몇 개의 값뿐</b>입니다.</p>
+    <p class="sub">Ribbon이 파티클을 따라갈 때만 위치를 읽어 옵니다.</p>
+    <p class="sub">입자 하나가 인스턴스 하나라, Draw 호출 한 번으로 전부 그립니다.</p>
+  </div>
+</section>
+
+<section class="row flip ex-wide-r" data-p="ex">
+  <div class="media">
+    <pre class="code ex-code-s"><mark><i>CHECK_FAILED</i>(<i>Reset_IndirectArgs</i>());</mark><mark><i>CHECK_FAILED</i>(_computeShader-&gt;<i>Dispatch</i>((_instanceCount + kThreadCountX - <s>1</s>) / kThreadCountX, <s>1</s>, <s>1</s>));</mark><mark><i>CHECK_FAILED</i>(<i>Copy_OutputToInstanceVB</i>());</mark><mark><i>CHECK_FAILED</i>(<i>Copy_OutputToIndirectArgs</i>());</mark><u>…</u>
+_context-&gt;<i>DrawIndexedInstancedIndirect</i>(_indirectArgsBuffer.<i>Get</i>(), <s>0</s>);</pre>
+    <span class="tag k-code"><b>코드</b>VIBufferCom_ComputePointParticle.cpp</span>
+  </div>
+  <div class="txt">
+    <ol class="steps">
+      <li><span><b>인자 초기화</b>그릴 개수 · 스폰 카운터를 0으로</span></li>
+      <li><span><b>Dispatch</b>슬롯 수를 64로 나눠 올림한 그룹 수. 슬롯 150개면 3그룹</span></li>
+      <li><span><b>인스턴스 복사</b>입자별 데이터를 인스턴스 버퍼로</span></li>
+      <li><span><b>인자 복사</b>출력 인자를 그리기 인자 버퍼로</span></li>
+      <li><span><b>Indirect Draw</b>GPU가 쓴 인자로 인스턴싱 한 번에</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- E4 · 사례 02: 재생 규칙 (PPT 3·4장). 받은 시간을 구간으로 나눠 쓰는 과정이 스크롤로 진행 -->
+<section class="stage" data-p="ex" style="height:300vh">
+  <div class="pin">
+    <div class="layer ex-slice" data-ex-step="0">
+      <div class="ex-slice-in">
+        <div class="eyebrow">사례 02 <span class="sk">C++</span><span class="sk">시스템 구현</span></div>
+        <h2 class="ex-h">프레임이 길어도 지연 · 재생 · 반복을 <u>건너뛰지 않는다</u></h2>
+        <div class="ex-time" aria-hidden="true">
+          <div class="ex-frame"><span>이번 프레임에 받은 0.15초</span></div>
+          <div class="ex-track">
+            <div class="ex-seg" style="flex:15"><span>… 반복 1 재생</span></div>
+            <div class="ex-seg ex-s1" style="flex:28"><b>재생 0.07</b><span>반복 1 끝</span></div>
+            <div class="ex-seg ex-s2" style="flex:20"><b>지연 0.05</b><span>반복 2 지연</span></div>
+            <div class="ex-seg ex-s3" style="flex:12"><b>재생 0.03</b><span>반복 2</span></div>
+            <div class="ex-seg" style="flex:25"><span>반복 2 재생 …</span></div>
+          </div>
+        </div>
+        <div class="ex-says">
+          <p class="cap ex-say0">언리얼 Cascade 파티클 시스템처럼, 에디터에서 정한 지연 · 지속시간 · 반복 횟수가 실제 재생 규칙이 되도록 연결했습니다. <span>예시: 지연 0.05초 · 재생 0.30초, 이번 프레임 0.15초</span></p>
+          <p class="cap ex-say1">재생 구간에서는 이번 반복이 끝나는 지점까지만 쓰고, 남은 시간은 다음 반복으로 넘깁니다.</p>
+          <p class="cap ex-say2">지연 구간에서는 지연이 끝나는 지점까지만 시간을 씁니다.</p>
+          <p class="cap ex-say3">while을 세 번 돌며 나눠 씁니다. 스폰은 재생 몫(0.07 + 0.03초)만큼만 셉니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="row wide" data-p="ex">
+  <div class="media">
+    <pre class="code ex-code-s"><b>float</b> remainingTime = safeDeltaTime;<mark><b>while</b> (remainingTime &gt; <s>0.f</s> &amp;&amp; PlaybackState::Completed != _playbackState)</mark>{
+    <b>const float</b> delay = <i>Resolve_CurrentLoopDelay</i>();
+    <b>if</b> (_loopElapsedTime &lt; delay)
+    {
+        _playbackState = PlaybackState::Delayed;<mark>        <b>const float</b> delayStep = <i>min</i>(remainingTime, delay - _loopElapsedTime);</mark>        _loopElapsedTime += delayStep;
+        remainingTime -= delayStep;
+        <b>if</b> (_loopElapsedTime &lt; delay || remainingTime &lt;= <s>0.f</s>)
+            <b>break</b>;
+    }
+    _playbackState = PlaybackState::Playing;
+    <b>const float</b> duration = <i>Resolve_Duration</i>();
+    <b>const float</b> currentPlaybackTime = <i>max</i>(<s>0.f</s>, _loopElapsedTime - delay);
+    <b>const float</b> remainingPlaybackTime = <i>max</i>(<s>0.f</s>, duration - currentPlaybackTime);<mark>    <b>const float</b> playbackStep = <i>min</i>(remainingTime, remainingPlaybackTime);</mark>    <b>if</b> (playbackStep &gt; <s>0.f</s>)
+    {
+        tick.computeDeltaTime += playbackStep;<mark>        <b>const</b> uint32 spawnRequest = <i>Consume_SpawnRequest</i>(playbackStep);</mark>        <b>if</b> (spawnRequest &gt; <s>0u</s> &amp;&amp; tick.spawnRequest == <s>0u</s>)
+            tick.spawnSerialBase = _spawnSerialCounter;
+        tick.spawnRequest += spawnRequest;
+        <u>…</u>
+        _loopElapsedTime += playbackStep;
+        remainingTime -= playbackStep;
+    }
+    <u>…</u>
+}</pre>
+    <span class="tag k-code"><b>코드</b>ComputeSpriteEmitter.cpp · 한 프레임의 시간을 구간 단위로 나눠 쓰는 루프</span>
+  </div>
+  <div class="txt">
+    <ol class="steps">
+      <li><span><b>이번 프레임의 시간을 다 쓸 때까지</b>받은 시간을 지연 · 재생 구간에 차례로 나눠 쓴다. 완료되면 멈춘다</span></li>
+      <li><span><b>지연 구간</b>지연이 끝나는 지점까지만 시간을 쓴다</span></li>
+      <li><span><b>재생 구간</b>이번 반복이 끝나는 지점까지만 쓰고, 남은 시간은 다음 반복으로 넘긴다</span></li>
+      <li><span><b>스폰은 재생한 시간만큼</b>실제로 재생한 구간 길이로 스폰 개수를 계산한다</span></li>
+      <li><span><b>다시 재생해도 같은 랜덤</b>첫 스폰의 순번을 GPU로 넘긴다. GPU는 이 순번으로 난수를 정한다</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="row flip" data-p="ex">
+  <div class="media">
+    <div class="ex-cells" aria-hidden="true">
+      <div class="ex-cell"><span>0.00–0.12초</span><b>0</b></div>
+      <div class="ex-cell"><span>0.12–0.24초</span><b>0</b></div>
+      <div class="ex-cell ex-hit"><span>0.24–0.36초</span><b>+16개</b><i>표시</i></div>
+      <div class="ex-cell"><span>0.36–0.48초</span><b>0</b><i>표시 있음</i></div>
+      <div class="ex-cell"><span>0.48–0.60초</span><b>0</b><i>표시 있음</i></div>
+    </div>
+    <p class="ex-note">예시: 프레임마다 0.12초씩 재생, 반복 길이 0.60초, 버스트 0.30초 · 16개. 칸 하나는 한 프레임이 재생한 시간 구간입니다.</p>
+  </div>
+  <div class="txt">
+    <h3>버스트는 정한 시점에, 반복마다 한 번만</h3>
+    <p>0.30초를 정확히 밟는 프레임은 없지만, <b>0.24–0.36초 구간이 품고 있어 한 번 실행됩니다.</b></p>
+    <p class="sub">이전 시각 ≤ 버스트 시각 ≤ 현재 시각이면 실행하고 표시를 남깁니다. 표시는 다음 반복이 시작될 때 지워져, 반복마다 정확히 한 번 실행됩니다.</p>
+  </div>
+</section>
+
+<!-- E5 · 난관: Trail 보간 (PPT 17장) -->
+<section class="intro head" data-p="ex">
+  <div class="eyebrow">난관과 해결 <span class="sk">수학</span><span class="sk">문제 해결</span></div>
+  <h2>빠른 검격에도 <u>꺾이지 않는</u> Trail</h2>
+  <p>프레임당 샘플이 하나라, 빠른 검격에서는 점 사이가 벌어져 잔상이 꺾였습니다.</p>
+</section>
+
+<section class="row" data-p="ex">
+  <div class="media">
+    <div class="ex-curves" aria-hidden="true">
+      <figure><svg class="ex-curve" viewBox="0 0 360 210" data-ex-curve="raw"></svg><figcaption class="tag"><b>보간 전</b>점 6개</figcaption></figure>
+      <figure><svg class="ex-curve" viewBox="0 0 360 210" data-ex-curve="smooth"></svg><figcaption class="tag k-game"><b>보간 후</b>점 6 → 22개</figcaption></figure>
+    </div>
+  </div>
+  <div class="txt">
+    <div class="k">해법<b>점을 지나는 곡선</b></div>
+    <p>점을 지나는 <b>Catmull-Rom 곡선</b>으로 잇고, 구간 길이만큼만 나눠 채웠습니다.</p>
+    <div class="k">효과<b>빠른 구간만 촘촘하게</b></div>
+    <p>느린 구간은 점이 거의 늘지 않고, 빠른 구간만 촘촘해집니다.</p>
+  </div>
+</section>
+
+<section class="row flip ex-wide-r" data-p="ex">
+  <div class="media">
+    <pre class="code ex-code-s"><b>const float</b> sampleSpacing = <i>max</i>(kMinSampleSpacing, _desc.sampleSpacing);
+<b>const</b> uint32 lastIndex = <b>static_cast</b>&lt;uint32&gt;(_history.<i>size</i>() - <s>1u</s>);
+<b>for</b> (uint32 index = <s>0</s>; index + <s>1u</s> &lt; visibleCount; ++index)
+{
+    <b>const</b> <s>EffectTrailSample</s> p0 = <i>Build_SmoothedHistorySample</i>(index &gt; <s>0u</s> ? index - <s>1u</s> : index);
+    <b>const</b> <s>EffectTrailSample</s> p1 = <i>Build_SmoothedHistorySample</i>(index);
+    <b>const</b> <s>EffectTrailSample</s> p2 = <i>Build_SmoothedHistorySample</i>(index + <s>1u</s>);
+    <b>const</b> <s>EffectTrailSample</s> p3 = <i>Build_SmoothedHistorySample</i>(<i>min</i>(index + <s>2u</s>, lastIndex));
+
+    <b>const float</b> centerDistance = <i>Compute_TrailCenterDistance</i>(p1, p2);
+    <b>const</b> uint32 stepCount = <i>min</i>(<i>max</i>(<s>1u</s>, <b>static_cast</b>&lt;uint32&gt;(<i>ceilf</i>(centerDistance / sampleSpacing))),
+                                  maxIntervalSubdivision);
+    <b>for</b> (uint32 step = <s>1u</s>; step &lt;= stepCount; ++step)
+    {
+        <b>const float</b> ratio = <b>static_cast</b>&lt;<b>float</b>&gt;(step) / stepCount;
+        <s>TrailRenderSample</s> renderSample{};<mark>        renderSample.sample = <i>Catmull_RomTrailSample</i>(p0, p1, p2, p3, ratio);</mark>        renderSample.age = _history[index].age
+                         + (_history[index + <s>1u</s>].age - _history[index].age) * ratio;
+        outSamples.<i>push_back</i>(renderSample);
+    }
+}</pre>
+    <span class="tag k-code"><b>코드</b>ComputeTrailEmitter.cpp</span>
+  </div>
+  <div class="txt">
+    <ol class="steps">
+      <li><span><b>샘플 간격</b>설정 간격이 너무 작아도 최소 간격 아래로는 내려가지 않게 해, 점이 과하게 늘지 않게 한다</span></li>
+      <li><span><b>인접 4점</b>구간마다 앞뒤 한 점씩 더해 4점을 잡고, 양 끝에서는 끝점을 복제한다</span></li>
+      <li><span><b>분할 수</b>구간 길이를 간격으로 나눠 올림하고, 상한은 설정값으로 막는다</span></li>
+      <li><span><b>Catmull-Rom</b>4점으로 구간 사이 곡선 위의 점을 비율 위치마다 구한다</span></li>
+      <li><span><b>나이도 같이 보간</b>점마다 나이도 같은 비율로 보간해, 꼬리의 폭 · 투명도 변화가 끊기지 않게 한다</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- E6 · 협업: 에디터 = 게임 (PPT 15·20장) -->
+<section class="intro head" data-p="ex">
+  <div class="eyebrow">팀이 쓰는 툴 <span class="sk">협업</span><span class="sk">구조 설계</span></div>
+  <h2>에디터에서 본 것이 <u>게임에서 나온다</u></h2>
+  <p>툴에서 본 이펙트와 게임에서 나오는 이펙트가 다르면 툴을 믿을 수 없습니다. 에디터 프리뷰도 게임과 같은 이펙트 풀에서 꺼내, 저장 파일과 같은 정의 데이터로 재생하게 했습니다. 팀원 4명도 이 툴로 직접 이펙트를 만들었습니다.</p>
+</section>
+
+<section class="stage" data-p="ex" style="height:240vh">
+  <div class="pin">
+    <div class="layer ex-pair">
+      <div class="ex-col">
+        <div class="ex-swap ex-scroll">
+          <img src="assets/img/ex/effect_editor_overview.webp" alt="" loading="lazy">
+          <img class="ex-b" src="assets/img/ex/ingame_skill_effect.webp" alt="" loading="lazy">
+          <span class="ex-line" aria-hidden="true"></span>
+          <span class="tag k-ed ex-tag-a"><b>에디터</b>EffectEditor에서 만든 유성 이펙트</span>
+          <span class="tag k-game ex-tag-b"><b>게임 화면</b>같은 파일을 게임에서 재생</span>
+        </div>
+        <div class="ex-txt">
+          <p class="cap ex-cap-a">툴은 만들고 저장하는 일만, 게임은 불러오는 일만 맡기고, 재생 정의(EffectDefinition)는 엔진에 하나만 두었습니다.</p>
+          <p class="cap ex-cap-b">게임은 툴에서 저장한 JSON을 불러와, 툴 미리보기와 같은 EffectDefinition으로 재생합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="row flip" data-p="ex">
+  <div class="media ex-hookmedia">
+    <pre class="code ex-code"><s>Shared</s>&lt;<s>EffectEmitter</s>&gt;
+EffectEmitterFactory::<i>Create_EffectEmitter</i>(
+    <b>const</b> <s>EffectEmitterDefinition</s>&amp; emitterDefinition)
+{
+    <b>if</b> (<b>nullptr</b> == gCreateEmitterFn)
+        <b>return nullptr</b>;<mark>    <b>return</b> <i>gCreateEmitterFn</i>(emitterDefinition);</mark>}</pre>
+    <span class="tag k-code"><b>Engine</b>EffectEmitterFactory.cpp · 종류를 모른 채 등록된 생성 함수만 호출</span>
+    <pre class="code ex-code"><b>void</b> <i>Register_ClientEffectEmitters</i>()
+{<mark>    EffectEmitterFactory::<i>Register_CreateEmitterFn</i>(</mark><mark>        &amp;Create_ClientEffectEmitter);</mark>}</pre>
+    <span class="tag k-code"><b>Client</b>EffectEmitterRegistration.cpp · 시작할 때 Client가 등록</span>
+  </div>
+  <div class="txt">
+    <h3>Effect 틀은 Engine에, 이미터 세부 구현은 Client에</h3>
+    <p>재생 · 생성 규칙은 Engine(DLL)에, 종류별 구현은 Client(static lib)에 둡니다. 실제 이미터 6종은 시작할 때 Factory에 등록해, <b>공용 프레임워크(Engine)가 게임 코드(Client)에 의존하지 않습니다.</b></p>
+    <p class="sub">EffectEditor · 메인 에디터 · 게임이 같은 Client lib을 링크하므로, 에디터에서 본 이펙트가 같은 이미터 코드로 재생됩니다.</p>
+  </div>
+</section>
+
+<!-- E7 · 마무리 -->
+<section class="end" data-p="ex">
+  <div class="acts">
+    <span>Expedition 33 모작</span>
+    <a class="go" href="https://youtu.be/JBuVAdqzew8" target="_blank" rel="noopener">YouTube에서 영상 보기 ↗</a>
+    <a href="https://github.com/shKim-33/Expedition_158_Effect" target="_blank" rel="noopener">GitHub 코드 ↗</a>
+  </div>
+  <a class="nextp" href="#gf">
+    <div class="eyebrow">다음 프로젝트</div>
+    <h2>Gunfire Reborn 모작 →</h2>
+  </a>
+</section>
+<!-- /PART ex -->
+<!-- PART gf -->
+<!-- G1 · 프로젝트 첫 장면 (PPT 2장) -->
+<section class="proj" id="gf" data-p="gf">
+  <img class="ov gf-ov" src="assets/img/gf/GF_01_main_boss_laser.webp" alt="Gunfire Reborn 모작 보스 전투">
+  <div class="eyebrow">2026.01.12 – 04.15 · 개인 프로젝트 · C++20 · DirectX 11 · HLSL</div>
+  <h2>Gunfire<br>Reborn <small class="gf-sm">모작</small></h2>
+  <p class="say">DirectX 11 수업 프레임워크를 다듬고 확장해, 레벨 에디터 · 전투 · 렌더링까지 구현한 3D 개인 프로젝트입니다.</p>
+  <dl class="who">
+    <div class="goal"><dt>목적</dt><dd>DirectX 11과 프레임워크 구조를 익히기 위해, 수업 프레임워크를 다듬고 확장하며 충돌 · 전투 · 렌더링의 핵심 구현을 직접 했습니다.</dd></div>
+    <div><dt>직접 구현한 것</dt><dd>GameLogic 층 분리 · 레벨 에디터 · 게임플레이(플레이어 행동 · 몬스터 AI · 히트스캔 · 충돌 판정) · 그림자 · 외곽선 렌더링</dd></div>
+  </dl>
+  <div class="acts">
+    <a class="go" href="https://youtu.be/Jpvrbx4RoCE" target="_blank" rel="noopener">YouTube에서 영상 보기 ↗</a>
+  </div>
+  <span class="tagr">보스 전투</span>
+</section>
+
+<!-- G2 · 플레이 화면: 보스 3909 패턴 4종 (PPT 13장) -->
+<section class="reel" data-p="gf">
+  <div class="pin">
+    <div class="eyebrow">플레이 화면 · 보스 패턴 4종</div>
+    <div class="track">
+      <figure><video data-auto muted loop playsinline preload="none" poster="assets/video/gf_pillar.webp" src="assets/video/gf_pillar.mp4"></video><figcaption><i class="mono">01</i>바위 기둥 · 바닥 경고 뒤에 솟고, 뒤에 서면 레이저를 막는다</figcaption></figure>
+      <figure><video data-auto muted loop playsinline preload="none" poster="assets/video/gf_rock.webp" src="assets/video/gf_rock.mp4"></video><figcaption><i class="mono">02</i>추적 바위 · 돌 6개를 차례로 쏘고, 쏴서 부술 수 있다</figcaption></figure>
+      <figure><video data-auto muted loop playsinline preload="none" poster="assets/video/gf_fist.webp" src="assets/video/gf_fist.mp4"></video><figcaption><i class="mono">03</i>주먹 발사 · 직선으로 날아와 피할 수 있다</figcaption></figure>
+      <figure><video data-auto muted loop playsinline preload="none" poster="assets/video/gf_laser.webp" src="assets/video/gf_laser.mp4"></video><figcaption><i class="mono">04</i>레이저 · 경고 2초 뒤 방향을 고정하고 쏜다</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- G3 · 사례 01: OBB SAT (PPT 11장) -->
+<section class="intro head" data-p="gf">
+  <div class="eyebrow">사례 01 <span class="sk">수학 · 물리</span><span class="sk">C++</span></div>
+  <h2>OBB가 겹친 <u>방향과 깊이</u>를 직접 구한다</h2>
+  <p>면 법선 6개와 변 방향 외적 9개, 15개 축에 두 상자를 차례로 투영합니다. 하나라도 갈라지면 충돌이 아니고, 모두 겹치면 가장 얕은 축이 법선과 깊이가 됩니다.</p>
+</section>
+
+<section class="row wide" data-p="gf">
+  <div class="media">
+    <div class="gf-sat">
+      <div class="gf-axes">
+        <div class="gf-axes-h"><b>면 법선 6</b><span>상자마다 3개</span></div>
+        <div class="gf-chips gf-face"><i>S0</i><i>S1</i><i>S2</i><i>T0</i><i>T1</i><i>T2</i></div>
+        <div class="gf-axes-h"><b>변 외적 9</b><span>외적 길이 0은 건너뜀</span></div>
+        <div class="gf-chips gf-cross"><i>S0×T0</i><i>S0×T1</i><i>S0×T2</i><i>S1×T0</i><i>S1×T1</i><i>S1×T2</i><i>S2×T0</i><i>S2×T1</i><i>S2×T2</i></div>
+      </div>
+      <div class="gf-projs">
+        <figure class="gf-proj gf-hit">
+          <div class="gf-line"><span class="gf-self" style="left:10%;width:48%">self</span><span class="gf-target" style="left:42%;width:46%">target</span><span class="gf-depth" style="left:42%;width:16%"></span></div>
+          <figcaption><b>겹친다</b>depth &gt; 0</figcaption>
+        </figure>
+        <figure class="gf-proj gf-miss">
+          <div class="gf-line"><span class="gf-self" style="left:6%;width:38%">self</span><span class="gf-target" style="left:56%;width:38%">target</span><span class="gf-depth" style="left:44%;width:12%"></span></div>
+          <figcaption><b>갈라진다 → false</b>틈: depth &lt; 0</figcaption>
+        </figure>
+      </div>
+    </div>
+    <p class="gf-rule"><b>하나라도 갈라지면</b> 충돌 아님 &nbsp;·&nbsp; <b>모두 겹치면</b> 가장 얕은 축 = 법선 · 깊이</p>
+  </div>
+  <div class="txt">
+    <img class="gf-dbg" src="assets/img/gf/GF_obb_debug.webp" alt="" loading="lazy">
+    <span class="tag k-ed"><b>디버그 화면</b>충돌체를 그려 확인하는 모습</span>
+  </div>
+</section>
+
+<section class="row flip gf-wide-r" data-p="gf">
+  <div class="media">
+    <pre class="code gf-code-s"><u>…</u>
+<b>const</b> <b>auto</b> testAxis = [&amp;](<b>const</b> <s>Vector3</s>&amp; axis) -&gt; <b>bool</b>
+{
+    <b>const</b> <b>float</b> axisLengthSq = axis.<i>LengthSquared</i>();
+<mark>    <b>if</b> (axisLengthSq &lt;= <s>1e-6f</s>)</mark><mark>        <b>return</b> <b>true</b>;</mark>
+    <b>const</b> <b>float</b> axisLength = <i>sqrtf</i>(axisLengthSq);
+    <b>const</b> <s>Vector3</s> unitAxis = axis / axisLength;
+    <b>const</b> <b>float</b> radiusSelf =
+        <i>projectRadius</i>(unitAxis, selfAxes, self.Extents);
+    <b>const</b> <b>float</b> radiusTarget =
+        <i>projectRadius</i>(unitAxis, targetAxes, target.Extents);
+    <b>const</b> <b>float</b> distance = centerDelta.<i>Dot</i>(unitAxis);
+<mark>    <b>const</b> <b>float</b> depth = radiusSelf + radiusTarget - <i>abs</i>(distance);</mark>
+<mark>    <b>if</b> (depth &lt; <s>0.f</s>)</mark><mark>        <b>return</b> <b>false</b>;</mark>    <b>if</b> (!hasBestAxis || depth &lt; bestDepth)
+    {
+        hasBestAxis = <b>true</b>;
+        bestDepth = depth;
+<mark>        <b>if</b> (distance &gt;= <s>0.f</s>)</mark><mark>            bestNormal = unitAxis * <s>-1.f</s>;</mark>        <b>else</b>
+            bestNormal = unitAxis;
+    }
+
+    <b>return</b> <b>true</b>;
+};</pre>
+    <span class="tag k-code"><b>코드</b>CBounding_OBB.cpp</span>
+  </div>
+  <div class="txt">
+    <ol class="steps">
+      <li><span><b>이 검사를 15개 축에 돌린다</b>면 법선 6개(상자마다 3개)와 변 방향 외적 9개를 이 람다에 차례로 넣는다</span></li>
+      <li><span><b>길이 0인 축은 건너뛴다</b>평행한 두 변의 외적처럼 길이가 거의 0인 축은 방향을 정할 수 없다. 검사하지 않고 통과시킨다</span></li>
+      <li><span><b>겹친 깊이</b>두 상자를 이 축에 투영한 반지름의 합에서 중심 사이 거리를 뺀다. 양수면 이 축에서 겹친다</span></li>
+      <li><span><b>갈라지는 축이 있으면 끝</b>이 축에서 두 상자가 떨어져 있으면 충돌이 아니다. 바로 false로 끝낸다</span></li>
+      <li><span><b>가장 얕은 축과 법선 부호</b>지금까지 가장 얕은 축을 기억한다. 법선은 target에서 self 쪽을 향하도록 부호를 맞춘다</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- G4 · 사례 01 이어서: 캡슐 = 선분, 삼분 탐색 (PPT 12장) -->
+<section class="row" data-p="gf">
+  <div class="media">
+    <div class="gf-tern">
+      <figure>
+        <svg class="gf-tsvg" viewBox="0 0 360 214" role="img" aria-label="거리 제곱은 t에 대해 볼록하다">
+          <rect class="gf-drop" x="20" y="14" width="107" height="170"/>
+          <line class="gf-ax" x1="20" y1="184" x2="340" y2="184"/>
+          <line class="gf-tk" x1="127" y1="14" x2="127" y2="184"/><line class="gf-tk" x1="233" y1="14" x2="233" y2="184"/>
+          <path class="gf-crv" d="M20,40 Q180,213.9 340,145.9"/>
+          <circle class="gf-pa" cx="127" cy="129.2" r="5"/><circle class="gf-pb" cx="233" cy="164.3" r="5"/>
+          <text x="74" y="32" text-anchor="middle" class="gf-tx gf-txr">버림</text>
+          <text x="134" y="120" class="gf-tx">왼쪽이 더 높다</text>
+          <text x="20" y="204" text-anchor="middle" class="gf-tx">0</text><text x="127" y="204" text-anchor="middle" class="gf-tx">1/3</text><text x="233" y="204" text-anchor="middle" class="gf-tx">2/3</text><text x="340" y="204" text-anchor="middle" class="gf-tx">1</text>
+        </svg>
+        <figcaption class="tag"><b>도식</b>거리²는 t에 대해 볼록 · 높은 쪽 바깥 1/3을 버린다</figcaption>
+      </figure>
+      <div class="gf-shrink">
+        <div style="--w:100%"><b>시작</b><i></i><span>1</span></div>
+        <div style="--w:66.7%"><b>1회</b><i></i><span>2/3</span></div>
+        <div style="--w:44.4%"><b>2회</b><i></i><span>4/9</span></div>
+        <div style="--w:29.6%"><b>3회</b><i></i><span>8/27</span></div>
+        <p>구간이 매번 2/3로 · <b>24회 반복 → (2/3)²⁴ ≈ 6e-5</b></p>
+      </div>
+    </div>
+  </div>
+  <div class="txt">
+    <div class="k">충돌체 추가<b>캡슐은 결국 선분 하나</b></div>
+    <p>상자로는 세로로 긴 몸을 덮을 수 없어 캡슐을 더했습니다. <b>선분과 상자에서 가장 가까운 점만 찾으면 나머지는 구와 똑같이 풀립니다.</b></p>
+    <p class="sub">선분을 상자 로컬로 옮기면 상자가 축에 정렬돼 거리 계산이 단순해집니다. 선분 위의 점 P(t) = 시작 + t · 방향에서 상자까지의 거리²가 가장 작은 t를 삼분 탐색으로 찾습니다.</p>
+  </div>
+</section>
+
+<!-- G5 · 사례 02: 히트스캔 (PPT 5장) -->
+<section class="intro head" data-p="gf">
+  <div class="eyebrow">사례 02 <span class="sk">C++</span><span class="sk">게임 시스템</span></div>
+  <h2><u>벽 너머로 맞지 않는</u> 히트스캔 판정</h2>
+  <p>레이 하나에 벽 · 적 · 보스 투사체가 함께 걸립니다. 종류별로 가장 가까운 것을 찾고, 거리로 하나만 골랐습니다. 벽 너머는 판정하지 않고, 가장 앞에 있는 대상만 맞습니다.</p>
+</section>
+
+<section class="row wide" data-p="gf">
+  <div class="media">
+    <pre class="code gf-code-s"><mark><b>const</b> <b>bool</b> hasMonster = <i>Try_FindNearestMonsterHitscanTarget</i>(release, monster, monsterHit);</mark><mark><b>const</b> <b>bool</b> hasMap     = <i>Try_FindNearestMapOccluderHitscanTarget</i>(release, mapHit);</mark><mark><b>const</b> <b>bool</b> hasStone   = <i>Try_FindNearestTrackingStoneProjectileHitscanTarget</i>(</mark><mark>                              release, stone, stoneHit);</mark><b>if</b> (!hasMonster &amp;&amp; !hasMap &amp;&amp; !hasStone)
+    <b>return</b> <b>false</b>;
+<mark><b>const</b> <b>float</b> tieEpsilon = <s>1e-6f</s>;</mark><b>const</b> <b>bool</b> mapBlocks = hasMap
+    &amp;&amp; (!hasMonster || mapHit.hitDistance &lt;= monsterHit.hitDistance + tieEpsilon)
+    &amp;&amp; (!hasStone   || mapHit.hitDistance &lt;= stoneHit.hitDistance + tieEpsilon);
+<mark><b>if</b> (mapBlocks)</mark>{
+    out.selectedEndPointWorld = mapHit.hitPositionWorld;
+    <b>return</b> <b>true</b>;
+}
+<mark><b>if</b> (hasStone &amp;&amp; (!hasMonster || stoneHit.hitDistance &lt;= monsterHit.hitDistance + tieEpsilon))</mark>{
+    out.selectedEndPointWorld = stoneHit.hitPositionWorld;
+    out.shouldBreakTrackingStoneProjectile = <b>true</b>;
+    <b>return</b> <b>true</b>;
+}
+<b>if</b> (!hasMonster) <b>return</b> <b>false</b>;
+out.selectedEndPointWorld = monsterHit.hitPositionWorld;
+<mark>out.shouldApplyMonsterDamage = <b>true</b>;</mark></pre>
+    <span class="tag k-code"><b>코드</b>CPlayerCombatCom.cpp · Try_ResolveReleasedHitscanResult 발췌</span>
+  </div>
+  <div class="txt">
+    <ol class="steps">
+      <li><span><b>후보 셋</b>같은 레이로 몬스터 · 맵 · 보스 추적석을 각각 가장 가까운 것 하나씩 찾는다</span></li>
+      <li><span><b>같은 거리</b>거리가 같으면(오차 1e-6 안) 벽 쪽을 고른다</span></li>
+      <li><span><b>벽이 먼저</b>벽이 다른 후보보다 가까우면 거기서 멈춘다. 벽 너머 적은 맞지 않는다</span></li>
+      <li><span><b>추적석 요격</b>보스가 던진 추적석이 몬스터보다 가까우면 쏴서 부술 수 있다</span></li>
+      <li><span><b>몬스터 피해</b>남은 경우만 몬스터에 피해를 준다. 피해량 · 헤드샷 소리는 호출부가 처리한다</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- G6 · 사례 02 이어서: 본 히트박스 · 파츠 (PPT 12장) -->
+<section class="trio gf-three" data-p="gf">
+  <div>
+    <img src="assets/img/gf/GF_18_hitbox_full_debug.webp" alt="" loading="lazy">
+    <span class="tag k-ed"><b>에디터</b>히트박스 표시를 켠 모습</span>
+    <p class="cap">캡슐 9개(몸통 1 · 팔 4 · 다리 4)와 머리 구. 본 두 개를 잇는 선분에서 캡슐의 위치 · 회전 · 길이가 정해집니다.</p>
+  </div>
+  <div>
+    <img src="assets/img/gf/GF_19_hitbox_crouch_aim.webp" alt="" loading="lazy">
+    <span class="tag k-ed"><b>에디터</b>앉아 조준하는 자세</span>
+    <p class="cap">앉아 조준할 때도 히트박스가 본을 따라갑니다.</p>
+  </div>
+  <div>
+    <img src="assets/img/gf/GF_20_headshot_damage.webp" alt="" loading="lazy">
+    <span class="tag k-game"><b>게임 화면</b>머리를 맞혔을 때</span>
+    <p class="cap">파츠는 맞으면 루트에 알리기만 하고, 약점 판정과 피해 배율은 루트가 정합니다. 같은 거리면 머리가 우선입니다.</p>
+  </div>
+</section>
+
+<!-- G7 · 사례 03: 그림자 (PPT 8장) -->
+<section class="intro head" data-p="gf">
+  <div class="eyebrow">사례 03 <span class="sk">성능 · 최적화</span><span class="sk">렌더링</span></div>
+  <h2>가까운 곳은 <u>캐스케이드</u>, 멈춘 것은 <u>정적 맵</u></h2>
+  <p>햇빛 역할의 방향성 조명 하나를 두고, 그 방향으로 그림자 카메라를 맞춥니다. 디퍼드 조명에는 이 빛에만 그림자를 적용합니다.</p>
+</section>
+
+<section class="row wide" data-p="gf">
+  <div class="media">
+    <div class="gf-cmp">
+      <img src="assets/img/gf/GF_shadow_off.webp" alt="그림자 끔" loading="lazy">
+      <img class="gf-on" src="assets/img/gf/GF_shadow_on.webp" alt="그림자 켬" loading="lazy">
+      <span class="gf-lab gf-lab-off">그림자 끔</span>
+      <span class="gf-lab gf-lab-on">그림자 켬</span>
+    </div>
+    <span class="tag k-ed"><b>에디터</b>같은 자리에서 그림자를 끄고 켠 화면</span>
+  </div>
+  <div class="txt">
+    <div class="k">매 프레임<b>2048 맵 2장</b></div>
+    <p>카메라 앞 60m를 가까운 18m와 먼 18~60m로 나눠 <b>동적 그림자 맵 2단</b>에 그립니다. 카메라가 돌아도 흔들리지 않게 맵 위치를 격자에 맞춥니다.</p>
+    <div class="k">레벨을 불러올 때 한 번<b>6144 맵 1장</b></div>
+    <p>움직이지 않는 모델의 그림자는 <b>정적 그림자 맵</b>에 한 번만 굽습니다. 매 프레임 그리는 대상에서는 빼고, 에디터에서 켠 모델만 굽습니다.</p>
+  </div>
+</section>
+
+<section class="row flip gf-wide-r" data-p="gf">
+  <div class="media">
+    <pre class="code gf-code-s"><b>const</b> <b>bool</b> cascadeOn = g_fCascadeShadowEnabled &gt; <s>0.5f</s>;
+<mark><b>if</b> (cascadeOn &amp;&amp; viewZ &lt;= g_vShadowCascadeSplitDepths.x)</mark>    cascadeShadow = <i>Compute_ShadowFactorForCascade</i>(worldPos, normal, lightDir,
+                        g_ShadowViewMatrix0, g_ShadowProjMatrix0, g_ShadowDepthTexture0);
+<mark><b>else</b> <b>if</b> (cascadeOn &amp;&amp; viewZ &lt;= g_vShadowCascadeSplitDepths.y)</mark>    cascadeShadow = <i>Compute_ShadowFactorForCascade</i>(worldPos, normal, lightDir,
+                        g_ShadowViewMatrix1, g_ShadowProjMatrix1, g_ShadowDepthTexture1);
+<u>…</u>
+<mark><b>return</b> <i>min</i>(cascadeShadow, staticShadow);</mark></pre>
+    <span class="tag k-code"><b>코드</b>Shader_Deferred.hlsl</span>
+  </div>
+  <div class="txt">
+    <ol class="steps">
+      <li><span><b>깊이 18m 이하</b>가까운 단</span></li>
+      <li><span><b>60m 이하</b>먼 단</span></li>
+      <li><span><b>정적 맵과 합성</b>더 어두운 쪽</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- G8 · 구조: 세 층 (층 쌓기, PPT 21장) -->
+<section class="stage" data-p="gf" style="height:250vh">
+  <div class="pin">
+    <div class="layer shot doc gf-win gf-build" data-gf-step="0">
+      <pre class="code gf-code"><b>class</b> ENGINE_DLL <s>CGameInstance</s> <b>final</b> : <b>public</b> <s>CBase</s>
+{
+<b>public</b>:
+    <b>static</b> <s>CGameInstance</s>* <i>GetInstance</i>();
+    <u>…</u>
+<b>private</b>:<mark>    unique_ptr&lt;CGraphicDevice&gt;    m_graphicDevice;</mark><mark>    unique_ptr&lt;CLevelManager&gt;     m_levelManager;</mark><mark>    unique_ptr&lt;CRenderer&gt;         m_renderer;</mark>    <u>…</u>
+};</pre>
+      <img class="gf-ed" src="assets/img/gf/GF_06_level_editor_overview.webp" alt="" loading="lazy">
+      <div class="gf-left">
+        <div class="eyebrow">구조 <span class="sk">구조 설계</span><span class="sk">툴</span></div>
+        <h2 class="gf-h">프레임워크 · 게임 로직 · 앱을 세 층으로 나눴습니다.</h2>
+        <div class="gf-swap">
+          <span class="tag k-code gf-t1"><b>코드</b>CGameInstance.h · 프레임워크 단일 창구</span>
+          <span class="tag k-ed gf-t2"><b>에디터</b>레벨 에디터: 계층 창, 기즈모, 저장·불러오기</span>
+        </div>
+        <div class="gf-bands">
+          <div class="gf-band gf-b1"><b>Engine</b><span>DLL · 수업에서 받은 골격을 다듬고 확장</span></div>
+          <div class="gf-band gf-b2"><b>GameLogic</b><span>정적 라이브러리 · 직접 분리해 더한 층</span></div>
+          <div class="gf-band gf-b3"><b>Client · Editor</b><span>같은 게임 로직을 정책 값만 바꿔 공유합니다</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- G9 · 난관과 해결 -->
+<section class="intro head" data-p="gf">
+  <div class="eyebrow">난관과 해결 <span class="sk">문제 해결</span></div>
+  <h2>1인칭 팔 모델과 무기 모델의 애니메이션 동기화</h2>
+  <p>1인칭 팔과 무기는 뼈대와 애니메이션이 따로라, 게임이 도는 내내 둘을 맞춰 줘야 했습니다.</p>
+</section>
+
+<section class="row" data-p="gf">
+  <div class="media">
+    <div class="shots">
+      <figure><img src="assets/img/gf/GF_10_weapon_foundry.webp" alt="" loading="lazy"><figcaption>파운드리</figcaption></figure>
+      <figure><img src="assets/img/gf/GF_11_weapon_thunder_gauntlet.webp" alt="" loading="lazy"><figcaption>썬더 건틀릿</figcaption></figure>
+      <figure><img src="assets/img/gf/GF_12_weapon_justice.webp" alt="" loading="lazy"><figcaption>저스티스</figcaption></figure>
+    </div>
+    <p class="tag k-ed"><b>에디터</b>무기마다 팔과 무기를 한 모델로 묶은 계층</p>
+    <img class="gf-hier" src="assets/img/gf/GF_13_body_hierarchy_1.webp" alt="" loading="lazy">
+  </div>
+  <div class="txt">
+    <div class="k">해결<b>제작 단계로 옮김</b></div>
+    <p>게임 안에서 맞추는 대신 만들 때 미리 합쳤습니다. <b>Unity에서 팔과 무기를 한 모델로 묶어 애니메이션을 입혀 FBX로 내보내고, 직접 만든 변환 툴(Assimp)로 게임용 데이터로 바꿨습니다.</b></p>
+    <div class="k">결과<b>단일 데이터 재생</b></div>
+    <p>게임은 <b>합쳐진 데이터 하나만 재생</b>하면 되니, 팔과 무기를 맞추는 코드가 필요 없어졌습니다.</p>
+  </div>
+</section>
+
+<!-- G10 · 마무리 -->
+<section class="end" data-p="gf">
+  <div class="acts">
+    <span>Gunfire Reborn 모작</span>
+    <a class="go" href="https://youtu.be/Jpvrbx4RoCE" target="_blank" rel="noopener">YouTube에서 영상 보기 ↗</a>
+  </div>
+  <a class="nextp" href="#do">
+    <div class="eyebrow">다음 프로젝트</div>
+    <h2>Destiny Overclock →</h2>
+  </a>
+</section>
+<!-- /PART gf -->
+
+<!-- D1 · Destiny Overclock 첫 장면 (PPT 2장) -->
+<section class="proj" id="do">
+  <img class="ov" src="assets/img/do/2F_overview_01.webp" alt="Destiny Overclock 2층 오버뷰">
+  <div class="eyebrow">Official 2026 Unity Game Jam 출품작 · 2026.11.06 – 11.14 · 9일 · 3인 팀 · Unity 6.3 · C# · URP</div>
+  <h2>Destiny<br>Overclock</h2>
+  <p class="say">적의 행운(0~99 숫자)을 해킹으로 빼앗아 보안 시설을 층별로 돌파하는 Unity 3D SF 잠입 액션입니다.</p>
+  <dl class="who">
+    <div class="goal"><dt>목적</dt><dd>9일 안에 '행운의 숫자'를 쓰는 게임을 완성도 있게 내기 위해, 앞 프로젝트에서 익힌 계획서와 Unity MCP에 아티팩트를 더하고, 팀이 함께 정한 AI 공용 규칙 위에서 AI를 적극 활용했습니다.</dd></div>
+    <div><dt>맡은 것</dt><dd>핵심 구조(행운 · 해킹 흐름 · 게임 상태) · 감시 · 경보 시스템 · 해킹 미니게임 2종 · 2층 레벨 · 전 층 분위기 설정</dd></div>
+    <div><dt>팀원이 맡은 것</dt><dd>플레이어 · 적 AI · 1 · 3 · 4층 레벨 · 타이틀 씬 구성 · 분위기 리그 코드</dd></div>
+  </dl>
+  <div class="acts">
+    <a class="go" href="https://ru-vin.itch.io/destiny-overclock" target="_blank" rel="noopener">itch.io에서 플레이 ↗</a>
+  </div>
+  <span class="tagr">2층 오버뷰</span>
+</section>
+
+<!-- D2 · 2층 플레이 화면 -->
+<section class="reel">
+  <div class="pin">
+    <div class="eyebrow">2층 레벨 · 플레이 화면</div>
+    <div class="track">
+      <figure><img src="assets/img/do/2F_02_sneak_behind_P1.webp" alt="" loading="lazy"><figcaption><i class="mono">01</i>적의 감시 시야</figcaption></figure>
+      <figure><img src="assets/img/do/2F_05_hack_cctv_numberpath.webp" alt="" loading="lazy"><figcaption><i class="mono">02</i>CCTV 해킹</figcaption></figure>
+      <figure><img src="assets/img/do/2F_12_cctv_sweep_run.webp" alt="" loading="lazy"><figcaption><i class="mono">03</i>CCTV 시야를 피해 이동</figcaption></figure>
+      <figure><img src="assets/img/do/2F_14_run_past_stunned.webp" alt="" loading="lazy"><figcaption><i class="mono">04</i>해킹으로 행운을 빼앗긴 적은 기절합니다</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- D3 · 사례 01: 노출 게이지와 층 경보 (PPT 14장) -->
+<section class="intro head">
+  <div class="eyebrow">사례 01 <span class="sk">게임 시스템 개선</span><span class="sk">문제 해결</span></div>
+  <h2>발각을 한 번의 실패가 아니라 <u>회복할 수 있는 단계</u>로</h2>
+  <p>시야에 들어오는 즉시 게임 오버이던 감시를, 거리에 따라 차는 노출 게이지와 층 경보(경보 → 수색 → 평상)로 바꿨습니다. CCTV와 몬스터는 같은 방식으로 감시합니다.</p>
+</section>
+
+<section class="stage" style="height:420vh">
+  <div class="pin">
+    <div class="layer shot">
+      <img src="assets/img/do/exp_0_before.webp" alt="" loading="lazy">
+      <span class="tag k-game"><b>작업 전</b>게임 화면</span>
+      <p class="cap">보이면 즉시 게임 오버였습니다.</p>
+    </div>
+    <div class="layer shot">
+      <img src="assets/img/do/exp_1_half.webp" alt="" loading="lazy">
+      <span class="tag k-game"><b>게이지 0.5</b>게임 화면</span>
+      <p class="cap">시야에 들어오면 노출 게이지가 찹니다. 머리 위에 노란 ?와 반 찬 링이 뜹니다.</p>
+    </div>
+    <div class="layer shot">
+      <img src="assets/img/do/exp_2_full.webp" alt="" loading="lazy">
+      <span class="tag k-game"><b>게이지 가득</b>게임 화면</span>
+      <p class="cap">게이지가 가득 차면 빨간 !가 뜨고 층 경보가 울립니다.</p>
+    </div>
+    <div class="layer shot">
+      <img src="assets/img/do/exp_3_search.webp" alt="" loading="lazy">
+      <span class="tag k-game"><b>수색</b>게임 화면</span>
+      <p class="cap">적이 경보 위치로 와서 둘러봅니다. 시야 밖에 있으면 게이지가 줄어 회복할 수 있습니다.</p>
+    </div>
+    <div class="layer shot">
+      <img src="assets/img/do/exp_4_locked.webp" alt="" loading="lazy">
+      <span class="tag k-game"><b>출구 잠김</b>게임 화면</span>
+      <p class="cap">경보 · 수색 중에는 출구가 잠깁니다.</p>
+    </div>
+    <div class="rail r5"><span>작업 전</span><span>게이지 0.5</span><span>게이지 가득</span><span>수색</span><span>출구 잠김</span></div>
+  </div>
+</section>
+
+<section class="row flip wide-r">
+  <div class="media">
+    <pre class="code code-s"><b>public</b> <b>void</b> <i>Tick</i>(<b>bool</b> inSight, <b>float</b> distance01, <s>AlertLevel</s> level, <b>float</b> deltaTime)
+{
+    <b>if</b> (inSight)
+    {
+<mark>        <b>if</b> (level == AlertLevel.Alert || _settings == <b>null</b>)</mark>        {
+            Value = <s>1f</s>;
+            <b>return</b>;
+        }
+
+<mark>        <b>float</b> fillTime = _settings.<i>GetFillTime</i>(distance01);</mark><mark>        <b>if</b> (level == AlertLevel.Search) fillTime /= _settings.SearchMultiplier;</mark>        Value = fillTime &gt; <s>0f</s> ? <i>Clamp01</i>(Value + deltaTime / fillTime) : <s>1f</s>;
+        <b>return</b>;
+    }
+
+<mark>    Value = _settings != <b>null</b> ? <i>Clamp01</i>(Value - _settings.DecayPerSecond * deltaTime) : <s>0f</s>;</mark>}</pre>
+    <span class="tag k-code"><b>코드</b>Vision/ExposureGauge.cs · Tick</span>
+  </div>
+  <div class="txt">
+    <h3>순수 C# 클래스라 CCTV와 몬스터가 같은 식을 씁니다.</h3>
+    <ol class="steps">
+      <li><span><b>경보 중이면 즉시 가득</b>Alert 단계에서는 보이는 순간 게이지 1</span></li>
+      <li><span><b>거리별 채움 시간</b>멀수록 천천히 찬다 (설정 곡선)</span></li>
+      <li><span><b>수색 중에는 더 빨리</b>Search 단계는 채움 시간을 배율로 나눔</span></li>
+      <li><span><b>시야 밖이면 줄어든다</b>초당 감소량만큼 내려가 회복할 수 있다</span></li>
+    </ol>
+    <p class="sub">적 상태 머신은 팀원 코드라, 둘러보기와 경보 수신만 합의한 뒤 고쳤습니다.</p>
+  </div>
+</section>
+
+<section class="trio two">
+  <div>
+    <div class="eyebrow">측정으로 고친 떨림 · 둘러보기</div>
+    <div class="big fail">360<small>°/초</small></div>
+    <p class="cap">둘러보기가 ±60°를 초당 360°로 왕복하고 있었습니다. 사인파 스윕(최대 약 125°/초)으로 바꿨습니다.</p>
+  </div>
+  <div>
+    <div class="eyebrow">측정으로 고친 떨림 · 시야 부채꼴</div>
+    <div class="big fail">260<small>/376</small></div>
+    <p class="cap">부채꼴이 376프레임 중 260프레임 멈춰 있었고, 최대 12.4° 튀었습니다. 매 프레임 다시 그리게 했습니다.</p>
+  </div>
+</section>
+
+<!-- D4 · 협업: 주인 하나 + 접점 인터페이스 (PPT 22장) -->
+<section class="intro head">
+  <div class="eyebrow">팀 작업 구조 <span class="sk">협업</span><span class="sk">구조 설계</span></div>
+  <h2>행운과 시간은 <u>주인을 하나로</u>, 나머지는 인터페이스로 잇는다</h2>
+  <p>행운 값은 PlayerLuck, 숫자 판정은 LuckRules, 게임 상태와 Time.timeScale은 GameManager 하나만 바꿉니다. 적 · 기믹 · 미니게임은 인터페이스와 이벤트로만 이 셋에 닿게 해, 세 사람이 영역을 나눠 동시에 작업했습니다.</p>
+</section>
+
+<section class="row wide">
+  <div class="media">
+    <div class="own">
+      <div class="own-h">주인 <span>값을 바꾸는 곳은 여기 하나</span></div>
+      <div class="own-top">
+        <div><b>PlayerLuck</b><span>행운 값</span></div>
+        <div><b>LuckRules</b><span>숫자 판정</span></div>
+        <div><b>GameManager</b><span>게임 상태 · timeScale</span></div>
+      </div>
+      <div class="own-h">접점 <span>인터페이스와 이벤트로만 닿는다</span></div>
+      <div class="own-bot">
+        <div><b>적 · 감시</b><span>해킹 · 기절 · 스킬의 대상이 됨</span><i>IHackable · IStunnable · IOverclockStoppable</i></div>
+        <div><b>레벨 기믹</b><span>행운을 비용으로 작동</span><i>ILuckSpendable</i></div>
+        <div><b>해킹 미니게임</b><span>난이도를 받고 성공 여부만 돌려줌</span><i>IHackMinigame · IHackTierRange</i></div>
+        <div><b>UI</b><span>값이 바뀌면 알림을 받아 표시</span><i>이벤트 구독</i></div>
+      </div>
+    </div>
+  </div>
+  <div class="txt">
+    <div class="k">9일 동안<b>접점 3 → 7개</b></div>
+    <p>새 기능은 주인을 건드리지 않고 <b>접점 인터페이스를 더해</b> 붙였습니다.</p>
+    <ol class="tl">
+      <li><i>11-07</i><span><b>첫날 골격</b>IHackable · IHackMinigame · ILuckSpendable</span></li>
+      <li><i>11-09</i><span><b>몬스터 기절</b>IStunnable</span></li>
+      <li><i>11-11</i><span><b>낮은 엄폐로 시야 차단</b>ICoverOccupant</span></li>
+      <li><i>11-11</i><span><b>Q 오버클럭 스킬</b>IOverclockStoppable</span></li>
+      <li><i>11-13</i><span><b>해킹 난이도 범위</b>IHackTierRange</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="row flip wide-r">
+  <div class="media codes">
+    <pre class="code code-s"><b>public</b> <b>bool</b> <i>TrySpendOn</i>(<s>ILuckSpendable</s> target)
+{
+    <b>if</b> (target == <b>null</b> || !target.CanActivate) <b>return</b> <b>false</b>;
+
+    <b>int</b> cost = target.Cost;
+    <b>if</b> (_current &lt; cost) <b>return</b> <b>false</b>;
+
+<mark>    <i>SetValue</i>(_current - cost);</mark><mark>    target.<i>Activate</i>();</mark>    LuckSpent?.<i>Invoke</i>(target, cost);
+    <b>return</b> <b>true</b>;
+}</pre>
+    <span class="tag k-code"><b>코드</b>Luck/PlayerLuck.cs · TrySpendOn</span>
+    <pre class="code code-s"><b>public</b> <b>interface</b> <s>IHackMinigame</s>
+{
+<mark>    <b>void</b> <i>Begin</i>(<s>HackTier</s> tier, <s>Action</s>&lt;<b>bool</b>&gt; onFinished);</mark>    <b>void</b> <i>Cancel</i>();
+}</pre>
+    <span class="tag k-code"><b>코드</b>Contracts/IHackMinigame.cs (주석 생략)</span>
+  </div>
+  <div class="txt">
+    <h3>행운을 쓰는 길은 PlayerLuck 한 곳입니다.</h3>
+    <ol class="steps">
+      <li><span><b>차감은 여기서만 한다</b>행운 값을 줄이는 코드는 이 함수 하나</span></li>
+      <li><span><b>기믹은 효과만 낸다</b>ILuckSpendable은 비용과 효과만 알고, 행운 값은 바꾸지 않는다</span></li>
+      <li><span><b>미니게임은 성공 여부만</b>난이도를 받고 성공 여부만 돌려준다. 행운 값은 바꾸지 않는다</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- D4b · 팀과 공유: 아티팩트 24개 (PPT 25장) -->
+<section class="intro head">
+  <div class="eyebrow">팀과 공유 <span class="sk">새 기술 적용</span><span class="sk">협업</span></div>
+  <h2>AI가 반복해서 읽는 건 마크다운, <u>사람이 보는 건 아티팩트</u></h2>
+  <p>Claude가 만드는 공유 가능한 웹 페이지(아티팩트) 24개를 결정 · 확인 · 공유 용도로 나눠 썼습니다. 기준은 누가 몇 번 읽느냐였습니다. 사람이 보고 판단하는 시안 · 보고서 · 가이드는 아티팩트로 만들어 팀과 함께 보는 방식으로, 팀 작업의 효율성을 올렸습니다.</p>
+</section>
+
+<section class="trio art3">
+  <div>
+    <div class="eyebrow">결정 · 조작해 보는 청사진 · 시안</div>
+    <div class="big">10<small>개</small></div>
+    <p class="cap">탑뷰 청사진에서 플레이어를 움직여 적의 시야 · 순찰 · 경로 길이를 직접 테스트하며 2층 동선을 정했습니다.</p>
+    <img src="assets/img/do/009_layout_artifact.webp" alt="" loading="lazy">
+  </div>
+  <div>
+    <div class="eyebrow">확인 · 한 장으로 보는 확인 보고서</div>
+    <div class="big">6<small>개</small></div>
+    <p class="cap">같은 자리 · 같은 카메라로 찍은 지금 화면과 시안을 슬라이더로 겹쳐 보며 2층 분위기를 판단했습니다.</p>
+    <img src="assets/img/do/art_mood.webp" alt="" loading="lazy">
+  </div>
+  <div>
+    <div class="eyebrow">공유 · 팀에 넘기는 가이드 · 인수인계</div>
+    <div class="big pass">7<small>개</small></div>
+    <p class="cap">2층에서 찾은 조명 굽기 방식을 가이드로 넘겨, 다른 팀원이 맡은 층에 각자 적용했습니다. 버그 노트 1개도 같은 방식으로 넘겼습니다.</p>
+    <img src="assets/img/do/guide_03.webp" alt="" loading="lazy">
+  </div>
+</section>
+
+<section class="row">
+  <div class="media">
+    <img src="assets/img/do/art_luck_05_full.webp" alt="" loading="lazy">
+    <span class="tag k-art"><b>아티팩트</b>행운을 얻고 쓰는 흐름을 보여 준 미니게임 시안</span>
+  </div>
+  <div class="txt">
+    <h3>팀과는 설명 대신 시안 링크를 보내 상의했습니다.</h3>
+    <p>빼앗은 행운을 길을 여는 비용과 적을 멈추는 스킬, 두 갈래로 쓰는 흐름도 시안으로 보여 주고 팀 동의를 받았습니다.</p>
+    <p class="sub">AI를 쓰는 방식이 서로 꼬이지 않도록 팀이 함께 공용 규칙을 정했습니다. 첫날 저장소에 AGENTS.md를 두어 Claude Code와 Codex가 같은 규칙을 읽게 하고, 공용 문서와 개인 문서를 나눠 관리했습니다.</p>
+    <p class="sub">탑뷰 청사진에서는 안 보이던 통로 막힘은 Unity에서 고쳤습니다. 그 뒤로 동선 · 시야는 아티팩트로, 통로 폭 같은 실측은 Unity에서 확인했습니다. 결정의 정본은 계획서(마크다운)에 뒀습니다.</p>
+  </div>
+</section>
+
+<!-- D5 · 난관: 2층 조명 굽기 -->
+<section class="intro head">
+  <div class="eyebrow">난관과 해결 <span class="sk">문제 해결</span><span class="sk">협업</span></div>
+  <h2>2층 조명 굽기, 외부 모델의 라이트맵 UV 누락</h2>
+  <p>천장이 뚫린 2층에 실시간 해 그림자가 대각선으로 졌습니다. 웹에서 돌아가는 게임이라, 실시간 조명을 늘리는 대신 조명을 미리 굽기로 했습니다.</p>
+</section>
+
+<section class="trio">
+  <div>
+    <div class="big fail">32<small>/77</small></div>
+    <p class="cap">시험 삼아 구워 보니 77개 중 32개가 빠졌습니다. 라이트맵용 UV(uv2)가 없고 기본 UV도 겹친 외부 에셋 모델이 "invalid Mesh"로 제외된 것이었습니다.</p>
+    <figure class="paper"><div class="paper-h">Tasks/03_completed/027_floor02_light_bake_plan.md</div><p><b>결과:</b> 2026-11-12. 방 S와 북쪽 복도<u>…</u>의 렌더러 77개를 Static으로 지정하고 Baked 스포트 5개<u>…</u>로 구웠다. <u>…</u></p><mark><b>77개 중 32개가 굽기에서 빠졌다.</b></mark><p><code>ithappy</code> 모델(벽 Panel, 바닥 Tile, 소파·책상·바리케이드 등)은 라이트맵 UV(uv2)가 없고 uv0도 겹쳐서 "invalid Mesh"로 제외된다.</p></figure>
+  </div>
+  <div>
+    <div class="big">230</div>
+    <p class="cap">메모리 안에서만 임시 UV를 넣어 다시 구워 보고 원인을 확인한 뒤, 팀 동의를 받아 1·2·3층이 쓰는 모델 230개에 Generate Lightmap UVs를 켰습니다.</p>
+    <img src="assets/img/do/guide_02.webp" alt="" loading="lazy">
+  </div>
+  <div>
+    <div class="big pass">0</div>
+    <p class="cap">다시 확인하니 uv2 없는 모델은 0개, 바뀐 파일은 설정 파일(.meta) 230개뿐이었습니다.</p>
+    <img src="assets/img/do/2F_overview_02.webp" alt="" loading="lazy">
+  </div>
+</section>
+
+<section class="lit">
+  <div>
+    <p>2층은 <b>Baked 점 조명 81개·Light Probe 490개</b>로 "invalid Mesh" 경고 없이 구웠습니다.</p>
+    <p><b>굽는 방법은 가이드로 정리해 넘겼고,</b> 다른 층은 각 담당이 이 가이드를 보고 직접 구웠습니다.</p>
+  </div>
+  <figure>
+    <img src="assets/img/do/lighting_guide.webp" alt="층 조명 굽기 가이드" loading="lazy">
+    <figcaption class="tag k-art"><b>아티팩트</b>팀에 넘긴 층 조명 굽기 가이드</figcaption>
+  </figure>
+</section>
+
+<!-- D6 · AI 한 장면: 확인 13회 통과 → 첫 플레이 1분 (PPT 26장) -->
+<section class="stage" style="height:200vh">
+  <div class="pin">
+    <div class="layer duo">
+      <div>
+      <div class="eyebrow">AI 활용 <span class="sk">새 기술 적용</span></div>
+      <div class="big pass">13<small>번</small></div>
+      <div class="ticks" aria-hidden="true"></div>
+      <p class="cap">서브에이전트에 13번 맡긴 작업이 확인을 모두 통과했는데,</p>
+      </div>
+      <div class="float"><img src="assets/img/do/012_s4_00_topdown.webp" alt="" loading="lazy"><img src="assets/img/do/012_s5_01_lowcover_crouched_safe.webp" alt="" loading="lazy"><img src="assets/img/do/012_s6d_01_console_briefing.webp" alt="" loading="lazy"><img src="assets/img/do/012_s6f_01_console_room_f.webp" alt="" loading="lazy"></div>
+    </div>
+    <div class="layer duo">
+      <div>
+      <div class="eyebrow">AI 활용 <span class="sk">새 기술 적용</span></div>
+      <div class="big fail">1<small>분</small></div>
+      <p class="cap">처음 직접 플레이한 1분 안에, 화면이 시작 지점 벽에 고정된 걸 발견했습니다.</p>
+      </div>
+      <div class="float"><figure class="paper"><div class="paper-h">Notes/012_floor02_build/subagent_log.md</div><h5>22 · 위임 #5~#12</h5><p>서브들이 캡처용 <code>_CaptureCam</code>(DontSave)을 지우지 않아 Editor 메모리에 4개 남음. 씬 파일에는 없지만 깊이 0이라 <code>Main Camera</code>(-1)를 덮어,</p><mark>사용자 직접 플레이 때 화면이 시작 지점 벽에 고정된 것처럼 보임.</mark><p>서브 보고는 모두 "임시 카메라 삭제"였음</p></figure></div>
+    </div>
+  </div>
+</section>
+
+<section class="row">
+  <div class="media">
+    <div class="shots">
+      <figure><img src="assets/img/do/012_s2_00_topdown.webp" alt="" loading="lazy"></figure>
+      <figure><img src="assets/img/do/012_s3b_01_hud_overlay.webp" alt="" loading="lazy"></figure>
+      <figure><img src="assets/img/do/012_s4_00_topdown.webp" alt="" loading="lazy"></figure>
+      <figure><img src="assets/img/do/012_s5_01_lowcover_crouched_safe.webp" alt="" loading="lazy"></figure>
+      <figure><img src="assets/img/do/012_s6a_01_monster_stunned.webp" alt="" loading="lazy"></figure>
+      <figure><img src="assets/img/do/012_s6c_01_turret_drone.webp" alt="" loading="lazy"></figure>
+      <figure><img src="assets/img/do/012_s6d_01_console_briefing.webp" alt="" loading="lazy"></figure>
+      <figure><img src="assets/img/do/012_s6f_01_console_room_f.webp" alt="" loading="lazy"></figure>
+      <figure><img src="assets/img/do/012_s7_00_topdown.webp" alt="" loading="lazy"></figure>
+    </div>
+    <p class="tag k-ed"><b>확인 캡처</b>서브에이전트가 2층 본 씬을 단계마다 구성하며 남긴 화면</p>
+  </div>
+  <div class="txt">
+    <div class="k">원인<b>남아 있던 카메라 4개</b></div>
+    <p><b>캡처용 임시 카메라 4개가 에디터 메모리에 남아 있었습니다.</b> 씬 파일에는 없어서, 저장소만 보는 확인으로는 잡을 수 없었습니다.</p>
+    <div class="k">바꾼 것<b>확인 항목</b></div>
+    <p>확인 항목에 <b>에디터 상태와 직접 플레이 지점</b>을 넣었고, 에디터를 오래 붙잡는 작업은 위임에서 뺐습니다. 바꾼 뒤 첫 작업에서 직접 플레이가 보고에 없던 문제 2건(벽 안 좌표, 잘못 넣은 키)을 찾았습니다.</p>
+  </div>
+</section>
+
+<!-- D7 · 마무리 -->
+<section class="end">
+  <div class="floors">
+    <figure><img src="assets/img/do/1F_overview_01.webp" alt="" loading="lazy"><figcaption>1층 · 분위기 설정</figcaption></figure>
+    <figure class="me"><img src="assets/img/do/2F_overview_01_s.webp" alt="" loading="lazy"><figcaption>2층 · 레벨 구성과 분위기 설정</figcaption></figure>
+    <figure><img src="assets/img/do/3F_overview_01.webp" alt="" loading="lazy"><figcaption>3층 · 분위기 설정</figcaption></figure>
+    <figure><img src="assets/img/do/4F_overview_01.webp" alt="" loading="lazy"><figcaption>4층 · 분위기 설정</figcaption></figure>
+  </div>
+  <div class="acts">
+    <span>Destiny Overclock</span>
+    <a class="go" href="https://ru-vin.itch.io/destiny-overclock" target="_blank" rel="noopener">itch.io에서 플레이 ↗</a>
+  </div>
+  <a class="nextp" href="#etc">
+    <div class="eyebrow">이어서</div>
+    <h2>그 밖의 프로젝트 →</h2>
+  </a>
+</section>
+
+<!-- 그 밖의 프로젝트 (PPT 29·30장) -->
+<section class="intro head" id="etc">
+  <div class="eyebrow">그 밖의 프로젝트</div>
+  <h2>SinkPoint</h2>
+  <p>OpenAI Game Builders Seoul 2026 온라인 예선 제출작 · Unity 3D 액션 어드벤처 · 2026.08.22 – 08.26 (5일) · 2인 팀 · Unity 6.3 (C#, URP), WebGL</p>
+  <p class="etc-who"><b>목적</b>5일 안에 플레이할 수 있는 결과물을 내기 위해, Unity MCP를 처음 도입해 에디터 작업까지 맡기고 직접 플레이하며 검증하는 데 집중했습니다.</p>
+  <p class="etc-who"><b>담당</b>플레이어 · 카메라 · 사격 연동 · 방향성 중력 · 무중력 · 그래플</p>
+</section>
+
+<section class="row">
+  <div class="media">
+    <img src="assets/img/sp/sp_shift.webp" alt="" loading="lazy">
+    <span class="tag k-game"><b>게임 화면</b>중력 방향이 바뀌는 구간</span>
+  </div>
+  <div class="txt">
+    <div class="eyebrow">대표 기술 하나 <span class="sk">수학</span></div>
+    <h3>중력이 바뀌면 카메라와 플레이어가 함께 돈다</h3>
+    <p class="etc-p"><i>문제</i>플레이어와 카메라가 서로 다른 기준 Up을 써서, 중력이 바뀌면 화면과 몸이 어긋났습니다.</p>
+    <p class="etc-p"><i>해법</i>보이는 Up 하나를 <b>0.5초 동안 SmoothStep 곡선으로 축 회전</b>시키고, 몸과 카메라가 이 값만 읽게 했습니다.</p>
+  </div>
+</section>
+
+<section class="row flip wide-r">
+  <div class="media">
+    <pre class="code code-s"><b>float</b> easedProgress = Mathf.<i>SmoothStep</i>(<s>0f</s>, <s>1f</s>, TransitionProgress);
+<mark>PresentationUp = (</mark><mark>    Quaternion.<i>AngleAxis</i>(transitionAngle * easedProgress, transitionAxis)</mark><mark>    * transitionStartUp).normalized;</mark><u>…</u>
+<s>Vector3</s> <i>GetTransitionAxis</i>(<s>Vector3</s> startUp, <s>Vector3</s> targetUp)
+{
+<mark>    <s>Vector3</s> axis = Vector3.<i>Cross</i>(startUp, targetUp);</mark>    <b>if</b> (axis.sqrMagnitude &gt;= Mathf.Epsilon)
+        <b>return</b> axis.normalized;
+
+    <s>Vector3</s> fallback = Mathf.<i>Abs</i>(Vector3.<i>Dot</i>(startUp, Vector3.forward)) &lt; <s>0.99f</s>
+        ? Vector3.forward : Vector3.right;
+    <b>return</b> Vector3.<i>Cross</i>(startUp, fallback).normalized;
+}</pre>
+    <span class="tag k-code"><b>코드</b>하나의 Up 방향을 축 둘레로 돌립니다</span>
+  </div>
+  <div class="txt">
+    <ol class="steps">
+      <li><span><b>0.5초 SmoothStep</b>시작과 끝은 천천히 돈다</span></li>
+      <li><span><b>축 둘레 회전</b>축 = 시작 Up × 목표 Up (외적)</span></li>
+      <li><span><b>정반대 폴백</b>180°면 외적이 0이라 임의의 수직 축</span></li>
+    </ol>
+    <p class="sub"><b>AI</b> · Unity MCP로 씬 · Prefab · Play Mode까지 에이전트에게 맡기고, 완료는 직접 Play Mode로 확인했습니다.</p>
+    <p class="etc-links"><a href="https://www.youtube.com/watch?v=ACLhexzNJnM" target="_blank" rel="noopener">영상 ↗</a><a href="https://ziofs1031.itch.io/sink" target="_blank" rel="noopener">itch.io에서 플레이 ↗</a></p>
+  </div>
+</section>
+
+<section class="trio two etc-two">
+  <div>
+    <img src="assets/img/etc/cotl.webp" alt="Cult of the Lamb 모작" loading="lazy">
+    <div class="eyebrow">2025.11 – 12 · 약 6주 · 4인 팀 · C++ · DirectX 9</div>
+    <h3>Cult of the Lamb 모작</h3>
+    <p class="cap">빌보드와 방향별 스프라이트로 2D를 3D 공간에 올린 2.5D 팀 프로젝트</p>
+    <p class="etc-who"><b>담당</b>플레이어 구조 · 전투, 마을 건축, NPC 행동 · 마을 콘텐츠, 카메라 제어</p>
+    <p class="etc-links"><a href="https://youtu.be/vYB8a4q0KrA" target="_blank" rel="noopener">영상 ↗</a></p>
+  </div>
+  <div>
+    <img src="assets/img/etc/skul.webp" alt="Skul 모작" loading="lazy">
+    <div class="eyebrow">2025.09 – 10 · 약 4주 · 개인 · C++ · DirectX 11</div>
+    <h3>Skul 모작</h3>
+    <p class="cap">WinAPI 2D와 DirectX 11 지식을 바탕으로 만든 2D 액션 게임</p>
+    <p class="etc-who"><b>담당</b>렌더링 기반, 플레이어 상태, 충돌 판정, 보스 파츠 · 페이즈, 씬 흐름</p>
+    <p class="etc-links"><a href="https://youtu.be/yCKlWQMpwc0" target="_blank" rel="noopener">영상 ↗</a></p>
+  </div>
+</section>
+
+<!-- AI 활용 · 새 기술 적용 (PPT 23장) -->
+<section class="intro head" id="ai">
+  <div class="eyebrow">AI 활용 <span class="sk">새 기술 적용</span></div>
+  <h2>설계 · 판단 · 검증은 내가, <u>작성은 AI와 함께</u></h2>
+  <p>프로젝트마다 목적과 기간이 달라서, AI를 쓰는 방식도 그에 맞춰 새로 정했고, 앞 프로젝트에서 익힌 방식을 다음에 한 단계씩 넓혀 갔습니다. 어느 쪽이든 무엇을 만들지 정하고 결과를 확인하는 일은 제가 맡았습니다.</p>
+</section>
+
+<section class="ai4">
+  <div>
+    <i class="mono">2026.01 – 04 · Codex</i>
+    <h3>Gunfire Reborn</h3>
+    <p class="ai-goal">DirectX 11 학습 · 프레임워크 구성</p>
+    <p class="ai-how">계획서와 페어 프로그래밍</p>
+    <dl><dt>AI</dt><dd>계획서 작성, 에디터 구축 같은 자잘한 반복 작업</dd><dt>나</dt><dd>핵심 구현은 직접, AI에게는 계획서와 반복 작업만</dd></dl>
+    <p class="ai-num"><b>100</b> 완료 문서 · <b>26</b> 폐기 문서</p>
+  </div>
+  <div>
+    <i class="mono">2026.05 – 07 · Codex</i>
+    <h3>Expedition 33</h3>
+    <p class="ai-goal">팀 프로젝트의 완성도</p>
+    <p class="ai-how">안전장치와 팀 규칙</p>
+    <dl><dt>AI</dt><dd>팀 코드 규칙과 hook 안에서 구현</dd><dt>나</dt><dd>프롬프트 · hook 개선, 팀 코드 규칙 · 구조 문서, 계획서 반려</dd></dl>
+    <p class="ai-num"><b>hook</b>이 거부한 것 · 파괴적 git 명령, 데이터 테이블 직접 수정, 원본을 읽지 않은 셰이더 수정</p>
+  </div>
+  <div>
+    <i class="mono">2026.08 · 5일 · Codex · Unity MCP</i>
+    <h3>SinkPoint</h3>
+    <p class="ai-goal">5일 안에 플레이할 수 있는 결과물</p>
+    <p class="ai-how">에디터까지 맡기고 검증에 집중</p>
+    <dl><dt>AI</dt><dd>Unity MCP를 처음 도입해 씬 · Prefab · Play Mode 작업까지</dd><dt>나</dt><dd>직접 플레이 검증과 디테일 검수, 짧은 기간 안의 방향과 퀄리티</dd></dl>
+    <p class="ai-num"><b>142</b> MCP 제공 툴 · <b>33</b> 사용 기록(건)</p>
+  </div>
+  <div>
+    <i class="mono">2026.11 · 9일 잼 · Claude Code · Unity MCP</i>
+    <h3>Destiny Overclock</h3>
+    <p class="ai-goal">9일 잼, 밀도 높은 3인 팀 작업</p>
+    <p class="ai-how">팀이 함께 보는 AI 결과물</p>
+    <dl><dt>AI</dt><dd>기획서 · 청사진 · 보고서를 아티팩트로, 구현은 서브에이전트에 단계별로</dd><dt>나</dt><dd>팀의 AI 사용 방식 문서화, 기획 방향과 협업</dd></dl>
+    <p class="ai-num"><b>24</b> 아티팩트 · <b>35</b> 계획서 · <b>44</b> 단계별 위임</p>
+  </div>
+</section>
+
+<!-- 맺음 (PPT 32장) -->
+<section class="fin">
+  <h2>계속 나아지고,<br>기대하게 만드는 개발자가 되겠습니다.</h2>
+  <p><b>김석호</b><a href="mailto:ksh66020@gmail.com">ksh66020@gmail.com</a><a href="https://github.com/shKim-33" target="_blank" rel="noopener">github.com/shKim-33 ↗</a></p>
+</section>
+
+<div class="next"><span>김석호 · 게임 클라이언트 프로그래머</span><a class="mono" href="#top">맨 위로 ↑</a></div>
+
+<script>
+(function(){
+  // 근거 이미지: 3장 이상이면 두 줄 흐름으로, 아니면 정렬된 묶음으로
+  [].forEach.call(document.querySelectorAll('.float'),function(f){
+    var kids=[].slice.call(f.children);
+    if(kids.length<3){f.classList.add('few');return}
+    f.classList.add('roll');
+    [0,1].forEach(function(c){
+      var col=document.createElement('div');col.className='col';
+      var order=c?kids.slice(2).concat(kids.slice(0,2)):kids;
+      [0,1].forEach(function(){order.forEach(function(k){var n=k.cloneNode(true);n.removeAttribute('loading');col.appendChild(n)})});
+      f.appendChild(col);
+    });
+    kids.forEach(function(k){f.removeChild(k)});
+  });
+
+  var stages=[].slice.call(document.querySelectorAll('.stage')).map(function(el){
+    var ticks=el.querySelector('.ticks');
+    if(ticks)for(var i=0;i<13;i++)ticks.appendChild(document.createElement('span'));
+    return {el:el,layers:el.querySelectorAll('.layer'),rail:el.querySelectorAll('.rail span'),ticks:ticks?ticks.children:null};
+  });
+  var reels=[].slice.call(document.querySelectorAll('.reel')).map(function(el){return {el:el,track:el.querySelector('.track')}});
+  function prog(el){var r=el.getBoundingClientRect();return Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)))}
+  function onScroll(){
+    stages.forEach(function(s){
+      var n=s.layers.length,p=prog(s.el),k=Math.min(n-1,Math.floor(p*n));
+      for(var i=0;i<n;i++)s.layers[i].classList.toggle('on',i===k);
+      for(i=0;i<s.rail.length;i++)s.rail[i].classList.toggle('on',i===k);
+      if(s.ticks){var lit=Math.min(13,Math.floor(p*n/0.8*13));for(i=0;i<13;i++)s.ticks[i].classList.toggle('on',i<lit)}
+    });
+    reels.forEach(function(r){r.track.style.transform='translateX('+(-(r.track.scrollWidth-innerWidth)*prog(r.el))+'px)'});
+  }
+  addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onScroll();
+
+  var steps=[].slice.call(document.querySelectorAll('.step'));
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting)return;
+      steps.forEach(function(s){s.classList.toggle('on',s===e.target)});
+    });
+  },{rootMargin:'-45% 0px -45% 0px'});
+  steps.forEach(function(s){io.observe(s)});
+
+  // 첫 화면 배경: 영상 → 정지 화면 → 정지 화면 → 영상을 차례로 교차 전환
+  var reel=document.querySelector('.hero-reel');
+  if(reel&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
+    var items=[].slice.call(reel.querySelectorAll('video,img')),cap=reel.querySelector('.hero-cap'),cur=0,timer=0,live=false,seen=false;
+    function next(){go((cur+1)%items.length)}
+    function run(fresh){
+      clearTimeout(timer);if(!live)return;
+      var el=items[cur];
+      if(el.tagName!=='VIDEO'){timer=setTimeout(next,4500);return}
+      if(fresh)el.currentTime=0;
+      timer=setTimeout(next,16000);
+      var p=el.play();
+      if(p&&p.catch)p.catch(function(){clearTimeout(timer);timer=setTimeout(next,4500)});
+    }
+    function go(i){
+      var prev=items[cur];cur=i;
+      items.forEach(function(el,k){el.classList.toggle('on',k===i)});
+      cap.textContent=items[i].getAttribute('data-cap');
+      if(prev!==items[i]&&prev.tagName==='VIDEO')setTimeout(function(){if(items[cur]!==prev)prev.pause()},1300);
+      var after=items[(i+1)%items.length];if(after.tagName==='VIDEO')after.preload='auto';
+      run(true);
+    }
+    items.forEach(function(el){if(el.tagName==='VIDEO')el.addEventListener('ended',function(){if(items[cur]===el)next()})});
+    function sync(vis){
+      live=vis&&!document.hidden;
+      if(live){run(!seen);seen=true}
+      else{clearTimeout(timer);if(items[cur].tagName==='VIDEO')items[cur].pause()}
+    }
+    var heroVis=true;
+    new IntersectionObserver(function(es){heroVis=es[0].isIntersecting;sync(heroVis)}).observe(reel);
+    document.addEventListener('visibilitychange',function(){sync(heroVis)});
+  }
+})();
+</script>
+<script>
+(function(){
+  // 본문 영상(data-auto): 화면에 보이고, 고정 무대 안이면 자기 층이 켜졌을 때만 재생
+  var vids=[].slice.call(document.querySelectorAll('video[data-auto]'));
+  if(!vids.length||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  function sync(){
+    vids.forEach(function(v){
+      var layer=v.closest('.layer'),ok=v._vis&&!document.hidden&&(!layer||layer.classList.contains('on'));
+      if(ok){if(v.paused){var p=v.play();if(p&&p.catch)p.catch(function(){})}}
+      else if(!v.paused)v.pause();
+    });
+  }
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){e.target._vis=e.isIntersecting});sync()},{threshold:.2});
+  vids.forEach(function(v){io.observe(v)});
+  addEventListener('scroll',sync,{passive:true});
+  document.addEventListener('visibilitychange',sync);
+})();
+</script>
+<script data-part="ex">
+(function(){
+  // E8 맞바꿈: 진행도 0~0.25 A만, 0.25~0.75 경계선 이동, 0.75 이후 B만. 반을 넘으면 글을 B용으로.
+  var cuts=[].slice.call(document.querySelectorAll('[data-p="ex"] .ex-scroll')).map(function(sw){
+    return {stage:sw.closest('.stage'),b:sw.querySelector('.ex-b'),line:sw.querySelector('.ex-line'),layer:sw.closest('.layer')};
+  });
+  if(!cuts.length)return;
+  function prog(el){var r=el.getBoundingClientRect();return Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)))}
+  function onScroll(){
+    cuts.forEach(function(c){
+      var r=Math.min(1,Math.max(0,(prog(c.stage)-0.25)/0.5));
+      c.b.style.clipPath='inset(0 '+((1-r)*100)+'% 0 0)';
+      c.line.style.left=(r*100)+'%';
+      c.line.style.opacity=(r>0&&r<1)?1:0;
+      c.layer.classList.toggle('ex-past',r>=0.5);
+    });
+  }
+  addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onScroll();
+})();
+</script>
+<script data-part="ex">
+(function(){
+  // 사례 02: 고정 구간의 스크롤 진행도를 단계 번호(0~3)로 옮긴다
+  var slice=document.querySelector('[data-p="ex"] .ex-slice'),stage=slice&&slice.closest('.stage');
+  function prog(el){var r=el.getBoundingClientRect();return Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)))}
+  function upd(){if(slice){var p=prog(stage);slice.setAttribute('data-ex-step',p<.18?0:p<.45?1:p<.72?2:3)}}
+  addEventListener('scroll',upd,{passive:true});addEventListener('resize',upd);upd();
+
+  // 난관: 같은 6점을 직선으로 이은 것과 Catmull-Rom으로 구간마다 나눠 채운 것(6 → 22점)
+  var P=[[22,172],[58,84],[132,34],[226,40],[300,96],[338,178]],STEPS=[3,5,5,5,3],NS='http://www.w3.org/2000/svg';
+  function cr(a,b,c,d,t){var t2=t*t,t3=t2*t;return .5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3)}
+  function build(svg,smooth){
+    var pts=[{p:P[0],raw:true}];
+    for(var i=0;i+1<P.length;i++){
+      var p0=P[i>0?i-1:i],p1=P[i],p2=P[i+1],p3=P[Math.min(i+2,P.length-1)],n=smooth?STEPS[i]:1;
+      for(var s=1;s<=n;s++){var t=s/n;pts.push({p:[cr(p0[0],p1[0],p2[0],p3[0],t),cr(p0[1],p1[1],p2[1],p3[1],t)],raw:s===n})}
+    }
+    var line=document.createElementNS(NS,'polyline');
+    line.setAttribute('points',pts.map(function(q){return q.p[0].toFixed(1)+','+q.p[1].toFixed(1)}).join(' '));
+    svg.appendChild(line);
+    pts.forEach(function(q){
+      var c=document.createElementNS(NS,'circle');
+      c.setAttribute('cx',q.p[0].toFixed(1));c.setAttribute('cy',q.p[1].toFixed(1));c.setAttribute('r',q.raw?5:3.2);
+      c.setAttribute('class',q.raw?'ex-dot':'ex-dot-new');svg.appendChild(c);
+    });
+  }
+  [].forEach.call(document.querySelectorAll('[data-p="ex"] [data-ex-curve]'),function(svg){build(svg,svg.getAttribute('data-ex-curve')==='smooth')});
+})();
+</script>
+<script data-part="gf">
+(function(){
+  // 층 쌓기(G3): 한 층 안의 스크롤 진행도를 단계 번호로 옮긴다
+  var build=document.querySelectorAll('[data-p="gf"] .gf-build')[0];
+  var buildStage=build&&build.closest('.stage');
+  function prog(el){var r=el.getBoundingClientRect();return Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)))}
+  function upd(){
+    if(build){var p=prog(buildStage);build.setAttribute('data-gf-step',p<.05?0:p<.38?1:p<.7?2:3)}
+  }
+  addEventListener('scroll',upd,{passive:true});addEventListener('resize',upd);upd();
+})();
+</script>
+</body>
+</html>
