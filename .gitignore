@@ -1,0 +1,6 @@
+# 작업용 파일 (공개하지 않음). 공개 페이지는 draft-v3.html을 합친 뒤 index.html로 복사한다.
+.claude/
+parts/
+parts-v3/
+preview-*.html
+draft-*.html

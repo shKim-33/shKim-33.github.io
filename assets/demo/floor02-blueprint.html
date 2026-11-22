@@ -1,0 +1,1089 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Floor02 자동 시연</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0a1f3a; --paper: #0e2a4d; --sheet: #133663; --line: #2a5487; --grid: #4b7bb3;
+  --chalk: #d6e7ff; --ink: #eaf2ff; --muted: #9fb7d8; --accent: #6fd3ff;
+  --monster: #ff5a4e; --turret: #ffa53a; --drone: #c9a2ff; --cctv: #f2c14e;
+  --player: #3fe0c5; --door: #57d68d; --laser: #ff6fcf; --lure: #d7f36a; --switch: #fff27a;
+  --f-body: "IBM Plex Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body { background: var(--paper); color: var(--ink); font-family: var(--f-body);
+  display: flex; align-items: center; justify-content: center; }
+/* 캔버스 비율 66:42 (64+2*PAD, 40+2*PAD). 가로를 iframe 폭에 맞추되 높이가 넘치면 높이에 맞춘다 */
+.stage { position: relative; width: min(100vw, calc(100vh * 66 / 42)); }
+canvas { width: 100%; display: block; pointer-events: none; outline: none; cursor: default; user-select: none; -webkit-user-select: none; }
+.hud { position: absolute; left: 1.2%; bottom: 2%; display: flex; align-items: center; gap: 1.2em; max-width: 96%;
+  font: 600 clamp(9px, 1.45vw, 13px)/1.2 var(--f-mono); color: var(--muted); letter-spacing: .02em;
+  background: color-mix(in srgb, var(--bg) 78%, transparent); border: 1px solid var(--line); border-radius: 3px;
+  padding: .35em .7em; pointer-events: none; white-space: nowrap; overflow: hidden; }
+.hud b { color: var(--door); font-weight: 600; font-variant-numeric: tabular-nums; }
+.hud .meter { display: inline-block; vertical-align: middle; width: 5em; height: .6em; margin-left: .5em; border: 1px solid var(--line); border-radius: 3px; background: var(--sheet); overflow: hidden; }
+.hud .meter > i { display: block; height: 100%; width: 0; background: var(--cctv); }
+.hud .last { color: var(--ink); overflow: hidden; text-overflow: ellipsis; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <canvas id="map" aria-label="Floor02 확장 청사진 자동 시연: 순찰하는 적과 CCTV 사이로 플레이어가 스스로 출구까지 걷는다" role="img"></canvas>
+  <div class="hud" aria-hidden="true">
+    <span>행운 <b id="hud-luck">10</b></span>
+    <span>노출<span class="meter"><i id="hud-expo"></i></span></span>
+    <span class="last" id="hud-log"></span>
+  </div>
+</div>
+
+<!-- 원본 스크립트가 id로 읽고 쓰는 요소들의 숨김 껍데기 (화면에 보이지 않음) -->
+<div id="stubs" style="display:none" aria-hidden="true">
+  <b id="f-mon"></b><b id="f-dr"></b>
+  <span id="layout"><button data-v="sandbox"></button><button data-v="expand"></button></span>
+  <span id="corr"><button data-v="now"></button><button data-v="A"></button><button data-v="B"></button></span>
+  <span id="vis"><button data-v="old"></button><button data-v="new"></button></span>
+  <button id="play"></button>
+  <span id="speed"><button data-v="1"></button><button data-v="2"></button><button data-v="4"></button></span>
+  <button id="reset"></button>
+  <input type="checkbox" id="t-vision"><input type="checkbox" id="t-routes"><input type="checkbox" id="t-noise"><input type="checkbox" id="t-links"><input type="checkbox" id="t-new">
+  <span id="luck"></span><b id="det"></b><span id="modeinfo"></span>
+  <span id="mode"><button data-v="walk"></button><button data-v="run"></button><button data-v="sneak"></button><button data-v="cover"></button></span>
+  <i id="expo"></i>
+  <button id="actE"></button><small id="actEt"></small>
+  <button id="actF"></button><small id="actFt"></small>
+  <div id="status"></div>
+  <div id="insp"></div>
+  <ul id="log"></ul>
+  <table>
+    <tbody id="routes"></tbody>
+    <tbody id="counts"></tbody>
+    <tbody id="coords"></tbody>
+    <tbody id="ocoords"></tbody>
+  </table>
+  <div id="routeNote"></div>
+  <ul id="check"></ul>
+  <ul id="fixes"></ul>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const D2R = Math.PI / 180;
+  const VW = 64, VH = 40, PAD = 1.0;
+  const START = [7, 3.5];
+  const R = (x0, z0, x1, z1) => ({ x0, z0, x1, z1 });
+  // 데이터 각도는 수학 각도(+X에서 반시계). 표시는 Unity Y 회전(+Z에서 시계)으로 바꾼다
+  const yaw = a => ((90 - a) % 360 + 360) % 360;
+
+  // ---------- 도면 데이터 (시안 좌표, m) ----------
+  const ROOMS_BASE = [
+    { id: 'S', name: 'S 시작 전실', ...R(2, 1, 10, 7) },
+    { id: 'A', name: 'A 갈림길', ...R(3, 12, 11, 19) },
+    { id: 'B', name: 'B 중앙 홀', ...R(14, 26, 30, 37) },
+    { id: 'C', name: 'C 갈림길', ...R(19, 9, 28, 19) },
+    { id: 'D', name: 'D 서버 랙', ...R(33, 25, 46, 37) },
+    { id: 'E', name: 'E 발전기', ...R(33, 2, 46, 12) },
+  ];
+  const CORR_BASE = [
+    { id: 'S_A', ...R(5.4, 7, 8.6, 12) }, { id: 'A_B_1', ...R(5.4, 19, 8.6, 32.6) }, { id: 'A_B_2', ...R(5.4, 29.4, 14, 32.6) },
+    { id: 'B_C', ...R(22.4, 19, 25.6, 26) }, { id: 'C_A', ...R(11, 14.8, 19, 17.2) },
+    { id: 'D_E', ...R(42.6, 12, 45.8, 25) }, { id: 'C_E_1', ...R(21, 4, 23.4, 9) }, { id: 'C_E_2', ...R(21, 4, 33, 6.4) },
+    { id: '지름길', ...R(28, 9.6, 33, 12) },
+  ];
+  const HIGH_BASE = [R(35, 29.5, 43, 30.5), R(35, 32.5, 43, 33.5), R(35, 35.3, 43, 36.2), R(38, 6.6, 41.5, 9.4)];
+  const CIRC_BASE = [{ x: 22, z: 33.5, r: 1.6 }];
+
+  const TYPE = {
+    monster: { fov: 90, range: 8, speed: 2, hear: 1, luck: 15, label: '몬스터' },
+    turret: { fov: 40, range: 12, speed: 0, hear: 0, luck: 15, label: '고정 터렛' },
+    drone: { fov: 100, range: 7, speed: 2.5, hear: 1, luck: 10, label: '순찰 드론' },
+  };
+
+  const LAYOUTS = {
+    sandbox: {
+      name: '샌드박스', W: 48,
+      rooms: [...ROOMS_BASE, { id: 'X', name: '출구', exit: true, ...R(46, 5.4, 47.6, 8.6) }],
+      corrs: [...CORR_BASE, { id: 'C_D_1', ...R(28, 15.6, 39.2, 18) }, { id: 'C_D_2', ...R(36.8, 18, 39.2, 25) }],
+      ghost: [{ name: 'F 제어실 (확장 예정)', ...R(50, 25, 62, 37) }, { name: 'G 물류 구역 (확장 예정)', ...R(50, 2, 62, 14) }],
+      high: HIGH_BASE, circ: CIRC_BASE, low: [],
+      barriers: [
+        { id: 'door1', type: 'door', name: '문-1', x: 30.5, z0: 9.6, z1: 12, cost: 3, why: 'C→E 지름길. 행운 3으로 B·D를 모두 건너뛴다.' },
+        { id: 'laser1', type: 'laser', name: '레이저-1', x: 34.5, z0: 15.6, z1: 18, cost: 3, why: 'C→D 복도. 끄면 C에서 D로 바로 간다.' },
+      ],
+      cctvs: [
+        { id: 'CCTV-1', pos: [19.4, 18.5], base: 250, why: 'C 갈림길 북서쪽. Unity 방향 200°(남남서)로 C 서쪽 절반과 C_A 입구 쪽을 훑는다.' },
+        { id: 'CCTV-2', pos: [33.5, 25.5], base: 45, why: 'D 입구. 009에서 G1과 시야가 겹친다고 적어 둔 자리.' },
+      ],
+      enemies: [
+        { id: 'P1', type: 'monster', behav: 'patrol', mode: 'loop', pts: [[7, 16], [7, 31], [24, 31], [24, 16], [12, 16]], start: 2, why: '고리 1(A–B–C)을 돈다. 시작 전실에서 처음 만나는 감시자.' },
+        { id: 'P2', type: 'monster', behav: 'patrol', mode: 'pingpong', pts: [[39, 31], [44.2, 31], [44.2, 4], [36, 4]], start: 0, why: 'D와 E를 D_E 복도로 오간다.' },
+        { id: 'F1', type: 'monster', behav: 'free', area: [15, 27, 29, 36], pos: [17, 28], why: 'B 중앙 홀 안에서 임의 지점을 돈다. (실제 씬에서는 경로가 없어 제자리 경비. 여기서는 영역 순찰로 그림)' },
+        { id: 'G1', type: 'monster', behav: 'stationary', pos: [41, 27.5], heading: 250, why: 'D 입구를 지킨다. CCTV-2와 시야가 겹친다.' },
+      ],
+      lures: [], switches: [],
+      exit: R(46, 5.4, 47.6, 8.6),
+      combos: [
+        { id: 'none', name: '기믹 없음', open: [] },
+        { id: 'd1', name: '문-1', open: ['door1'] },
+        { id: 'l1', name: '레이저-1', open: ['laser1'] },
+        { id: 'all', name: '전부', open: ['door1', 'laser1'] },
+      ],
+      target: [90, 120],
+    },
+    expand: {
+      name: '확장안', W: 64,
+      rooms: [...ROOMS_BASE,
+        { id: 'F', name: 'F 제어실', isNew: true, ...R(50, 25, 62, 37) },
+        { id: 'G', name: 'G 물류 구역', isNew: true, ...R(50, 2, 62, 14) },
+        { id: 'X', name: '출구', exit: true, isNew: true, ...R(62, 5.4, 63.6, 8.6) }],
+      corrs: [...CORR_BASE,
+        { id: 'C_D_1', moved: true, ...R(28, 16.6, 39.2, 19) }, { id: 'C_D_2', moved: true, ...R(36.8, 19, 39.2, 25) },
+        { id: 'B_D', isNew: true, ...R(30, 33, 33, 35.4) },
+        { id: 'D_F', isNew: true, ...R(46, 30.4, 50, 33.6) },
+        { id: 'E_G', isNew: true, ...R(46, 5.4, 50, 8.6) },
+        { id: 'F_G', isNew: true, ...R(55.6, 14, 58, 25) }],
+      ghost: [],
+      high: [...HIGH_BASE, R(53, 32.6, 59, 34), R(53, 9.4, 57.5, 10.4), R(26.6, 28.6, 27.8, 31)],
+      circ: CIRC_BASE,
+      low: [R(8.8, 14, 10.4, 14.8), R(16.5, 33.5, 18, 34.3), R(24.4, 12.2, 26, 13), R(36.4, 9.8, 37.8, 10.6), R(54.5, 35.2, 56, 36), R(55.2, 7.2, 56.6, 8), R(50.8, 28.6, 52, 29.4)],
+      barriers: [
+        { id: 'door1', type: 'door', name: '문-1', x: 30.5, z0: 9.6, z1: 12, cost: 3, why: 'C→E 지름길 (기존). 행운 3으로 C_E 우회로를 줄인다.' },
+        { id: 'door2', type: 'door', name: '문-2', x: 31.5, z0: 33, z1: 35.4, cost: 3, isNew: true, why: 'B→D 지름길 (신규). B에서 D로 바로 들어가지만 G1이 그 통로를 보고 있다.' },
+        { id: 'laser1', type: 'laser', name: '레이저-1', x: 34.5, z0: 16.6, z1: 19, cost: 3, why: 'C→D 복도 (기존). 복도를 1m 위로 옮겨 지름길과의 벽을 4.6m로 늘렸다.' },
+        { id: 'laser2', type: 'laser', name: '레이저-2', x: 48, z0: 5.4, z1: 8.6, cost: 3, isNew: true, why: 'E→G 연결 (신규). "짧지만 비용 드는 길". 끄면 D·F를 건너뛰고 출구로 간다.' },
+      ],
+      cctvs: [
+        { id: 'CCTV-1', pos: [27.6, 18.6], base: 225, moved: true, why: '(옮김) C 북동쪽 구석에서 C 안쪽과 서쪽 입구(C_A)를 훑는다. C 서쪽만 보던 샌드박스 자리(19.4, 18.5 · Unity 200°)보다 C 전체와 C_A 입구를 넓게 본다 (확정).' },
+        { id: 'CCTV-2', pos: [33.5, 25.5], base: 45, why: 'D 남서쪽 입구 (기존). G1을 동쪽으로 옮겨 시야 겹침을 풀었다.' },
+        { id: 'CCTV-3', pos: [50.6, 36.4], base: 315, isNew: true, why: 'F 제어실 북서쪽. 입구에서 콘솔까지 가는 길을 본다. 보안 콘솔 대상.' },
+        { id: 'CCTV-4', pos: [56.8, 24.4], base: 270, isNew: true, why: 'F_G 복도 위쪽에서 복도를 내려다본다. 보안 콘솔 대상.' },
+        { id: 'CCTV-5', pos: [50.6, 13.4], base: 315, isNew: true, why: 'G 북서쪽. F_G 복도 출구와 G 안쪽을 본다. 보안 콘솔 대상.' },
+      ],
+      enemies: [
+        { id: 'P1', type: 'monster', behav: 'patrol', mode: 'loop', pts: [[7, 16], [7, 31], [24, 31], [24, 16], [12, 16]], start: 2, why: '고리 1(A–B–C)을 돈다. 시작 전실에서 처음 만나는 감시자 하나 (009 규칙 유지).' },
+        { id: 'P2', type: 'monster', behav: 'patrol', mode: 'pingpong', pts: [[39, 31], [44.2, 31], [44.2, 4], [36, 4]], start: 0, why: 'D와 E를 D_E 복도로 오간다. 기믹 없는 길에서 가장 긴 위험 구간. 복도 엄폐물·홈으로 끊어 지나간다.' },
+        { id: 'F1', type: 'monster', behav: 'free', area: [15, 27, 29, 36], pos: [17, 28], why: 'B 중앙 홀 안에서 움직인다 (실제 씬은 경로가 없으면 제자리 경비).' },
+        { id: 'G1', type: 'monster', behav: 'stationary', pos: [45, 34.2], heading: 180, moved: true, why: '(옮김) D 동쪽에서 랙 사이 통로를 서쪽으로 본다. D 입구 CCTV-2와 겹치던 시야를 풀고, 문-2로 들어오는 사람을 본다.' },
+        { id: 'T1', type: 'turret', behav: 'stationary', pos: [61.4, 13.4], heading: 220, isNew: true, why: 'G 동북쪽 구석에서 출구로 가는 동선을 길게 본다. 낮은 엄폐물 뒤에서 웅크리면 피할 수 있다. 보안 콘솔 대상.' },
+        { id: 'T2', type: 'turret', behav: 'stationary', pos: [15, 36.4], heading: 315, isNew: true, why: 'B 홀 북서쪽에서 홀을 대각선으로 본다. 가운데 기둥과 높은 블록 뒤가 그늘.' },
+        { id: 'P3', type: 'monster', behav: 'patrol', mode: 'pingpong', pts: [[52.4, 27.4], [60.2, 27.4], [60.2, 31.2]], start: 0, isNew: true, why: 'F 제어실 경비. 방 남쪽을 오가며 콘솔과 F_G 입구 앞을 지난다. 서쪽으로 돌아올 때 입구를 보므로, 입구 옆 엄폐물에서 기다리거나 해킹해서 들어간다.' },
+      { id: 'D1', type: 'drone', behav: 'patrol', mode: 'loop', pts: [[20.6, 10.6], [26.8, 10.6], [26.8, 17.6], [20.6, 17.6]], start: 1, isNew: true, why: '(옮김) C 갈림길 안을 돈다. 경계 반경이 작아 가장자리로 돌아가면 피할 수 있다. F는 몬스터 P3가 맡는다.' },
+        { id: 'D2', type: 'drone', behav: 'patrol', mode: 'loop', pts: [[51.5, 3.2], [59.5, 3.2], [59.5, 12.6], [51.5, 12.6]], start: 2, isNew: true, why: 'G를 크게 돈다. 콘솔로 꺼지지 않아, 보안이 꺼진 12초 동안에도 원형 경계를 피해 가야 한다.' },
+      ],
+      lures: [],
+      switches: [
+        { id: '보안 콘솔', pos: [61.4, 29], targets: ['CCTV-3', 'CCTV-4', 'CCTV-5', 'T1'], dur: 12, cost: 0, why: 'F 제어실 동쪽 벽. 해킹(E)하면 CCTV-3·4·5와 터렛 T1이 12초 꺼진다. 행운은 들지 않고, 방을 지키는 P3를 뚫는 것이 대가.' },
+      ],
+      exit: R(62, 5.4, 63.6, 8.6),
+      combos: [
+        { id: 'none', name: '기믹 없음', open: [] },
+        { id: 'd1', name: '문-1', open: ['door1'] },
+        { id: 'l2', name: '레이저-2', open: ['laser2'] },
+        { id: 'd1l2', name: '문-1 + 레이저-2', open: ['door1', 'laser2'] },
+        { id: 'all', name: '전부', open: ['door1', 'door2', 'laser1', 'laser2'] },
+      ],
+      target: [130, 999],
+    },
+  };
+
+  // 복도 안 (확장안에만 적용). A: 순찰·주요 복도를 4m로 넓히고 한쪽 벽에 낮은 엄폐물. B: 폭은 그대로, 벽에 깊이 1.2m 홈
+  const CORR_VAR = {
+    now: { corrs: {}, add: [], low: [], bar: {} },
+    A: {
+      corrs: { A_B_1: R(5, 19, 9, 32.6), C_A: R(11, 14.4, 19, 18.4), D_E: R(42, 12, 46, 25), C_E_1: R(20.6, 3.6, 24.6, 9), C_E_2: R(20.6, 3.6, 33, 7.6),
+        C_D_1: R(28, 16.6, 39.2, 20.6), C_D_2: R(36, 20.6, 40, 25), F_G: R(55, 14, 59, 25) },
+      add: [],
+      low: [R(5.1, 23, 5.9, 24.4), R(8.1, 27, 8.9, 28.4), R(14, 17.6, 15.4, 18.4), R(42.1, 17, 42.9, 18.4), R(45.2, 21, 46, 22.4),
+        R(26, 3.7, 27.4, 4.5), R(31, 19.8, 32.4, 20.6), R(55.1, 18.5, 55.9, 19.9), R(58.1, 21.5, 58.9, 22.9)],
+      bar: { laser1: { z1: 20.6 } },
+    },
+    B: {
+      corrs: {},
+      add: [R(4.2, 23, 5.4, 24.6), R(8.6, 26, 9.8, 27.6), R(14, 17.2, 15.6, 18.4), R(41.4, 17, 42.6, 18.6), R(45.8, 20, 47, 21.6),
+        R(26, 2.8, 27.6, 4), R(31, 19, 32.6, 20.2), R(58, 18.5, 59.2, 20.1), R(54.4, 21.5, 55.6, 23.1)],
+      low: [], bar: {},
+    },
+  };
+  const VIS = { old: { monster: [90, 8], drone: [100, 7] }, new: { monster: [60, 12], drone: [360, 3.5] } };
+  function buildLayout() {
+    const base = LAYOUTS[st.layout];
+    if (st.layout !== 'expand') return base;
+    const v = CORR_VAR[st.corr];
+    return { ...base,
+      corrs: [...base.corrs.map(c => v.corrs[c.id] ? { ...c, ...v.corrs[c.id], widened: true } : c), ...v.add.map(r => ({ id: '홈', niche: true, ...r }))],
+      low: [...base.low, ...v.low],
+      barriers: base.barriers.map(b => v.bar[b.id] ? { ...b, ...v.bar[b.id] } : b),
+    };
+  }
+
+  const MODES = { walk: { name: '걷기', speed: 2.5, noise: 4, crouch: false }, run: { name: '달리기', speed: 5, noise: 8, crouch: false },
+    sneak: { name: '은신', speed: 1.5, noise: 1, crouch: true }, cover: { name: '엄폐', speed: 1, noise: 0.5, crouch: true } };
+  const HACK_RANGE = 6, HACK_STUN = 5, STEAL = 5, USE_RANGE = 2.2, DETECT_T = 0.5, PULSE = 0.5, SEARCH_T = 3, WAIT_T = 2, TURN = 360;
+
+  // ---------- 상태 ----------
+  const st = { layout: 'expand', playing: !matchMedia('(prefers-reduced-motion: reduce)').matches, speed: 1,
+    vision: true, routes: true, noise: true, links: true, showNew: true, route: 'none', corr: 'A', vis: 'new' };
+  let L, cell, GW, GH, navOK, navBar, NW, NH, barriers, enemies, cctvs, lures, switches, player, simT, log, rings, flash, detCount, grace, sel, routeRes;
+  const RES = 0.25, NRES = 0.5;
+
+  // ---------- 격자 ----------
+  const inR = (r, x, z) => x >= r.x0 && x <= r.x1 && z >= r.z0 && z <= r.z1;
+  function buildGrid() {
+    GW = Math.round(VW / RES); GH = Math.round(VH / RES);
+    cell = new Uint8Array(GW * GH);
+    const floors = [...L.rooms, ...L.corrs];
+    for (let j = 0; j < GH; j++) for (let i = 0; i < GW; i++) {
+      const x = (i + .5) * RES, z = (j + .5) * RES;
+      let v = floors.some(r => inR(r, x, z)) ? 1 : 0;
+      if (v && L.high.some(r => inR(r, x, z))) v = 0;
+      if (v && L.circ.some(c => Math.hypot(x - c.x, z - c.z) < c.r)) v = 0;
+      if (v && L.low.some(r => inR(r, x, z))) v = 2;
+      cell[j * GW + i] = v;
+    }
+    NW = Math.round(VW / NRES); NH = Math.round(VH / NRES);
+    navOK = new Uint8Array(NW * NH); navBar = new Int8Array(NW * NH).fill(-1);
+    for (let j = 0; j < NH; j++) for (let i = 0; i < NW; i++) {
+      const x = (i + .5) * NRES, z = (j + .5) * NRES, k = j * NW + i;
+      navOK[k] = clear(x, z, 0.35, 'none') ? 1 : 0;
+      barriers.forEach((b, bi) => { if (Math.abs(x - b.x) < 0.6 && z >= b.z0 - 0.3 && z <= b.z1 + 0.3) navBar[k] = bi; });
+    }
+  }
+  const cellAt = (x, z) => {
+    const i = Math.floor(x / RES), j = Math.floor(z / RES);
+    return (i < 0 || j < 0 || i >= GW || j >= GH) ? 0 : cell[j * GW + i];
+  };
+  // who: 'player' = 닫힌 문·레이저만 막힘, 'enemy' = 문·레이저 항상 막힘 (D6: NavMesh에 닫힌 상태로 굽는다), 'none' = 무시
+  function barrierBlocks(x, z, who) {
+    if (who === 'none') return false;
+    for (const b of barriers) if ((who === 'enemy' || !b.open) && Math.abs(x - b.x) < 0.3 && z >= b.z0 && z <= b.z1) return true;
+    return false;
+  }
+  const walk = (x, z, who) => cellAt(x, z) === 1 && !barrierBlocks(x, z, who);
+  const clear = (x, z, r, who) => walk(x, z, who) && walk(x + r, z, who) && walk(x - r, z, who) && walk(x, z + r, who) && walk(x, z - r, who);
+  function segClear(ax, az, bx, bz, r, who) {
+    const d = Math.hypot(bx - ax, bz - az); if (d < 1e-3) return true;
+    for (let t = 0; t <= d; t += 0.15) if (!clear(ax + (bx - ax) * t / d, az + (bz - az) * t / d, r, who)) return false;
+    return clear(bx, bz, r, who);
+  }
+  // 시야 레이: 벽·높은 장애물·닫힌 문이 막는다. 레이저는 막지 않는다. low=true면 낮은 엄폐물도 막는다 (웅크린 대상)
+  function visBlocked(x, z, low) {
+    const c = cellAt(x, z);
+    if (c === 0 || (low && c === 2)) return true;
+    for (const b of barriers) if (b.type === 'door' && !b.open && Math.abs(x - b.x) < 0.2 && z >= b.z0 && z <= b.z1) return true;
+    return false;
+  }
+  function ray(ox, oz, deg, range, low) {
+    const c = Math.cos(deg * D2R), s = Math.sin(deg * D2R);
+    for (let d = 0.3; d <= range; d += 0.1) if (visBlocked(ox + c * d, oz + s * d, low)) return Math.max(0, d - 0.05);
+    return range;
+  }
+
+  // ---------- 길찾기 (0.5m 격자 다익스트라 + 시야 기반 직선화) ----------
+  function findPath(sx, sz, tx, tz, who) {
+    const pass = k => navOK[k] && (navBar[k] < 0 || (who === 'player' && barriers[navBar[k]].open));
+    const snap = (x, z) => {
+      const ci = Math.floor(x / NRES), cj = Math.floor(z / NRES);
+      let best = -1, bd = 1e9;
+      for (let dj = -3; dj <= 3; dj++) for (let di = -3; di <= 3; di++) {
+        const i = ci + di, j = cj + dj; if (i < 0 || j < 0 || i >= NW || j >= NH) continue;
+        const k = j * NW + i; if (!pass(k)) continue;
+        const d = Math.hypot((i + .5) * NRES - x, (j + .5) * NRES - z); if (d < bd) { bd = d; best = k; }
+      }
+      return best;
+    };
+    const s = snap(sx, sz), t = snap(tx, tz);
+    if (s < 0 || t < 0) return null;
+    const N = NW * NH, dist = new Float64Array(N).fill(Infinity), prev = new Int32Array(N).fill(-1);
+    const heap = [], push = (k, d) => { heap.push([d, k]); let i = heap.length - 1; while (i > 0) { const p = (i - 1) >> 1; if (heap[p][0] <= heap[i][0]) break; [heap[p], heap[i]] = [heap[i], heap[p]]; i = p; } };
+    const pop = () => { const top = heap[0], last = heap.pop(); if (heap.length) { heap[0] = last; let i = 0; for (;;) { const l = 2 * i + 1, r = l + 1; let m = i; if (l < heap.length && heap[l][0] < heap[m][0]) m = l; if (r < heap.length && heap[r][0] < heap[m][0]) m = r; if (m === i) break; [heap[m], heap[i]] = [heap[i], heap[m]]; i = m; } } return top; };
+    dist[s] = 0; push(s, 0);
+    const NB = [[1, 0, 1], [-1, 0, 1], [0, 1, 1], [0, -1, 1], [1, 1, 1.4142], [1, -1, 1.4142], [-1, 1, 1.4142], [-1, -1, 1.4142]];
+    while (heap.length) {
+      const [d, k] = pop(); if (d > dist[k]) continue; if (k === t) break;
+      const i = k % NW, j = (k / NW) | 0;
+      for (const [di, dj, c] of NB) {
+        const ni = i + di, nj = j + dj; if (ni < 0 || nj < 0 || ni >= NW || nj >= NH) continue;
+        const nk = nj * NW + ni; if (!pass(nk)) continue;
+        if (di && dj && (!pass(j * NW + ni) || !pass(nj * NW + i))) continue;
+        const nd = d + c * NRES; if (nd < dist[nk]) { dist[nk] = nd; prev[nk] = k; push(nk, nd); }
+      }
+    }
+    if (!isFinite(dist[t])) return null;
+    const cells = []; for (let k = t; k >= 0; k = prev[k]) cells.push([(k % NW + .5) * NRES, (((k / NW) | 0) + .5) * NRES]);
+    cells.reverse();
+    const raw = [[sx, sz], ...cells, [tx, tz]];
+    const rr = who === 'player' ? 0.25 : 0.35;
+    if (!clear(tx, tz, 0.2, who)) raw.pop();
+    const out = [raw[0]];
+    let a = 0;
+    while (a < raw.length - 1) {
+      let b = raw.length - 1;
+      while (b > a + 1 && !segClear(raw[a][0], raw[a][1], raw[b][0], raw[b][1], rr, who)) b--;
+      out.push(raw[b]); a = b;
+    }
+    return { pts: out, len: plen(out) };
+  }
+  const plen = pts => pts.reduce((s, p, i) => i ? s + Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) : 0, 0);
+
+  // ---------- 시뮬레이션 준비 ----------
+  function setup() {
+    L = buildLayout();
+    barriers = L.barriers.map(b => ({ ...b, open: false }));
+    buildGrid();
+    simT = 0; log = []; rings = []; flash = null; detCount = 0; grace = 0;
+    cctvs = L.cctvs.map(c => ({ ...c, kind: 'cctv', x: c.pos[0], z: c.pos[1], fov: 60, range: 8, luck: 20, stun: 0, t: 0, h: c.base, expo: 0 }));
+    enemies = L.enemies.map(d => {
+      const T = TYPE[d.type];
+      const vv = VIS[st.vis][d.type];
+      const e = { ...d, kind: 'enemy', fov: vv ? vv[0] : T.fov, range: vv ? vv[1] : T.range, speed: T.speed, hear: T.hear, luck: T.luck, stun: 0, expo: 0, state: 'patrol', wait: 0, dir: 1, path: null, lastHear: -9 };
+      if (d.pts) { const p = d.pts[d.start]; e.x = p[0]; e.z = p[1]; e.idx = d.start; advance(e); e.h = headTo(e, e.target); }
+      else { e.x = d.pos[0]; e.z = d.pos[1]; e.h = d.heading || 0; e.post = [e.x, e.z, e.h]; if (d.behav === 'free') { pickFree(e); e.h = headTo(e, e.target); } }
+      return e;
+    });
+    lures = L.lures.map(l => ({ ...l, kind: 'lure', used: false, active: 0, pulseT: 0 }));
+    switches = L.switches.map(s => ({ ...s, kind: 'switch', x: s.pos[0], z: s.pos[1], used: false, active: 0, stun: 0, luck: 0 }));
+    player = { x: START[0], z: START[1], mode: player ? player.mode : 'walk', luck: 10, path: null, moving: false };
+    addLog('시작', 10, 'z');
+    const vm = VIS[st.vis];
+    $('f-mon').textContent = `${vm.monster[0]}° ${vm.monster[1]}m · 2m/s`;
+    $('f-dr').textContent = (vm.drone[0] >= 360 ? `원형 ${vm.drone[1]}m` : `${vm.drone[0]}° ${vm.drone[1]}m`) + ' · 2.5m/s';
+    computeRoutes();
+    if (!sel || !findObj(sel)) sel = L.switches.length ? 'switch:보안 콘솔' : 'cctv:CCTV-1';
+    staticDirty = true;
+    renderPanels();
+  }
+  const headTo = (e, p) => Math.atan2(p[1] - e.z, p[0] - e.x) / D2R;
+  function advance(e) {
+    const n = e.pts.length;
+    if (e.mode === 'loop') e.idx = (e.idx + 1) % n;
+    else { if (e.idx + e.dir < 0 || e.idx + e.dir >= n) e.dir = -e.dir; e.idx += e.dir; }
+    e.target = e.pts[e.idx];
+  }
+  function pickFree(e) {
+    const [x0, z0, x1, z1] = e.area;
+    for (let k = 0; k < 40; k++) {
+      const x = x0 + Math.random() * (x1 - x0), z = z0 + Math.random() * (z1 - z0);
+      if (Math.hypot(x - e.x, z - e.z) > 3 && segClear(e.x, e.z, x, z, 0.45, 'enemy')) { e.target = [x, z]; return; }
+    }
+    e.target = [e.x, e.z];
+  }
+  const angDiff = (a, b) => ((b - a + 540) % 360) - 180;
+  function turn(e, want, dt) { const d = angDiff(e.h, want), s = TURN * dt; e.h = Math.abs(d) <= s ? want : e.h + Math.sign(d) * s; }
+  function followPath(o, speed, dt, face) {
+    let mv = speed * dt;
+    while (mv > 0 && o.path && o.path.length) {
+      const p = o.path[0], dx = p[0] - o.x, dz = p[1] - o.z, d = Math.hypot(dx, dz);
+      if (d > 0.01 && face) turn(o, Math.atan2(dz, dx) / D2R, dt);
+      if (d <= mv) { o.x = p[0]; o.z = p[1]; o.path.shift(); mv -= d; }
+      else { o.x += dx / d * mv; o.z += dz / d * mv; mv = 0; }
+    }
+    return !o.path || !o.path.length;
+  }
+
+  // 소리를 들은 적: 소리 난 곳까지 길을 찾아 조사하러 간다
+  function hear(e, x, z, src) {
+    if (e.hear <= 0 || e.stun > 0) return;
+    if (e.state === 'investigate' && e.inv && Math.hypot(e.inv[0] - x, e.inv[1] - z) < 1.5) return;
+    if (simT - e.lastHear < 0.4) return;
+    const p = findPath(e.x, e.z, x, z, 'enemy');
+    if (!p) return;
+    e.lastHear = simT; e.state = 'investigate'; e.inv = [x, z]; e.path = p.pts.slice(1); e.heardFrom = src;
+  }
+  function stepEnemy(e, dt) {
+    if (e.stun > 0) { e.stun -= dt; if (e.stun <= 0) { e.stun = 0; } return; }
+    if (e.type === 'turret') return;
+    if (e.state === 'investigate') {
+      if (followPath(e, e.speed, dt, true)) { e.state = 'search'; e.wait = SEARCH_T; e.scan0 = e.h; }
+      return;
+    }
+    if (e.state === 'search') {
+      e.wait -= dt; e.h = e.scan0 + Math.sin((SEARCH_T - e.wait) * 2.2) * 70;
+      if (e.wait <= 0) beginReturn(e);
+      return;
+    }
+    if (e.state === 'return') {
+      if (followPath(e, e.speed, dt, true)) {
+        e.state = 'patrol';
+        if (e.behav === 'stationary') e.h = e.post[2];
+        else if (e.behav === 'free') pickFree(e);
+      }
+      return;
+    }
+    if (e.behav === 'stationary') return;
+    if (e.wait > 0) { e.wait -= dt; turn(e, headTo(e, e.target), dt); return; }
+    const dx = e.target[0] - e.x, dz = e.target[1] - e.z, d = Math.hypot(dx, dz);
+    if (d > 0.01) turn(e, Math.atan2(dz, dx) / D2R, dt);
+    const mv = e.speed * dt;
+    if (d <= mv) { e.x = e.target[0]; e.z = e.target[1]; e.wait = WAIT_T; if (e.pts) advance(e); else pickFree(e); }
+    else { e.x += dx / d * mv; e.z += dz / d * mv; }
+  }
+  function beginReturn(e) {
+    let goal;
+    if (e.behav === 'patrol') {
+      let bi = 0, bd = 1e9; e.pts.forEach((p, i) => { const d = Math.hypot(p[0] - e.x, p[1] - e.z); if (d < bd) { bd = d; bi = i; } });
+      e.idx = bi; goal = e.pts[bi]; e.target = goal;
+    } else if (e.behav === 'stationary') goal = e.post;
+    else goal = [(e.area[0] + e.area[2]) / 2, (e.area[1] + e.area[3]) / 2];
+    const p = findPath(e.x, e.z, goal[0], goal[1], 'enemy');
+    e.state = 'return'; e.path = p ? p.pts.slice(1) : [];
+    if (e.behav === 'patrol') e.wait = 0;
+  }
+
+  const cctvActive = c => c.stun <= 0;
+  function stepCCTV(c, dt) {
+    if (c.stun > 0) { c.stun = Math.max(0, c.stun - dt); return; }
+    c.t += dt; // 기절한 동안은 스윕 시간이 흐르지 않는다 (SecurityCamera와 같음)
+    const period = 45 * 4 / 30;
+    c.h = c.base + Math.sin(c.t / period * Math.PI * 2) * 45;
+  }
+  const viewers = () => [...enemies.filter(e => e.stun <= 0), ...cctvs.filter(cctvActive)];
+  function sees(v, p, crouch) {
+    const dx = p.x - v.x, dz = p.z - v.z, dist = Math.hypot(dx, dz);
+    if (dist > v.range) return false;
+    const a = Math.atan2(dz, dx) / D2R;
+    if (Math.abs(angDiff(v.h, a)) > v.fov / 2) return false;
+    return ray(v.x, v.z, a, dist, crouch) >= dist - 0.3;
+  }
+
+  // ---------- 플레이어 행동 ----------
+  function addLog(text, delta, cls) {
+    log.unshift({ t: simT, text, delta, cls });
+    if (log.length > 30) log.pop();
+    logDirty = true;
+  }
+  function hackables() { return [...enemies, ...cctvs, ...switches.filter(s => !s.used)]; }
+  function hackTarget() {
+    let best = null, bd = 1e9;
+    for (const h of hackables()) {
+      const d = Math.hypot(h.x - player.x, h.z - player.z);
+      if (d > HACK_RANGE || d >= bd) continue;
+      const a = Math.atan2(h.z - player.z, h.x - player.x) / D2R;
+      if (ray(player.x, player.z, a, d, false) < d - 0.6) continue;
+      best = h; bd = d;
+    }
+    return best;
+  }
+  const canHack = h => h && (h.kind === 'switch' ? !h.used : h.stun <= 0 && h.luck >= STEAL);
+  function useTarget() {
+    const opts = [];
+    barriers.forEach(b => { if (!b.open) opts.push({ kind: 'barrier', o: b, x: b.x, z: (b.z0 + b.z1) / 2 }); });
+    let best = null, bd = USE_RANGE;
+    opts.forEach(u => { const d = Math.hypot(u.x - player.x, u.z - player.z); if (d < bd) { bd = d; best = u; } });
+    return best;
+  }
+  const costOf = u => u.o.cost;
+  function doHack() {
+    const h = hackTarget(); if (!canHack(h)) return;
+    if (h.kind === 'switch') {
+      h.used = true; h.active = h.dur;
+      h.targets.forEach(id => { const t = cctvs.find(q => q.id === id) || enemies.find(q => q.id === id); if (t) t.stun = Math.max(t.stun, h.dur); });
+      addLog(`콘솔 해킹: 보안 ${h.dur}초 정지`, 0, 'p'); return;
+    }
+    h.luck -= STEAL; player.luck += STEAL; h.stun = HACK_STUN;
+    if (h.kind === 'enemy') { h.state = 'patrol'; h.path = null; if (h.behav === 'patrol') { h.wait = 0; } }
+    addLog(`해킹 ${h.id}`, +STEAL, 'p');
+  }
+  function doUse() {
+    const u = useTarget(); if (!u) return;
+    if (player.luck < costOf(u)) { addLog(`행운 부족: ${u.o.name || u.o.id}`, 0, 'z'); return; }
+    player.luck -= costOf(u);
+    if (u.kind === 'barrier') { u.o.open = true; staticDirty = true; addLog(`${u.o.name} 해제`, -u.o.cost, 'm'); computeRoutes(); }
+  }
+
+  // ---------- 경로 계산 ----------
+  function crossed(pts) {
+    const out = new Set();
+    for (let i = 1; i < pts.length; i++) {
+      const [ax, az] = pts[i - 1], [bx, bz] = pts[i];
+      barriers.forEach(b => {
+        if ((ax - b.x) * (bx - b.x) > 0 || ax === bx) return;
+        const t = (b.x - ax) / (bx - ax), z = az + (bz - az) * t;
+        if (z >= b.z0 - 0.3 && z <= b.z1 + 0.3) out.add(b.id);
+      });
+    }
+    return out;
+  }
+  function computeRoutes() {
+    const keep = barriers.map(b => b.open);
+    const ex = [(L.exit.x0 + L.exit.x1) / 2, (L.exit.z0 + L.exit.z1) / 2];
+    routeRes = L.combos.map(c => {
+      barriers.forEach(b => { b.open = c.open.includes(b.id); });
+      const p = findPath(START[0], START[1], ex[0], ex[1], 'player');
+      const used = p ? [...crossed(p.pts)] : [];
+      const cost = used.reduce((s, id) => s + barriers.find(b => b.id === id).cost, 0);
+      return { ...c, path: p, used, cost };
+    });
+    barriers.forEach((b, i) => { b.open = keep[i]; });
+    const p = findPath(START[0], START[1], ex[0], ex[1], 'player');
+    routeRes.push({ id: 'now', name: '지금 열린 상태', path: p, used: p ? [...crossed(p.pts)] : [], cost: 0, now: true });
+    if (!routeRes.find(r => r.id === st.route)) st.route = 'none';
+    routesDirty = true;
+  }
+
+  // ---------- 캔버스 ----------
+  const cv = document.getElementById('map'), ctx = cv.getContext('2d');
+  const sc = document.createElement('canvas'), sctx = sc.getContext('2d');
+  let S = 14, COL = {}, staticDirty = true, logDirty = true, routesDirty = true, dpr = 1;
+  const cs = getComputedStyle(document.documentElement);
+  ['bg', 'paper', 'sheet', 'line', 'grid', 'chalk', 'ink', 'muted', 'accent', 'monster', 'turret', 'drone', 'cctv', 'player', 'door', 'laser', 'lure', 'switch']
+    .forEach(k => { COL[k] = cs.getPropertyValue('--' + k).trim(); });
+  const KCOL = { monster: 'monster', turret: 'turret', drone: 'drone' };
+  function resize() {
+    const w = cv.clientWidth; dpr = window.devicePixelRatio || 1;
+    S = w / (VW + PAD * 2);
+    const h = S * (VH + PAD * 2);
+    cv.style.height = h + 'px';
+    cv.width = sc.width = Math.round(w * dpr); cv.height = sc.height = Math.round(h * dpr);
+    staticDirty = true;
+  }
+  new ResizeObserver(resize).observe(cv);
+  const sx = x => (x + PAD) * S, sy = z => (VH - z + PAD) * S;
+  const wx = px => px / S - PAD, wz = py => VH + PAD - py / S;
+  const FONT = (k, w = 600, mono = false) => `${w} ${Math.max(9, S * k)}px ${mono ? '"JetBrains Mono", monospace' : '"IBM Plex Sans KR", "Malgun Gothic", sans-serif'}`;
+
+  function drawStatic() {
+    const c = sctx;
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const W = cv.clientWidth, H = cv.clientHeight;
+    c.fillStyle = COL.bg; c.fillRect(0, 0, W, H);
+    const rr = (r) => c.rect(sx(r.x0), sy(r.z1), (r.x1 - r.x0) * S, (r.z1 - r.z0) * S);
+    const floors = [...L.rooms, ...L.corrs];
+    // 확장 예정 영역 (샌드박스 보기)
+    L.ghost.forEach(g => {
+      c.setLineDash([S * .4, S * .3]); c.strokeStyle = COL.grid; c.lineWidth = 1.2; c.globalAlpha = .8;
+      c.strokeRect(sx(g.x0), sy(g.z1), (g.x1 - g.x0) * S, (g.z1 - g.z0) * S); c.setLineDash([]);
+      c.font = FONT(.5, 600); c.fillStyle = COL.muted; c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillText(g.name, sx((g.x0 + g.x1) / 2), sy((g.z0 + g.z1) / 2)); c.globalAlpha = 1;
+    });
+    // 벽 외곽선: 굵게 그린 뒤 바닥으로 덮어 바깥 반쪽만 남긴다 (벽 두께 약 0.55m)
+    c.strokeStyle = COL.chalk; c.lineWidth = S * .55 * 2; c.lineJoin = 'miter';
+    floors.forEach(r => { c.beginPath(); rr(r); c.stroke(); });
+    c.fillStyle = COL.sheet; floors.forEach(r => { c.beginPath(); rr(r); c.fill(); });
+    // 격자
+    c.save(); c.beginPath(); floors.forEach(rr); c.clip();
+    c.strokeStyle = COL.grid; c.lineWidth = 1;
+    for (let x = 0; x <= VW; x++) { c.globalAlpha = x % 4 ? .13 : .34; c.beginPath(); c.moveTo(sx(x), sy(0)); c.lineTo(sx(x), sy(VH)); c.stroke(); }
+    for (let z = 0; z <= VH; z++) { c.globalAlpha = z % 4 ? .13 : .34; c.beginPath(); c.moveTo(sx(0), sy(z)); c.lineTo(sx(VW), sy(z)); c.stroke(); }
+    c.globalAlpha = 1;
+    // 신규·이동 구역 빗금
+    if (st.showNew) {
+      floors.filter(r => r.isNew || r.moved || r.widened || r.niche).forEach(r => {
+        c.save(); c.beginPath(); rr(r); c.clip();
+        c.strokeStyle = r.moved ? COL.cctv : COL.accent; c.globalAlpha = .16; c.lineWidth = S * .18;
+        for (let k = -VH; k < VW + VH; k += 1.4) { c.beginPath(); c.moveTo(sx(k), sy(0)); c.lineTo(sx(k + VH), sy(VH)); c.stroke(); }
+        c.restore();
+      });
+    }
+    c.restore();
+    // 높은 장애물
+    c.fillStyle = COL.chalk;
+    L.high.forEach(r => { c.globalAlpha = .55; c.beginPath(); rr(r); c.fill(); });
+    L.circ.forEach(o => { c.beginPath(); c.arc(sx(o.x), sy(o.z), o.r * S, 0, 7); c.fill(); });
+    c.globalAlpha = 1;
+    // 낮은 엄폐물
+    c.strokeStyle = COL.chalk; c.lineWidth = 1.5; c.setLineDash([3, 2]);
+    L.low.forEach(r => { c.beginPath(); rr(r); c.stroke(); c.globalAlpha = .12; c.fillStyle = COL.chalk; c.fill(); c.globalAlpha = 1; });
+    c.setLineDash([]);
+    // 출구
+    c.fillStyle = COL.door; c.globalAlpha = .45; c.beginPath(); rr(L.exit); c.fill(); c.globalAlpha = 1;
+    // 문·레이저
+    barriers.forEach(b => {
+      const col = b.type === 'door' ? COL.door : COL.laser;
+      if (b.type === 'door') {
+        c.fillStyle = col; c.globalAlpha = b.open ? .25 : 1;
+        c.fillRect(sx(b.x - .22), sy(b.z1), .44 * S, (b.z1 - b.z0) * S); c.globalAlpha = 1;
+        if (b.open) { c.strokeStyle = col; c.lineWidth = 1; c.strokeRect(sx(b.x - .22), sy(b.z1), .44 * S, (b.z1 - b.z0) * S); }
+      } else {
+        c.strokeStyle = col; c.lineWidth = Math.max(2, S * .16); c.globalAlpha = b.open ? .25 : 1;
+        c.setLineDash([S * .3, S * .18]); c.beginPath(); c.moveTo(sx(b.x), sy(b.z0)); c.lineTo(sx(b.x), sy(b.z1)); c.stroke();
+        c.setLineDash([]); c.globalAlpha = 1;
+      }
+      c.font = FONT(.42, 600); c.fillStyle = col; c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillText(b.name + (b.open ? ' (열림)' : ''), sx(b.x), sy(b.z1) - S * .5);
+    });
+    // 방 이름
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    L.rooms.forEach(r => {
+      if (r.exit) {
+        c.save(); c.translate(sx(r.x1) + S * .45, sy((r.z0 + r.z1) / 2)); c.rotate(-Math.PI / 2);
+        c.font = FONT(.46, 700); c.fillStyle = COL.door; c.fillText('출구', 0, 0); c.restore(); return;
+      }
+      const cx = (r.x0 + r.x1) / 2, cz = r.z1 - 0.9;
+      c.font = FONT(.6, 700); c.fillStyle = COL.chalk; c.globalAlpha = .85; c.fillText(r.name, sx(cx), sy(cz));
+      if (r.isNew && st.showNew) { c.font = FONT(.38, 600, true); c.fillStyle = COL.accent; c.fillText('NEW', sx(cx), sy(cz) + S * .6); }
+      c.globalAlpha = 1;
+    });
+    // 신규 복도 표시
+    if (st.showNew) {
+      c.font = FONT(.36, 600, true);
+      L.corrs.filter(r => (r.isNew || r.moved || r.widened) && !r.niche).forEach(r => {
+        c.fillStyle = r.moved ? COL.cctv : COL.accent;
+        const cx = (r.x0 + r.x1) / 2, cz = (r.z0 + r.z1) / 2;
+        const vert = (r.z1 - r.z0) > (r.x1 - r.x0);
+        c.save(); c.translate(sx(cx), sy(cz)); if (vert) c.rotate(-Math.PI / 2);
+        c.fillText(r.id + (r.moved ? ' ↑1m' : '') + (r.widened ? ' · 4m' : ''), 0, 0); c.restore();
+      });
+    }
+    c.font = FONT(.4, 400, true); c.fillStyle = COL.muted; c.textAlign = 'left';
+    c.fillText(`+Z ↑   시안 (0,0) ↙   ${L.W}×40m   월드 = 시안 − (24, 20)`, sx(0), sy(VH) - S * .45);
+    staticDirty = false;
+  }
+
+  function poly(pts, color, width, dash, alpha = 1) {
+    ctx.strokeStyle = color; ctx.lineWidth = width; ctx.setLineDash(dash || []); ctx.lineJoin = 'round'; ctx.globalAlpha = alpha;
+    ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(sx(p[0]), sy(p[1])) : ctx.moveTo(sx(p[0]), sy(p[1]))); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+  }
+  function cone(v, color, alpha) {
+    const N = Math.max(16, Math.round(v.fov / 2.5)), pts = [];
+    for (let k = 0; k <= N; k++) {
+      const a = v.h - v.fov / 2 + v.fov * k / N, d = ray(v.x, v.z, a, v.range, false);
+      pts.push([v.x + Math.cos(a * D2R) * d, v.z + Math.sin(a * D2R) * d]);
+    }
+    ctx.fillStyle = color; ctx.globalAlpha = alpha;
+    ctx.beginPath(); ctx.moveTo(sx(v.x), sy(v.z)); pts.forEach(p => ctx.lineTo(sx(p[0]), sy(p[1]))); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha = Math.min(1, alpha * 2.6); ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.stroke(); ctx.globalAlpha = 1;
+  }
+  const label = (txt, x, z, col, k = .4, dy = -.85) => {
+    ctx.font = FONT(k, 700, true); ctx.fillStyle = col; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(txt, sx(x), sy(z) + S * dy);
+  };
+
+  function draw(seenIds) {
+    if (!sc.width || !sc.height) return; // iframe이 아직 크기 0일 때(지연 로딩) 건너뛴다
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    if (staticDirty) drawStatic();
+    ctx.drawImage(sc, 0, 0);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // 선택한 경로
+    const rt = routeRes.find(r => r.id === st.route);
+    if (rt && rt.path) poly(rt.path.pts, COL.accent, Math.max(2, S * .16), [S * .5, S * .3], .9);
+    // 순찰 경로
+    if (st.routes) enemies.forEach(e => {
+      const col = COL[KCOL[e.type]];
+      if (e.pts) poly(e.mode === 'loop' ? [...e.pts, e.pts[0]] : e.pts, col, 1.4, [3, 4], .75);
+      if (e.area) { ctx.strokeStyle = col; ctx.setLineDash([3, 4]); ctx.lineWidth = 1.4; ctx.globalAlpha = .75;
+        ctx.strokeRect(sx(e.area[0]), sy(e.area[3]), (e.area[2] - e.area[0]) * S, (e.area[3] - e.area[1]) * S); ctx.setLineDash([]); ctx.globalAlpha = 1; }
+      if (e.state === 'investigate' || e.state === 'return') if (e.path && e.path.length) poly([[e.x, e.z], ...e.path], col, 2, [1, 3], .9);
+    });
+    // 기믹 연결선
+    if (st.links) {
+      switches.forEach(s => s.targets.forEach(id => {
+        const c = cctvs.find(q => q.id === id) || enemies.find(q => q.id === id); if (!c) return;
+        poly([s.pos, [c.x, c.z]], COL.switch, s.active > 0 ? 2 : 1.2, [2, 4], s.active > 0 ? .95 : .55);
+      }));
+    }
+    // 시야
+    const vs = viewers();
+    if (st.vision) vs.forEach(v => cone(v, COL[v.kind === 'cctv' ? 'cctv' : KCOL[v.type]], v.kind === 'cctv' ? .2 : .15));
+    // 플레이어 소음
+    const m = MODES[player.mode];
+    if (st.noise && player.moving) {
+      ctx.strokeStyle = COL.player; ctx.lineWidth = 1.4; ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.arc(sx(player.x), sy(player.z), m.noise * S, 0, 7); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = COL.player; ctx.globalAlpha = .06; ctx.fill(); ctx.globalAlpha = 1;
+    }
+    // 스위치
+    switches.forEach(s => {
+      ctx.fillStyle = COL.switch; ctx.globalAlpha = s.used && s.active <= 0 ? .45 : 1;
+      ctx.beginPath(); const x = sx(s.pos[0]), y = sy(s.pos[1]), k = S * .42;
+      ctx.moveTo(x + k * .2, y - k); ctx.lineTo(x - k * .6, y + k * .1); ctx.lineTo(x - k * .05, y + k * .1); ctx.lineTo(x - k * .25, y + k); ctx.lineTo(x + k * .65, y - k * .15); ctx.lineTo(x + k * .1, y - k * .15); ctx.closePath(); ctx.fill();
+      ctx.globalAlpha = 1;
+      label(s.active > 0 ? `${s.active.toFixed(1)}s` : s.used ? '(사용함)' : '보안 콘솔', s.pos[0] - 0.4, s.pos[1], COL.switch, .38, -.85);
+      if (sel === 'switch:' + s.id) { ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.5; ctx.strokeRect(x - S * .6, y - S * .6, S * 1.2, S * 1.2); }
+    });
+    // CCTV
+    cctvs.forEach(c => {
+      const stun = c.stun > 0;
+      ctx.fillStyle = stun ? COL.muted : COL.cctv;
+      ctx.fillRect(sx(c.x) - S * .33, sy(c.z) - S * .33, S * .66, S * .66);
+      ctx.strokeStyle = COL.bg; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(sx(c.x), sy(c.z));
+      ctx.lineTo(sx(c.x + Math.cos(c.h * D2R) * .5), sy(c.z + Math.sin(c.h * D2R) * .5)); ctx.stroke();
+      label(c.id + (stun ? ` ⏸${c.stun.toFixed(0)}` : ''), c.x, c.z, stun ? COL.muted : COL.cctv);
+      if (sel === 'cctv:' + c.id) { ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.5; ctx.strokeRect(sx(c.x) - S * .6, sy(c.z) - S * .6, S * 1.2, S * 1.2); }
+    });
+    // 적
+    enemies.forEach(e => {
+      const col = e.stun > 0 ? COL.muted : COL[KCOL[e.type]];
+      const x = sx(e.x), y = sy(e.z), r = S * .45;
+      ctx.fillStyle = col; ctx.beginPath();
+      if (e.type === 'monster') ctx.arc(x, y, r, 0, 7);
+      else if (e.type === 'turret') ctx.rect(x - r, y - r, r * 2, r * 2);
+      else { ctx.moveTo(x, y - r * 1.15); ctx.lineTo(x + r * 1.15, y); ctx.lineTo(x, y + r * 1.15); ctx.lineTo(x - r * 1.15, y); ctx.closePath(); }
+      ctx.fill();
+      ctx.strokeStyle = COL.bg; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, y);
+      ctx.lineTo(sx(e.x + Math.cos(e.h * D2R) * (e.type === 'turret' ? .75 : .45)), sy(e.z + Math.sin(e.h * D2R) * (e.type === 'turret' ? .75 : .45))); ctx.stroke();
+      let tag = e.id;
+      if (e.stun > 0) tag += ` ⏸${e.stun.toFixed(0)}`;
+      else if (e.state === 'investigate') tag += ' ?';
+      else if (e.state === 'search') tag += ' ??';
+      label(tag, e.x, e.z, e.stun > 0 ? COL.muted : COL.ink, .4, -.95);
+      if (sel === 'enemy:' + e.id) { ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, S * .85, 0, 7); ctx.stroke(); }
+    });
+    // 플레이어
+    if (player.path && player.path.length) poly([[player.x, player.z], ...player.path], COL.player, 1.4, [2, 3], .8);
+    ctx.fillStyle = seenIds.length ? COL.monster : COL.player;
+    ctx.beginPath(); ctx.arc(sx(player.x), sy(player.z), S * (MODES[player.mode].crouch ? .32 : .4), 0, 7); ctx.fill();
+    ctx.strokeStyle = COL.bg; ctx.lineWidth = 2; ctx.stroke();
+    // 해킹 범위·행동 안내
+    const h = hackTarget(), u = useTarget();
+    if (h) { ctx.strokeStyle = canHack(h) ? COL.player : COL.muted; ctx.lineWidth = 1.2; ctx.setLineDash([2, 3]);
+      ctx.beginPath(); ctx.moveTo(sx(player.x), sy(player.z)); ctx.lineTo(sx(h.x), sy(h.z)); ctx.stroke(); ctx.setLineDash([]); }
+    const tips = [];
+    if (h) tips.push(canHack(h) ? (h.kind === 'switch' ? `E 콘솔 해킹 · 보안 ${h.dur}초 정지` : `E 해킹 ${h.id} +${STEAL}`) : `${h.id} 해킹 불가`);
+    if (u) tips.push(`F ${u.o.name || u.o.id} −${u.o.cost}`);
+    if (tips.length) {
+      ctx.font = FONT(.42, 700); ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      const t = tips.join('  ·  '), tw = ctx.measureText(t).width + 10;
+      let bx = sx(player.x) + S * .7, by = sy(player.z) + S * .9;
+      if (bx + tw > cv.clientWidth - 4) bx = sx(player.x) - S * .7 - tw;
+      ctx.fillStyle = COL.bg; ctx.globalAlpha = .85; ctx.fillRect(bx, by - S * .32, tw, S * .64); ctx.globalAlpha = 1;
+      ctx.fillStyle = COL.ink; ctx.fillText(t, bx + 5, by);
+    }
+    // 발각 표시
+    if (flash && simT - flash.t < 1.6) {
+      const a = 1 - (simT - flash.t) / 1.6;
+      ctx.globalAlpha = a; ctx.font = FONT(.75, 700); ctx.fillStyle = COL.monster; ctx.textAlign = 'center';
+      ctx.fillText(`발각! ${flash.by}  (실제 게임: 층 경보)`, sx(player.x), sy(player.z) - S * 1.6); ctx.globalAlpha = 1;
+    }
+  }
+
+  // ---------- 패널 ----------
+  const $ = id => document.getElementById(id);
+  const wc = (x, z) => `${(x - 24).toFixed(1)}, ${(z - 20).toFixed(1)}`;
+  const cc = (x, z) => `${(+x).toFixed(1)}, ${(+z).toFixed(1)}`;
+  function findObj(key) {
+    if (!key) return null;
+    const [k, id] = key.split(':');
+    if (k === 'enemy') return enemies && enemies.find(e => e.id === id);
+    if (k === 'cctv') return cctvs && cctvs.find(e => e.id === id);
+    if (k === 'lure') return lures && lures.find(e => e.id === id);
+    if (k === 'switch') return switches && switches.find(e => e.id === id);
+    if (k === 'barrier') return barriers && barriers.find(e => e.id === id);
+    return null;
+  }
+  function inspHTML() {
+    const o = findObj(sel);
+    if (!o) return '<p class="muted">도면에서 오브젝트를 클릭하면 여기에 설명이 나옵니다.</p>';
+    const tag = (t, col) => `<span class="tag" style="color:var(--${col})">${t}</span>`;
+    const isNew = o.isNew ? tag('신규', 'accent') : o.moved ? tag('옮김', 'cctv') : '';
+    let head = '', rows = [];
+    if (o.kind === 'enemy') {
+      const T = TYPE[o.type];
+      head = `<div class="name" style="color:var(--${KCOL[o.type]})">${o.id} ${tag(T.label, KCOL[o.type])} ${isNew}</div>`;
+      const beh = { patrol: o.mode === 'loop' ? 'FixedPatrol (Loop)' : 'FixedPatrol (PingPong)', free: 'FreePatrol', stationary: 'Stationary' }[o.behav];
+      const stName = o.stun > 0 ? `기절 ${o.stun.toFixed(1)}초` : { patrol: '순찰', investigate: '소리 조사 중', search: '둘러보는 중', return: '순찰로 복귀' }[o.state];
+      rows = [['행동', beh], ['시야', o.fov >= 360 ? `원형 ${o.range}m` : `${o.fov}° · ${o.range}m`], ['속도', o.speed ? o.speed + ' m/s' : '고정'], ['청각 배율', o.hear], ['행운', o.luck], ['상태', stName],
+        ['시안', o.pts ? cc(...o.pts[0]) + ' …' : cc(o.x, o.z)], ['월드', o.pts ? wc(...o.pts[0]) + ' …' : wc(o.x, o.z)]];
+    } else if (o.kind === 'cctv') {
+      head = `<div class="name" style="color:var(--cctv)">${o.id} ${tag('CCTV', 'cctv')} ${isNew}</div>`;
+      const sw = L.switches.find(s => s.targets.includes(o.id));
+      rows = [['시야', '60° · 8m'], ['회전', `기준 Unity ${yaw(o.base)}° ±45°`], ['행운', o.luck], ['상태', o.stun > 0 ? `기절 ${o.stun.toFixed(1)}초` : '작동'], ['콘솔', sw ? sw.id + ' 연결' : '없음'], ['시안', cc(o.x, o.z)], ['월드', wc(o.x, o.z)]];
+    } else if (o.kind === 'lure') {
+      head = `<div class="name" style="color:var(--lure)">${o.id} ${tag('소음 유인기', 'lure')} ${tag('신규', 'accent')}</div>`;
+      rows = [['비용', `행운 ${o.cost} · 1회용`], ['소리', `반경 ${o.R}m · ${o.dur}초 · ${PULSE}초마다`], ['상태', o.active > 0 ? `작동 중 ${o.active.toFixed(1)}초` : o.used ? '사용함' : '대기'],
+        ['콘솔 시안', cc(...o.console)], ['콘솔 월드', wc(...o.console)], ['스피커 시안', cc(...o.speaker)], ['스피커 월드', wc(...o.speaker)]];
+    } else if (o.kind === 'switch') {
+      head = `<div class="name" style="color:var(--switch)">${o.id} ${tag('신규', 'accent')}</div>`;
+      rows = [['조작', '해킹(E) · 1회 · 행운 0'], ['효과', `${o.targets.join(' · ')} ${o.dur}초 정지`], ['상태', o.active > 0 ? `작동 중 ${o.active.toFixed(1)}초` : o.used ? '사용함' : '대기'], ['시안', cc(...o.pos)], ['월드', wc(...o.pos)]];
+    } else if (o.kind === undefined && o.type) {
+      head = `<div class="name" style="color:var(--${o.type === 'door' ? 'door' : 'laser'})">${o.name} ${tag(o.type === 'door' ? '행운 문' : '레이저', o.type === 'door' ? 'door' : 'laser')} ${isNew}</div>`;
+      rows = [['비용', `행운 ${o.cost} · 1회용`], ['상태', o.open ? '열림' : '닫힘'], ['적', '항상 막힘 (D6: 닫힌 채 NavMesh 굽기)'], ['시안', `x ${o.x} · z ${o.z0}~${o.z1}`], ['월드', `x ${(o.x - 24).toFixed(1)} · z ${(o.z0 - 20).toFixed(1)}~${(o.z1 - 20).toFixed(1)}`]];
+    }
+    return head + `<p>${o.why || ''}</p><dl>${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>`;
+  }
+  function renderPanels() {
+    computeChecks();
+    renderCoords();
+    routesDirty = true; logDirty = true;
+  }
+  function renderRoutes() {
+    const [lo, hi] = L.target;
+    $('routes').innerHTML = routeRes.map(r => {
+      const len = r.path ? r.path.len : null;
+      const ok = len != null && len >= lo && len <= hi;
+      const pill = r.id === 'none' ? `<span class="pill ${ok ? 'in' : 'out'}">${ok ? '목표 안' : len < lo ? '짧음' : '긺'}</span>` : '';
+      const used = r.used.length ? r.used.map(id => barriers.find(b => b.id === id).name).join(' + ') : '없음';
+      return `<tr class="route${r.id === st.route ? ' sel' : ''}" data-id="${r.id}" tabindex="0"><td>${r.name}<div class="muted" style="font-size:11px">지나는 기믹: ${used}</div></td>`
+        + `<td class="n">${len != null ? len.toFixed(0) + 'm' : '막힘'}</td><td class="n">${len != null ? (len / 2.5).toFixed(0) + '초' : '-'}</td>`
+        + `<td class="n">${r.now ? '-' : r.cost}</td><td>${pill}</td></tr>`;
+    }).join('');
+    $('routes').querySelectorAll('tr').forEach(tr => {
+      const go = () => { st.route = tr.dataset.id; routesDirty = true; };
+      tr.addEventListener('click', go); tr.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    });
+    const none = routeRes.find(r => r.id === 'none'), allr = routeRes.find(r => r.id === 'all');
+    if (st.layout === 'expand') {
+      $('routeNote').innerHTML = `<b>읽는 법</b><span>기믹 없는 길은 S→A→C→(아래 우회)→E→D_E→D→F→F_G→G→출구로 약 ${none.path.len.toFixed(0)}m입니다. 레이저-2 하나(행운 3)로 D·F를 통째로 건너뛰어 ${routeRes.find(r => r.id === 'l2').path.len.toFixed(0)}m가 됩니다. 기믹 없는 길이 목표 130m에 ${none.path.len >= 130 ? '닿습니다' : '조금 못 미칩니다. F_G 복도를 꺾거나 출구를 G 남동쪽으로 옮겨 늘릴 수 있습니다'}.</span>`;
+    } else {
+      $('routeNote').innerHTML = `<b>읽는 법</b><span>샌드박스는 기믹 없이도 C→E 아래 우회로로 B·D를 모두 건너뛰어 약 ${none.path.len.toFixed(0)}m에 출구에 닿습니다 (009 "남긴 일"). 문을 열면 ${allr.path.len.toFixed(0)}m까지 짧아집니다.</span>`;
+    }
+    routesDirty = false;
+  }
+  function computeChecks() {
+    const ex = LAYOUTS.expand, sb = LAYOUTS.sandbox;
+    // 연결 그래프 (기믹 연결 포함)
+    const G = st.layout === 'expand'
+      ? { nodes: 'S A B C D E F G X'.split(' '), edges: [['S', 'A'], ['A', 'B'], ['A', 'C'], ['B', 'C'], ['C', 'D', 'laser1'], ['C', 'E'], ['C', 'E', 'door1'], ['B', 'D', 'door2'], ['D', 'E'], ['D', 'F'], ['E', 'G', 'laser2'], ['F', 'G'], ['G', 'X']] }
+      : { nodes: 'S A B C D E X'.split(' '), edges: [['S', 'A'], ['A', 'B'], ['A', 'C'], ['B', 'C'], ['C', 'D', 'laser1'], ['C', 'E'], ['C', 'E', 'door1'], ['D', 'E'], ['E', 'X']] };
+    const deg = {}; G.nodes.forEach(n => deg[n] = 0); G.edges.forEach(([a, b]) => { deg[a]++; deg[b]++; });
+    const free = G.edges.filter(e => !e[2]);
+    const dead = G.nodes.filter(n => n !== 'S' && n !== 'X' && deg[n] < 2);
+    const junc = G.nodes.filter(n => deg[n] >= 3);
+    const loopsAll = G.edges.length - G.nodes.length + 1, loopsFree = free.length - G.nodes.length + 1;
+    const items = [
+      ['막다른 곳 (시작·출구 제외)', dead.length ? dead.join(', ') : '없음'],
+      ['고리 (기믹 연결 포함)', loopsAll + '개'],
+      ['고리 (기믹 없이 걸을 수 있는 연결만)', loopsFree + '개'],
+      ['갈림길 (연결 3개 이상)', `${junc.length}곳 · ${junc.join(' ')}`],
+      ['시작 구역에서 만나는 감시자', 'P1 하나'],
+    ];
+    $('check').innerHTML = items.map(([k, v]) => `<li><span>${k}</span><b>${v}</b></li>`).join('')
+      + `<li><span class="muted" style="grid-column:1/-1;font-size:12px">고리를 기믹 연결까지 세면 넉넉하지만, 문·레이저를 하나도 안 쓰면 고리가 ${loopsFree}개뿐입니다. 추격을 끊는 고리 대부분이 행운을 써야 열린다는 뜻이라, 1단계에서 의도인지 정할 곳입니다.</span></li>`;
+    const cnt = (Lx, f) => f(Lx);
+    const rows = [
+      ['CCTV', l => l.cctvs.length, 'O'],
+      ['몬스터', l => l.enemies.filter(e => e.type === 'monster').length, 'O (D2)'],
+      ['고정 터렛', l => l.enemies.filter(e => e.type === 'turret').length, 'O'],
+      ['순찰 드론', l => l.enemies.filter(e => e.type === 'drone').length, 'O'],
+      ['행운 문', l => l.barriers.filter(b => b.type === 'door').length, '-'],
+      ['레이저', l => l.barriers.filter(b => b.type === 'laser').length, '-'],
+      ['보안 콘솔', l => l.switches.length, '콘솔 해킹'],
+    ];
+    const tot = l => rows.reduce((s, r) => s + r[1](l), 0);
+    $('counts').innerHTML = rows.map(([n, f, h]) => `<tr><td>${n}</td><td class="n">${cnt(sb, f)}</td><td class="n">${cnt(ex, f)}</td><td>${h}</td></tr>`).join('')
+      + `<tr><td><b>합계</b></td><td class="n"><b>${tot(sb)}</b></td><td class="n"><b>${tot(ex)}</b></td><td class="muted">해킹 대상 ${sb.cctvs.length + sb.enemies.length} → ${ex.cctvs.length + ex.enemies.length + ex.switches.length}</td></tr>`;
+    $('fixes').innerHTML = [
+      ['최단 경로가 짧고 B·D를 건너뜀', '출구를 G로 옮겨 기믹 없는 길이 D·F를 지남'],
+      ['지름길과 C→D 복도 사이 벽 3.6m (걷기 소음 4m보다 얇음)', 'C_D_1·C_D_2를 1m 위로 → 4.6m'],
+      ['D 입구에서 CCTV-2와 G1 시야 겹침', 'G1을 D 동쪽으로 옮김'],
+      ['엄폐물 부족', '방 안 낮은 엄폐물 7 + 높은 블록 3 + 복도 안 A/B'],
+      ['CCTV-1이 C 서쪽만 봄', 'C 북동쪽 구석, Unity 225°로 옮김 (확정)'],
+      ['벽 이음새·외곽 마감', '이 그림 범위 밖 (4단계)'],
+    ].map(([a, b]) => `<li><span>${a}</span><b style="font-family:var(--f-body);font-weight:400;color:var(--muted);max-width:22ch">${b}</b></li>`).join('');
+  }
+  function renderCoords() {
+    const Lx = L;
+    const f = r => `${r.x0}, ${r.z0} – ${r.x1}, ${r.z1}`;
+    const w = r => `${(r.x0 - 24).toFixed(1)}, ${(r.z0 - 20).toFixed(1)} – ${(r.x1 - 24).toFixed(1)}, ${(r.z1 - 20).toFixed(1)}`;
+    $('coords').innerHTML = [...Lx.rooms.map(r => ({ n: r.name, r })), ...Lx.corrs.map(r => ({ n: '복도 ' + r.id, r }))]
+      .map(({ n, r }) => `<tr><td>${n}${r.isNew ? ' <span class="pill in" style="color:var(--accent)">신규</span>' : r.moved ? ' <span class="pill out" style="color:var(--cctv)">옮김</span>' : ''}</td><td class="m">${f(r)}</td><td class="m">${w(r)}</td></tr>`).join('');
+    const objs = [
+      ...Lx.enemies.map(e => [e.id + ' ' + TYPE[e.type].label, e.pts ? e.pts[0] : e.pos, e.pts ? '경로' : (e.heading ?? '-')]),
+      ...Lx.cctvs.map(c => [c.id, c.pos, c.base]),
+      ...Lx.barriers.map(b => [b.name, [b.x, (b.z0 + b.z1) / 2], '-']),
+      ...Lx.lures.flatMap(l => [[l.id + ' 콘솔', l.console, '-'], [l.id + ' 스피커', l.speaker, '-']]),
+      ...Lx.switches.map(s => [s.id, s.pos, '-']),
+    ];
+    $('ocoords').innerHTML = objs.map(([n, p, h]) => `<tr><td>${n}</td><td class="m">${cc(...p)}</td><td class="m">${wc(...p)}</td><td class="n">${typeof h === 'number' ? yaw(h) + '°' : h}</td></tr>`).join('');
+  }
+  function renderLog() {
+    $('log').innerHTML = log.map(l => `<li><span>${l.text}</span><span class="${l.cls}">${l.delta > 0 ? '+' + l.delta : l.delta < 0 ? l.delta : l.cls === 'z' && l.text === '시작' ? l.delta : ''}</span></li>`).join('');
+    logDirty = false;
+  }
+
+  // ---------- 입력 ----------
+  const setPressed = (wrap, v) => wrap.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+  const syncPlay = () => { $('play').textContent = st.playing ? '일시정지' : '재생'; $('play').setAttribute('aria-pressed', String(st.playing)); };
+  $('play').addEventListener('click', () => { st.playing = !st.playing; syncPlay(); });
+  $('speed').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; st.speed = +b.dataset.v; setPressed($('speed'), b.dataset.v); });
+  const setMode = v => { player.mode = v; setPressed($('mode'), v); };
+  $('mode').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setMode(b.dataset.v); });
+  $('layout').addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.dataset.v === st.layout) return; st.layout = b.dataset.v; setPressed($('layout'), b.dataset.v); sel = null; setup(); });
+  $('reset').addEventListener('click', () => setup());
+  $('corr').addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.dataset.v === st.corr) return; st.corr = b.dataset.v; setPressed($('corr'), st.corr); setup(); });
+  $('vis').addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.dataset.v === st.vis) return; st.vis = b.dataset.v; setPressed($('vis'), st.vis); setup(); });
+  [['t-vision', 'vision'], ['t-routes', 'routes'], ['t-noise', 'noise'], ['t-links', 'links'], ['t-new', 'showNew']].forEach(([id, k]) => {
+    $(id).checked = st[k]; $(id).addEventListener('change', e => { st[k] = e.target.checked; staticDirty = true; });
+  });
+  $('actE').addEventListener('click', () => { doHack(); });
+  $('actF').addEventListener('click', () => { doUse(); });
+  document.querySelectorAll('#sheet-console').forEach(el => el.addEventListener('click', ev => {
+    if (ev.target.closest('input,label,button,a')) return;
+    if (st.layout !== 'expand') return;
+    sel = 'switch:보안 콘솔';
+  }));
+
+  function pickObject(x, z) {
+    const cands = [
+      ...enemies.map(e => ['enemy:' + e.id, e.x, e.z]),
+      ...cctvs.map(c => ['cctv:' + c.id, c.x, c.z]),
+      ...lures.flatMap(l => [['lure:' + l.id, ...l.console], ['lure:' + l.id, ...l.speaker]]),
+      ...switches.map(s => ['switch:' + s.id, ...s.pos]),
+      ...barriers.map(b => ['barrier:' + b.id, b.x, (b.z0 + b.z1) / 2]),
+    ];
+    let best = null, bd = 1.0;
+    cands.forEach(([k, cx, cz]) => { const d = Math.hypot(cx - x, cz - z); if (d < bd) { bd = d; best = k; } });
+    return best;
+  }
+  let dragging = false;
+  function walkTo(ev) {
+    const r = cv.getBoundingClientRect(), x = wx(ev.clientX - r.left), z = wz(ev.clientY - r.top);
+    const p = findPath(player.x, player.z, x, z, 'player');
+    if (p) player.path = p.pts.slice(1);
+  }
+  cv.addEventListener('pointerdown', ev => {
+    cv.focus();
+    const r = cv.getBoundingClientRect(), x = wx(ev.clientX - r.left), z = wz(ev.clientY - r.top);
+    const hit = pickObject(x, z);
+    if (hit) { sel = hit; return; }
+    dragging = true; cv.setPointerCapture(ev.pointerId); walkTo(ev);
+  });
+  let lastDrag = 0;
+  cv.addEventListener('pointermove', ev => { if (dragging && performance.now() - lastDrag > 120) { lastDrag = performance.now(); walkTo(ev); } });
+  cv.addEventListener('pointerup', () => { dragging = false; });
+  cv.addEventListener('pointercancel', () => { dragging = false; });
+  const keys = new Set();
+  const KEYMAP = { KeyW: [0, 1], ArrowUp: [0, 1], KeyS: [0, -1], ArrowDown: [0, -1], KeyA: [-1, 0], ArrowLeft: [-1, 0], KeyD: [1, 0], ArrowRight: [1, 0] };
+  cv.addEventListener('keydown', e => {
+    if (KEYMAP[e.code]) { keys.add(e.code); player.path = null; e.preventDefault(); return; }
+    if (e.code === 'KeyE') { doHack(); e.preventDefault(); }
+    if (e.code === 'KeyF') { doUse(); e.preventDefault(); }
+    const md = { Digit1: 'walk', Digit2: 'run', Digit3: 'sneak', Digit4: 'cover' }[e.code];
+    if (md) { setMode(md); e.preventDefault(); }
+  });
+  cv.addEventListener('keyup', e => keys.delete(e.code));
+  cv.addEventListener('blur', () => keys.clear());
+
+  // ============================================================
+  // AUTOPILOT (새로 추가한 코드 · 원본 시뮬레이션 아님)
+  // 원본의 findPath / hackTarget / canHack / doHack / useTarget / doUse / setup 을 그대로 호출만 한다.
+  // ============================================================
+  const AP_LIMIT = 60;   // 시뮬레이션 초: 이 안에 출구에 못 닿으면 처음부터 다시
+  const AP_WAIT = 2;     // 출구 도착(또는 시간 초과) 뒤 대기 초
+  const AP_REPLAN = 1.5; // 길을 다시 계산하는 간격(초)
+  const ap = { wait: 0, replan: 0 };
+  function apPlan() {
+    const ex = [(L.exit.x0 + L.exit.x1) / 2, (L.exit.z0 + L.exit.z1) / 2];
+    const p = findPath(player.x, player.z, ex[0], ex[1], 'player');
+    player.path = p ? p.pts.slice(1) : null;
+    ap.replan = AP_REPLAN;
+  }
+  let apHudLast = '';
+  function apHud() {
+    const e = log.length ? log[0] : null;
+    const txt = e ? e.text + (e.delta > 0 ? ' +' + e.delta : e.delta < 0 ? ' ' + e.delta : '') : '';
+    const w = $('expo').style.width || '0%';
+    const s = player.luck + '|' + w + '|' + txt;
+    if (s === apHudLast) return;
+    apHudLast = s;
+    $('hud-luck').textContent = player.luck;
+    $('hud-expo').style.width = w;
+    $('hud-log').textContent = txt;
+  }
+  function autoStep(dt, real) {
+    if (st.playing) {
+      if (ap.wait > 0) {
+        ap.wait -= real;
+        if (ap.wait <= 0) { setup(); ap.wait = 0; ap.replan = 0; }
+      } else if (player.cleared || simT > AP_LIMIT) {
+        ap.wait = AP_WAIT; player.path = null;
+      } else {
+        ap.replan -= dt;
+        if (!player.path || !player.path.length || ap.replan <= 0) apPlan();
+        const h = hackTarget();
+        if (canHack(h)) doHack();
+        const u = useTarget();
+        if (u && player.luck >= costOf(u)) { doUse(); apPlan(); }
+      }
+    }
+    apHud();
+  }
+  // 웹폰트가 늦게 도착하면 정적 레이어(도면 글자)를 다시 그린다
+  try {
+    Promise.all(['700 14px "IBM Plex Sans KR"', '600 14px "JetBrains Mono"', '400 14px "JetBrains Mono"']
+      .map(f => document.fonts.load(f, '도면 출구 갈림길 A B C D E F G'))).then(() => { staticDirty = true; }).catch(() => {});
+  } catch (_) { /* 폰트 API 없음: 무시 */ }
+  // ======================= AUTOPILOT 끝 =======================
+
+  // ---------- 루프 ----------
+  let last = performance.now(), lastStatus = '', lastInsp = '', lastAct = '';
+  function frame(now) {
+    const real = Math.min(0.05, (now - last) / 1000); last = now;
+    const dt = st.playing ? real * st.speed : 0;
+    simT += dt;
+    if (dt > 0) {
+      enemies.forEach(e => stepEnemy(e, dt));
+      cctvs.forEach(c => stepCCTV(c, dt));
+      switches.forEach(s => { if (s.active > 0) s.active = Math.max(0, s.active - dt); });
+    }
+    // 플레이어 이동 (일시정지 중에도 움직일 수 있다)
+    const m = MODES[player.mode], pdt = real * (st.playing ? st.speed : 1);
+    let mx = 0, mz = 0; keys.forEach(k => { mx += KEYMAP[k][0]; mz += KEYMAP[k][1]; });
+    const ox = player.x, oz = player.z;
+    if (mx || mz) {
+      const Ln = Math.hypot(mx, mz), sp = m.speed * pdt;
+      const nx = player.x + mx / Ln * sp, nz = player.z + mz / Ln * sp;
+      if (clear(nx, player.z, 0.25, 'player')) player.x = nx;
+      if (clear(player.x, nz, 0.25, 'player')) player.z = nz;
+    } else if (player.path && player.path.length) {
+      followPath(player, m.speed, pdt, false);
+      if (!player.path.length) player.path = null;
+    }
+    player.moving = Math.hypot(player.x - ox, player.z - oz) > 1e-4;
+    // 플레이어 소음: 움직이는 동안만
+    if (player.moving && dt > 0) enemies.forEach(e => { if (e.hear > 0 && Math.hypot(e.x - player.x, e.z - player.z) <= m.noise * e.hear) hear(e, player.x, player.z, '플레이어'); });
+    // 시야·노출
+    const vs = viewers(), seen = [];
+    grace = Math.max(0, grace - dt);
+    [...enemies, ...cctvs].forEach(v => {
+      const on = v.stun <= 0 && grace <= 0 && sees(v, player, m.crouch);
+      if (on) seen.push(v.id);
+      v.expo = on ? v.expo + dt : Math.max(0, v.expo - dt);
+    });
+    const worst = [...enemies, ...cctvs].reduce((a, v) => v.expo > a.expo ? v : a, { expo: 0 });
+    if (worst.expo >= DETECT_T) {
+      detCount++; flash = { t: simT, by: worst.id }; grace = 1.5;
+      [...enemies, ...cctvs].forEach(v => v.expo = 0);
+      addLog(`발각 (${worst.id})`, 0, 'z');
+    }
+    // 출구
+    if (inR(L.exit, player.x, player.z) && !player.cleared) { player.cleared = true; addLog('출구 도착 (FloorCleared)', 0, 'z'); }
+    if (!inR(L.exit, player.x, player.z)) player.cleared = false;
+
+    autoStep(dt, real); // AUTOPILOT
+    draw(seen);
+
+    // 패널 (바뀐 것만)
+    $('luck').textContent = player.luck;
+    $('det').textContent = detCount;
+    $('expo').style.width = Math.min(100, worst.expo / DETECT_T * 100) + '%';
+    const s = `<span>위치 시안 <b>${cc(player.x, player.z)}</b> · 월드 <b>${wc(player.x, player.z)}</b></span>`
+      + `<span>보고 있는 감시자: ${seen.length ? `<span class="bad">${seen.join(' · ')}</span>` : '<span class="ok">없음</span>'}</span>`
+      + `<span>${m.crouch ? '웅크림: 낮은 엄폐물 뒤에서 안 보임' : '서 있음: 낮은 엄폐물 위로 보임'}</span>`;
+    if (s !== lastStatus) { $('status').innerHTML = s; lastStatus = s; }
+    $('modeinfo').textContent = `${m.speed} m/s · 소음 ${m.noise}m`;
+    const h = hackTarget(), u = useTarget();
+    const act = `${h ? h.id + canHack(h) : ''}|${u ? u.o.id + player.luck : ''}`;
+    if (act !== lastAct) {
+      lastAct = act;
+      $('actE').disabled = !canHack(h);
+      $('actEt').textContent = h ? (canHack(h) ? (h.kind === 'switch' ? `${h.id} · 보안 ${h.dur}초 정지` : `${h.id} · 행운 +${STEAL} · 기절 ${HACK_STUN}초`) : `${h.id} · ${h.stun > 0 ? '기절 중' : '행운 부족'}`) : '6m 안에 대상 없음';
+      $('actF').disabled = !u || player.luck < u.o.cost;
+      $('actFt').textContent = u ? `${u.o.name || u.o.id} · 행운 −${u.o.cost}${player.luck < u.o.cost ? ' (부족)' : ''}` : '가까이(2m)에 문·레이저 없음';
+    }
+    const ih = inspHTML();
+    if (ih !== lastInsp) { $('insp').innerHTML = ih; lastInsp = ih; }
+    if (logDirty) renderLog();
+    if (routesDirty) renderRoutes();
+    requestAnimationFrame(frame);
+  }
+
+  syncPlay();
+  resize();
+  setup();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
