@@ -426,6 +426,32 @@ img{display:block}
   .m-reel .track::-webkit-scrollbar{display:none}
   .m-reel .track figure{flex:none;width:84vw;scroll-snap-align:center}
 }
+
+/* ── 사례·난관 표제: 스크롤 중에도 구분이 보이게 크게 (11-24) ── */
+.intro.head > .eyebrow,.eyebrow.cs{display:flex;align-items:center;flex-wrap:wrap;gap:.35em 0;font-size:clamp(20px,1.9vw,30px);font-weight:900;letter-spacing:-.01em;color:var(--ink)}
+.intro.head > .eyebrow::before,.eyebrow.cs::before{content:"";flex:none;width:.34em;height:1.05em;margin-right:.55em;border-radius:2px;background:var(--pass)}
+.intro.head > .eyebrow.hard::before,.eyebrow.cs.hard::before{background:var(--fail)}
+.intro.head > .eyebrow .sk,.eyebrow.cs .sk{font-size:clamp(12px,.95vw,15px);padding:3px 12px}
+.intro.head > .eyebrow + h2,.eyebrow.cs + h2{margin-top:clamp(14px,2.2vh,24px)}
+/* 난관 본문: 증상 · 시도 · 해결 · 결과 표시를 또렷하게 */
+.row .txt.story .k{display:flex;align-items:baseline;gap:.9em;font-size:clamp(14px,1.05vw,17px);letter-spacing:.06em;color:var(--pass)}
+.row .txt.story p + .k{margin-top:clamp(22px,3.6vh,40px);padding-top:clamp(18px,3vh,32px);border-top:1px solid var(--line)}
+.row .txt.story .k.bad{color:var(--fail)}
+.row .txt.story .k b{margin-top:0;font-size:clamp(20px,1.9vw,30px);letter-spacing:-.02em;line-height:1.3}
+.row .txt.story p{margin-top:10px;font-size:clamp(15px,1.25vw,19px)}
+.row:has(.txt.story){align-items:start}
+/* 첫 화면 영상 칸: 위치·크기를 정수 픽셀로 맞춘다 (소수점 가장자리에서 영상 한 줄이 선처럼 비치던 문제) */
+@supports (translate:0 round(-54%,1px)){
+  @media not ((max-width:800px) or (max-aspect-ratio:5/4)){
+    .hero .hero-reel{top:round(50%,1px);width:round(down,min(66vw,1500px),16px);transform:none;translate:0 round(-54%,1px)}
+  }
+  @media (max-width:800px),(max-aspect-ratio:5/4){
+    .hero .hero-reel{aspect-ratio:auto;height:round(56.25vw,1px)}
+  }
+}
+/* 단계 이름표는 줄바꿈하지 않는다 */
+.row .txt.story .k{white-space:nowrap}
+.row .txt.story .k b{white-space:normal;min-width:0}
 </style>
 <style data-part="ex">
 /* E1 · 첫 장면: 배경 이미지 왼쪽(행성·인물)을 눌러 글자를 읽히게 */
@@ -587,6 +613,8 @@ img{display:block}
   /* 모바일 단계 무대: 진행도가 한 번에 바뀌므로 맞바꿈은 전환으로 보여 준다 */
   .m-step .ex-scroll .ex-b{transition:clip-path .7s ease}
 }
+/* 스킬 영상: 화면을 꽉 채우지 않고 틀 안에서 재생 (11-24) */
+.stage:not(.m-swipe) .shot.ex-light > video{inset:auto;left:50%;top:calc(50% - 3svh);transform:translate(-50%,-50%);width:min(calc(100% - 2*var(--gut)),calc(78svh*16/9));height:auto;aspect-ratio:16/9;border-radius:10px}
 </style>
 <style data-part="gf">
 /* G1: 배경 이미지 폭 상한(원본 폭 1282), 제목의 작은 글자 */
@@ -790,7 +818,7 @@ img{display:block}
       <p class="ex-emit"><b>이미터 40개</b><span>Mesh ×30</span><span>Ribbon ×6</span><span>Sprite ×4</span></p>
     </div>
     <div class="layer shot ex-light">
-      <img src="assets/img/ex/showcase_skybreak.webp" alt="" loading="lazy">
+      <video data-auto muted loop playsinline preload="none" poster="assets/video/ex_skybreak.webp" src="assets/video/ex_skybreak.mp4"></video>
       <span class="tag k-game"><b>게임 화면</b>하늘 파괴</span>
       <p class="cap">시작·충전·유성·빔·최종 폭발, 다섯 파일이 애니메이션의 정해진 시점에 차례로 재생됩니다. 불꽃과 빛은 Sprite, 유성과 폭발 파편은 Mesh, 하늘에서 내리는 광선은 Beam이 맡았습니다.</p>
       <p class="ex-emit"><b>이미터 45개</b><span>Sprite ×28</span><span>Mesh ×16</span><span>Beam ×1</span></p>
@@ -870,7 +898,7 @@ _context-&gt;<i>DrawIndexedInstancedIndirect</i>(_indirectArgsBuffer.<i>Get</i>(
   <div class="pin">
     <div class="layer ex-slice" data-ex-step="0">
       <div class="ex-slice-in">
-        <div class="eyebrow">사례 02 <span class="sk">C++</span><span class="sk">시스템 구현</span></div>
+        <div class="eyebrow cs">사례 02 <span class="sk">C++</span><span class="sk">시스템 구현</span></div>
         <h2 class="ex-h">프레임이 길어도 지연 · 재생 · 반복을 <u>건너뛰지 않는다</u></h2>
         <div class="ex-time" aria-hidden="true">
           <div class="ex-frame"><span>이번 프레임에 받은 0.15초</span></div>
@@ -951,9 +979,8 @@ _context-&gt;<i>DrawIndexedInstancedIndirect</i>(_indirectArgsBuffer.<i>Get</i>(
 
 <!-- E5 · 난관: Trail 보간 (PPT 17장) -->
 <section class="intro head" data-p="ex">
-  <div class="eyebrow">난관과 해결 <span class="sk">수학</span><span class="sk">문제 해결</span></div>
-  <h2>빠른 검격에도 <u>꺾이지 않는</u> Trail</h2>
-  <p>프레임당 샘플이 하나라, 빠른 검격에서는 점 사이가 벌어져 잔상이 꺾였습니다.</p>
+  <div class="eyebrow hard">난관과 해결 <span class="sk">수학</span><span class="sk">문제 해결</span></div>
+  <h2>빠른 검격에서 꺾이던 잔상을, <u>빠른 구간만 촘촘하게</u> 채워 폈습니다</h2>
 </section>
 
 <section class="row" data-p="ex">
@@ -963,11 +990,13 @@ _context-&gt;<i>DrawIndexedInstancedIndirect</i>(_indirectArgsBuffer.<i>Get</i>(
       <figure><svg class="ex-curve" viewBox="0 0 360 210" data-ex-curve="smooth"></svg><figcaption class="tag k-game"><b>보간 후</b>점 6 → 22개</figcaption></figure>
     </div>
   </div>
-  <div class="txt">
-    <div class="k">해법<b>점을 지나는 곡선</b></div>
-    <p>점을 지나는 <b>Catmull-Rom 곡선</b>으로 잇고, 구간 길이만큼만 나눠 채웠습니다.</p>
-    <div class="k">효과<b>빠른 구간만 촘촘하게</b></div>
-    <p>느린 구간은 점이 거의 늘지 않고, 빠른 구간만 촘촘해집니다.</p>
+  <div class="txt story">
+    <div class="k bad">증상<b>점 사이가 벌어져 꺾임</b></div>
+    <p>위치를 프레임마다 한 번 기록하니, 빠른 검격에서는 점 사이가 벌어져 잔상이 각지게 꺾였습니다.</p>
+    <div class="k">해결<b>점을 지나는 곡선, 거리만큼만 분할</b></div>
+    <p>점을 지나는 <b>Catmull-Rom 곡선</b>으로 잇고, 구간 길이를 간격으로 나눈 만큼만 채웠습니다. 기록한 점도 한 번 다듬어 접선이 튀지 않게 했습니다.</p>
+    <div class="k">결과<b>빠른 구간만 촘촘하게</b></div>
+    <p>이 예시에서 점 6개가 22개가 됩니다. 느린 구간은 거의 늘지 않고, 나이도 같은 비율로 보간해 꼬리의 폭과 투명도가 끊기지 않습니다.</p>
   </div>
 </section>
 
@@ -1336,9 +1365,8 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
 
 <!-- G9 · 난관과 해결 -->
 <section class="intro head" data-p="gf">
-  <div class="eyebrow">난관과 해결 <span class="sk">문제 해결</span></div>
-  <h2>1인칭 팔 모델과 무기 모델의 애니메이션 동기화</h2>
-  <p>1인칭 팔과 무기는 뼈대와 애니메이션이 따로라, 게임이 도는 내내 둘을 맞춰 줘야 했습니다.</p>
+  <div class="eyebrow hard">난관과 해결 <span class="sk">문제 해결</span></div>
+  <h2>런타임에서 뼈대 사이 포즈를 넘기려던 시도를 접고, <u>제작 단계에서 팔과 무기를 합쳤습니다</u></h2>
 </section>
 
 <section class="row" data-p="gf">
@@ -1351,11 +1379,15 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
     <p class="tag k-ed"><b>에디터</b>무기마다 팔과 무기를 한 모델로 묶은 계층</p>
     <img class="gf-hier" src="assets/img/gf/GF_13_body_hierarchy_1.webp" alt="" loading="lazy">
   </div>
-  <div class="txt">
-    <div class="k">해결<b>제작 단계로 옮김</b></div>
-    <p>게임 안에서 맞추는 대신 만들 때 미리 합쳤습니다. <b>Unity에서 팔과 무기를 한 모델로 묶어 애니메이션을 입혀 FBX로 내보내고, 직접 만든 변환 툴(Assimp)로 게임용 데이터로 바꿨습니다.</b></p>
-    <div class="k">결과<b>단일 데이터 재생</b></div>
-    <p>게임은 <b>합쳐진 데이터 하나만 재생</b>하면 되니, 팔과 무기를 맞추는 코드가 필요 없어졌습니다.</p>
+  <div class="txt story">
+    <div class="k bad">증상<b>몸통이 팔 움직임을 받을 길이 없음</b></div>
+    <p>무기 애니메이션에는 팔 움직임이 같이 들어 있는데, 팔은 플레이어 몸통 모델의 뼈대입니다. 뼈대가 다르면 변환한 애니메이션이 붙지 않았습니다.</p>
+    <div class="k">시도<b>런타임 포즈 전달 → 상체 클립 분리</b></div>
+    <p>먼저 무기 쪽 상체 포즈를 몸통의 같은 이름 본으로 넘겨 봤습니다. 누적 행렬이 아닌 로컬 포즈로 넘겨야 했고, 몸통이 무기보다 먼저 갱신되는 순서도 걸렸습니다. 다음에는 변환 툴에서 상체 클립만 따로 뽑아 몸통이 직접 재생하게 하는 쪽으로 바꿨습니다.</p>
+    <div class="k">해결<b>제작 단계에서 합침</b></div>
+    <p><b>Unity에서 팔과 무기를 한 모델로 묶어 애니메이션을 입혀 FBX로 내보내고, 직접 만든 변환 툴(Assimp)로 게임용 데이터로 바꿨습니다.</b> 게임에는 무기마다 그 무기용 몸통 모델을 두고, 무기를 바꾸면 팔을 내리고 드는 모션에 맞춰 갈아 끼웁니다.</p>
+    <div class="k">결과<b>포즈 전달 계층 없음</b></div>
+    <p>뼈대 사이에서 포즈를 넘기는 런타임 계층이 필요 없어졌습니다. 몸통과 무기는 각자 자기 애니메이션만 재생하고, 무기는 손 소켓에 붙습니다.</p>
   </div>
 </section>
 
@@ -1593,7 +1625,7 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
 
 <!-- D5 · 난관: 2층 조명 굽기 -->
 <section class="intro head">
-  <div class="eyebrow">난관과 해결 <span class="sk">문제 해결</span><span class="sk">협업</span></div>
+  <div class="eyebrow hard">난관과 해결 <span class="sk">문제 해결</span><span class="sk">협업</span></div>
   <h2>2층 조명 굽기, 외부 모델의 라이트맵 UV 누락</h2>
   <p>천장이 뚫린 2층에 실시간 해 그림자가 대각선으로 졌습니다. 웹에서 돌아가는 게임이라, 실시간 조명을 늘리는 대신 조명을 미리 굽기로 했습니다.</p>
 </section>
@@ -1779,7 +1811,7 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
     <h3>Expedition 33</h3>
     <p class="ai-goal">팀 프로젝트의 완성도</p>
     <p class="ai-how">안전장치와 팀 규칙</p>
-    <dl><dt>AI</dt><dd>팀 코드 규칙과 hook 안에서 구현</dd><dt>나</dt><dd>프롬프트 · hook 개선, 팀 코드 규칙 · 구조 문서, 계획서 반려</dd></dl>
+    <dl><dt>AI</dt><dd>팀 코드 규칙과 hook 안에서 구현</dd><dt>나</dt><dd>프롬프트 · hook 개선, 팀 코드 규칙 · 구조 문서, 계획 방향 검토와 수정</dd></dl>
     <p class="ai-num"><b>hook</b>이 거부한 것 · 파괴적 git 명령, 데이터 테이블 직접 수정, 원본을 읽지 않은 셰이더 수정</p>
   </div>
   <div>
@@ -1891,10 +1923,18 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
   // 본문 영상(data-auto): 화면에 보이고, 고정 무대 안이면 자기 층이 켜졌을 때만 재생
   var vids=[].slice.call(document.querySelectorAll('video[data-auto]'));
   if(!vids.length||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  // 미리 받기: 화면에 가까워지면 첫 영상을, 한 층이 재생되면 다음 층 영상을 받아 둔다
+  function warm(v){if(v&&!v._warm){v._warm=1;v.preload='auto';v.load()}}
+  var near=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(!e.isIntersecting)return;
+    var l=e.target.closest('.layer'),pv=l&&l.previousElementSibling;
+    if(!pv||!pv.classList.contains('layer'))warm(e.target);
+  })},{rootMargin:'150% 0px'});
+  vids.forEach(function(v){near.observe(v)});
   function sync(){
     vids.forEach(function(v){
       var layer=v.closest('.layer'),ok=v._vis&&!document.hidden&&(!layer||layer.classList.contains('on'));
-      if(ok){if(v.paused){var p=v.play();if(p&&p.catch)p.catch(function(){})}}
+      if(ok){if(v.paused){var p=v.play();if(p&&p.catch)p.catch(function(){})}var nx=layer&&layer.nextElementSibling;if(nx)warm(nx.querySelector('video[data-auto]'))}
       else if(!v.paused)v.pause();
     });
   }
