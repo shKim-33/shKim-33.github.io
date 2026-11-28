@@ -50,8 +50,8 @@ img{display:block}
 .lead{font-size:clamp(15px,1.2vw,18px);color:var(--mute);max-width:38em;margin-top:16px}
 .index{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:clamp(32px,6vh,72px);padding:18px 0 26px;border-top:1px solid var(--line);font-size:14px}
 .index a{display:block;color:var(--mute)}
-.index i{font-style:normal;display:block;font-size:11px;margin-bottom:2px}
-.index strong{color:var(--ink);font-weight:700;font-size:16px;display:block}
+.index i{font-style:normal;display:block;font-size:clamp(13px,.9vw,17px);margin-bottom:4px}
+.index strong{color:var(--ink);font-weight:700;font-size:clamp(16px,1.15vw,22px);display:block}
 
 /* 장면 도입 */
 .intro{min-height:60svh;display:flex;flex-direction:column;justify-content:center;padding:96px var(--gut) 48px}
@@ -65,6 +65,8 @@ img{display:block}
 .intro.head{min-height:0;justify-content:flex-start;padding:clamp(72px,12vh,140px) var(--gut) 0}
 .intro.head h2{font-size:clamp(30px,4vw,64px);max-width:20em}
 .intro.head > p{margin-top:18px}
+.intro.head.long h2{max-width:none;font-size:clamp(30px,3.6vw,64px)}
+.intro.head.long > p{max-width:62em}
 .intro.head + .row,.intro.head + .trio{padding-top:clamp(24px,4vh,48px)}
 
 /* 스크롤 고정 무대: 장면이 겹쳐 있다가 스크롤에 따라 바뀐다 */
@@ -224,6 +226,8 @@ img{display:block}
 .row .media{min-width:0}
 .row .media > img,.row .media > iframe{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--line)}
 .row .media > iframe{aspect-ratio:16/10;background:#0e2a4d;pointer-events:none}
+/* 넓은 시안 칸: 제목 칸과 한 화면에 들어오도록 화면 높이에 맞춰 줄인다 */
+@media (min-width:801px){.row.wide .media > iframe{width:min(100%,max(480px,calc((100svh - 400px)*1.6)))}}
 .row .media > .tag{margin-top:12px}
 .row .txt h3{font-size:clamp(24px,2.5vw,40px);font-weight:900;line-height:1.3;letter-spacing:-.03em}
 .row .txt p + .k{margin-top:clamp(28px,5vh,56px)}
@@ -480,8 +484,10 @@ img{display:block}
 .paper.ex-plan{margin-top:10px}
 
 /* E8 · 툴 화면 ↔ 게임 화면: 스크롤로 맞바꿈 */
-.ex-pair .ex-col{width:min(100%,calc((100svh - 250px)*2560/1392));text-align:left}
-.ex-pair .cap{font-size:clamp(18px,1.9vw,29px);max-width:none}
+.ex-pair .ex-col{width:min(100%,calc((100svh - 250px - clamp(150px,21vh,225px))*2560/1392));text-align:left}
+.ex-pair .cap{font-size:clamp(16px,1.5vw,23px);max-width:none;margin-top:clamp(12px,2vh,22px)}
+.ex-pair-h{font-size:clamp(24px,3vw,48px);font-weight:900;line-height:1.16;letter-spacing:-.035em}
+.ex-pair-p{color:var(--mute);margin:clamp(8px,1.4vh,14px) 0 clamp(12px,2vh,22px);font-size:clamp(14px,1.2vw,18px)}
 .ex-scroll .ex-b{object-fit:cover;clip-path:inset(0 100% 0 0)}
 .ex-scroll .ex-line{left:0;opacity:0}
 .ex-txt{display:grid}
@@ -698,7 +704,7 @@ player_attack_ray_execution_plan.md
   <div class="pin">
     <div class="layer duo">
       <div>
-      <div class="eyebrow cs hard">사례 01 · 실패에서 바꾼 것</div>
+      <div class="eyebrow cs hard">AI 활용 01 · 실패에서 바꾼 것</div>
       <div class="big pass">13<small>번</small></div>
       <div class="ticks" aria-hidden="true"></div>
       <p class="cap">서브에이전트에 13번 맡긴 작업이 자동 확인을 모두 통과했는데,</p>
@@ -707,7 +713,7 @@ player_attack_ray_execution_plan.md
     </div>
     <div class="layer duo">
       <div>
-      <div class="eyebrow cs hard">사례 01 · 실패에서 바꾼 것</div>
+      <div class="eyebrow cs hard">AI 활용 01 · 실패에서 바꾼 것</div>
       <div class="big fail">1<small>분</small></div>
       <p class="cap">직접 플레이한 지 1분도 안 돼, 화면이 시작 지점 벽에 고정된 걸 발견했습니다.</p>
       </div>
@@ -770,8 +776,8 @@ player_attack_ray_execution_plan.md
 </section>
 
 <!-- D5 · 사례 02 정리: 아티팩트 시안으로 발각 시스템을 정했다 -->
-<section class="intro head">
-  <div class="eyebrow">사례 02 · 시안으로 결정</div>
+<section class="intro head long">
+  <div class="eyebrow">AI 활용 02 · 시안으로 결정</div>
   <h2>발각 방식은 <u>직접 해 볼 수 있는 시안</u>으로 비교해 정했습니다</h2>
   <p>Claude로 만든 웹 페이지 시안(아티팩트)에서, CCTV에 들키면 즉사하는 방식과 노출 게이지가 차오르는 방식을 토글로 번갈아 해 봤습니다. 시안에는 계획서 초안의 수치를 그대로 넣어, 숫자 하나만 바꿔 그 자리에서 다시 해 볼 수 있었습니다.</p>
 </section>
@@ -832,7 +838,7 @@ player_attack_ray_execution_plan.md
 
 <!-- D6 · 난관: 2층 조명 굽기 -->
 <section class="intro head">
-  <div class="eyebrow hard">난관과 해결</div>
+  <div class="eyebrow">구현 · 조명 굽기</div>
   <h2>2층 조명 굽기, 외부 모델의 라이트맵 UV 누락</h2>
   <p>천장이 뚫린 2층에 실시간 해 그림자가 대각선으로 졌습니다. 웹에서 돌아가는 게임이라, 실시간 조명을 늘리는 대신 조명을 미리 굽기로 했습니다.</p>
 </section>
@@ -935,7 +941,7 @@ player_attack_ray_execution_plan.md
 
 <!-- S3 · 사례 01: 범위를 정해 맡긴 Unity MCP -->
 <section class="intro head" data-p="sp">
-  <div class="eyebrow">사례 01 · 처음 써 본 Unity MCP</div>
+  <div class="eyebrow">AI 활용 01 · 처음 써 본 Unity MCP</div>
   <h2>처음 써 본 Unity MCP, <u>범위부터 정했습니다</u></h2>
   <p>Unity MCP는 이때 처음 썼습니다. AI가 Unity 에디터를 직접 다룰 수 있게 되면서 씬 복제, 프리팹 생성, 참조 연결, 플레이 실행까지 맡겼고, 저는 그만큼 직접 플레이하며 세부를 다듬었습니다.</p>
 </section>
@@ -956,7 +962,7 @@ player_attack_ray_execution_plan.md
 
 <!-- S4 · 난관: 방향성 중력에서 플레이어·카메라·물리 정렬 -->
 <section class="intro head" data-p="sp">
-  <div class="eyebrow hard">난관과 해결</div>
+  <div class="eyebrow">AI 활용 02 · 요청 밖 변경 되돌리기</div>
   <h2>AI가 에디터를 직접 만지자, <u>요청하지 않은 변경을 찾아 되돌리는 일</u>이 생겼습니다</h2>
 </section>
 
@@ -977,7 +983,7 @@ player_attack_ray_execution_plan.md
 
 <!-- S4b · 구현: 방향성 중력 -->
 <section class="intro head" data-p="sp">
-  <div class="eyebrow">직접 다듬은 구현</div>
+  <div class="eyebrow">구현 · 방향성 중력</div>
   <h2>방향성 중력에서 플레이어·카메라·물리 정렬</h2>
   <p>중력 방향이 바뀌면 '위'가 어디인지를 이동, 물리, 캐릭터 모습, 카메라가 각자 다르게 알고 있었습니다.</p>
 </section>
@@ -1162,18 +1168,14 @@ TransitionProgress = transitionDuration &lt;= Mathf.Epsilon
   </div>
 </section>
 
-<!-- E7b · 팀이 쓰는 툴 -->
-<section class="intro head" data-p="ex">
-  <div class="eyebrow">구현 · 팀이 쓰는 툴</div>
-  <h2>EffectEditor 저작 데이터와 게임 Runtime 연결</h2>
-  <p>툴에서 본 이펙트와 게임에서 나오는 이펙트가 다르면 툴을 믿을 수 없습니다. 그래서 툴과 게임이 같은 데이터를 읽게 해야 했습니다.</p>
-</section>
-
-<!-- E8 · 난관 해결: 툴 화면 ↔ 게임 화면 맞바꿈 (스크롤) -->
+<!-- E7b~E8 · 팀이 쓰는 툴: 제목 + 툴 화면 ↔ 게임 화면 맞바꿈 (스크롤, 제목까지 한 화면) -->
 <section class="stage" data-p="ex" style="height:240vh" data-m-steps="0,1" data-m-labels="에디터|게임 화면">
   <div class="pin">
     <div class="layer ex-pair">
       <div class="ex-col">
+        <div class="eyebrow cs">구현 · 팀이 쓰는 툴</div>
+        <h2 class="ex-pair-h">EffectEditor 저작 데이터와 게임 Runtime 연결</h2>
+        <p class="ex-pair-p">툴에서 본 이펙트와 게임에서 나오는 이펙트가 다르면 툴을 믿을 수 없습니다. 그래서 툴과 게임이 같은 데이터를 읽게 해야 했습니다.</p>
         <div class="ex-swap ex-scroll">
           <img src="assets/img/ex/effect_editor_overview.webp" alt="" loading="lazy">
           <img class="ex-b" src="assets/img/ex/ingame_skill_effect.webp" alt="" loading="lazy">
