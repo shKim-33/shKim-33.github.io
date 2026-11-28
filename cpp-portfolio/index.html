@@ -452,6 +452,18 @@ img{display:block}
 /* 단계 이름표는 줄바꿈하지 않는다 */
 .row .txt.story .k{white-space:nowrap}
 .row .txt.story .k b{white-space:normal;min-width:0}
+
+/* 작은 고정 글씨: 화면 폭에 맞춰 키운다 (AI 포트폴리오와 같은 기준) */
+.eyebrow{font-size:clamp(14px,.95vw,18px)}
+.top,.next{font-size:clamp(14px,.9vw,17px)}
+.hero-cap,.who dt,.track figcaption i,.view .note,.pts b,.flow li::before,.sk,.steps li::before,.row .txt p.etc-p i,.tl i,.etc-who b,.ai4 i{font-size:clamp(12px,.75vw,15px)}
+.rail,.shots figcaption,.step .k,.row .k,.own-h span{font-size:clamp(13px,.8vw,16px)}
+/* 첫 화면 프로젝트 목록: 정보 줄을 키우고 이름 아래에 링크를 둔다 */
+.index i{font-size:clamp(13px,.9vw,17px);margin-bottom:4px}
+.index strong{font-size:clamp(16px,1.15vw,22px)}
+.index .ext{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;font-size:clamp(13px,.8vw,16px)}
+.index .ext a{color:var(--mute);border-bottom:1px solid var(--line);padding-bottom:1px}
+.index .ext a:hover{color:var(--ink);border-color:currentColor}
 </style>
 <style data-part="ex">
 /* E1 · 첫 장면: 배경 이미지 왼쪽(행성·인물)을 눌러 글자를 읽히게 */
@@ -615,6 +627,7 @@ img{display:block}
 }
 /* 스킬 영상: 화면을 꽉 채우지 않고 틀 안에서 재생 (11-24) */
 .stage:not(.m-swipe) .shot.ex-light > video{inset:auto;left:50%;top:calc(50% - 3svh);transform:translate(-50%,-50%);width:min(calc(100% - 2*var(--gut)),calc(78svh*16/9));height:auto;aspect-ratio:16/9;border-radius:10px}
+.ex-file,.ex-lane-h span{font-size:clamp(13px,.8vw,16px)}
 </style>
 <style data-part="gf">
 /* G1: 배경 이미지 폭 상한(원본 폭 1282), 제목의 작은 글자 */
@@ -752,6 +765,7 @@ img{display:block}
   .gf-cmp .gf-on,.gf-cmp .gf-lab-on{animation:none}
   .gf-cmp .gf-lab-off{animation:none;opacity:0}
 }
+.gf-mini figcaption,.gf-axes-h span,.gf-proj figcaption,.gf-shrink > div{font-size:clamp(13px,.8vw,16px)}
 </style>
 </head>
 <body>
@@ -781,10 +795,10 @@ img{display:block}
   <p class="say">C++과 DirectX 11을 주력으로, 프로젝트마다 다른 시스템을 만들고 새 기술을 더해 왔습니다.</p>
   <p class="lead">수학부터 직접 구현한 충돌과 그림자, 팀이 함께 쓴 이펙트 시스템과 툴, 팀 작업에 접목한 AI까지. 프로젝트마다 가장 공들인 구현과, 막혔던 문제를 푼 과정을 골라 담았습니다.</p>
   <div class="index">
-    <a href="#ex"><i class="mono">2026.05–07 · C++ · DirectX 11 · 8인 팀</i><strong>Expedition 33 모작</strong></a>
-    <a href="#gf"><i class="mono">2026.01–04 · C++ · DirectX 11 · 개인</i><strong>Gunfire Reborn 모작</strong></a>
-    <a href="#do"><i class="mono">2026.11 · 9일 · Unity 3인 팀</i><strong>Destiny Overclock</strong></a>
-    <a href="#etc"><i class="mono">SinkPoint · Cult of the Lamb · Skul</i><strong>그 밖의 프로젝트</strong></a>
+    <div><a href="#ex"><i class="mono">2026.05–07 · C++ · DirectX 11 · 8인 팀</i><strong>Expedition 33 모작</strong></a><p class="ext"><a href="https://youtu.be/JBuVAdqzew8" target="_blank" rel="noopener">YouTube ↗</a><a href="https://github.com/shKim-33/Expedition_158_Effect" target="_blank" rel="noopener">GitHub ↗</a></p></div>
+    <div><a href="#gf"><i class="mono">2026.01–04 · C++ · DirectX 11 · 개인</i><strong>Gunfire Reborn 모작</strong></a><p class="ext"><a href="https://youtu.be/Jpvrbx4RoCE" target="_blank" rel="noopener">YouTube ↗</a></p></div>
+    <div><a href="#do"><i class="mono">2026.11 · 9일 · Unity 3인 팀</i><strong>Destiny Overclock</strong></a><p class="ext"><a href="https://ru-vin.itch.io/destiny-overclock" target="_blank" rel="noopener">itch.io ↗</a></p></div>
+    <div><a href="#etc"><i class="mono">SinkPoint · Cult of the Lamb · Skul</i><strong>그 밖의 프로젝트</strong></a></div>
   </div>
 </section>
 
