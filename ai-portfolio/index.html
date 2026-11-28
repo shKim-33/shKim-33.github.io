@@ -19,11 +19,11 @@ body{background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",system-ui,
 a{color:inherit;text-decoration:none}
 img{display:block}
 .mono{font-family:ui-monospace,Consolas,monospace;letter-spacing:.04em}
-.eyebrow{font-size:14px;font-weight:500;color:var(--mute);letter-spacing:.08em}
+.eyebrow{font-size:clamp(14px,.95vw,18px);font-weight:500;color:var(--mute);letter-spacing:.08em}
 
 /* 상단 목차 */
 .top{position:fixed;inset:0 0 auto 0;z-index:10;display:flex;justify-content:space-between;align-items:center;gap:24px;
-  padding:16px var(--gut);background:linear-gradient(rgba(8,9,11,.85),rgba(8,9,11,0));font-size:14px}
+  padding:16px var(--gut);background:linear-gradient(rgba(8,9,11,.85),rgba(8,9,11,0));font-size:clamp(14px,.9vw,17px)}
 .top nav{display:flex;gap:clamp(12px,2vw,28px);color:var(--mute);overflow-x:auto;white-space:nowrap;scrollbar-width:none}
 .top nav a:hover{color:var(--ink)}
 
@@ -42,14 +42,17 @@ img{display:block}
 .hero-reel > img{transition:opacity 1.2s ease,transform 6s linear}
 .hero-reel > .on{opacity:1}
 .hero-reel > img.on{transform:scale(1.03)}
-.hero-cap{position:absolute;z-index:1;bottom:16px;right:var(--gut);padding:5px 11px;border-radius:999px;background:rgba(8,9,11,.66);font-size:12px;letter-spacing:.04em;color:rgba(232,234,237,.72)}
+.hero-cap{position:absolute;z-index:1;bottom:16px;right:var(--gut);padding:5px 11px;border-radius:999px;background:rgba(8,9,11,.66);font-size:clamp(12px,.75vw,15px);letter-spacing:.04em;color:rgba(232,234,237,.72)}
 .hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,9,11,.62) 0%,transparent 24%),linear-gradient(90deg,rgba(8,9,11,.7) 0%,rgba(8,9,11,.3) 45%,rgba(8,9,11,0) 70%),linear-gradient(0deg,var(--bg) 0%,transparent 35%)}
 .hero > *:not(.bg):not(.shade){position:relative}
 .hero h1{font-size:clamp(96px,21vw,340px);font-weight:900;line-height:.92;letter-spacing:-.04em;margin:8px 0 0 -.04em}
 .say{font-size:clamp(22px,2.7vw,42px);font-weight:700;line-height:1.35;letter-spacing:-.02em;max-width:20em;margin-top:clamp(20px,3vw,40px)}
 .lead{font-size:clamp(15px,1.2vw,18px);color:var(--mute);max-width:38em;margin-top:16px}
 .index{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:clamp(32px,6vh,72px);padding:18px 0 26px;border-top:1px solid var(--line);font-size:14px}
-.index a{display:block;color:var(--mute)}
+.index > div > a{display:block;color:var(--mute)}
+.index .ext{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;font-size:clamp(13px,.8vw,16px)}
+.index .ext a{color:var(--mute);border-bottom:1px solid var(--line);padding-bottom:1px}
+.index .ext a:hover{color:var(--ink);border-color:currentColor}
 .index i{font-style:normal;display:block;font-size:clamp(13px,.9vw,17px);margin-bottom:4px}
 .index strong{color:var(--ink);font-weight:700;font-size:clamp(16px,1.15vw,22px);display:block}
 
@@ -91,7 +94,7 @@ img{display:block}
 .beat .num{font-size:clamp(110px,20vw,330px);font-weight:900;line-height:.85;letter-spacing:-.06em;text-align:right;
   background:linear-gradient(180deg,var(--ink) 10%,rgba(243,244,246,.12) 95%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .beat .num span{display:block;font-size:15px;font-weight:500;letter-spacing:.06em;-webkit-text-fill-color:var(--mute);margin-top:18px}
-.rail{position:absolute;left:var(--gut);right:var(--gut);bottom:30px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:13px;color:var(--mute)}
+.rail{position:absolute;left:var(--gut);right:var(--gut);bottom:30px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:clamp(13px,.8vw,16px);color:var(--mute)}
 .rail span{border-top:2px solid var(--line);padding-top:10px;transition:color .3s,border-color .3s}
 .rail span.on{color:var(--ink);border-color:var(--ink)}
 
@@ -173,7 +176,7 @@ img{display:block}
 .proj h2{font-size:clamp(60px,10.5vw,190px);font-weight:900;line-height:.95;letter-spacing:-.045em;margin:14px 0 0 -.04em;text-shadow:0 0 40px var(--bg)}
 .proj .say{font-size:clamp(19px,2vw,30px);max-width:19em;text-shadow:0 0 24px var(--bg),0 0 8px var(--bg)}
 .who{display:grid;grid-template-columns:repeat(2,minmax(0,24em));gap:8px clamp(20px,4vw,56px);margin-top:clamp(18px,3vh,32px);font-size:clamp(14px,1.1vw,16px);text-shadow:0 0 12px var(--bg)}
-.who dt{font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--pass);margin-bottom:4px}
+.who dt{font-size:clamp(12px,.75vw,15px);font-weight:700;letter-spacing:.12em;color:var(--pass);margin-bottom:4px}
 .who div + div dt{color:var(--mute)}
 .who dd{margin:0}
 .who div + div dd{color:var(--mute)}
@@ -195,7 +198,7 @@ img{display:block}
 .track figure{margin:0;width:min(66vw,calc((100svh - 240px)*16/9))}
 .track img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px}
 .track figcaption{margin-top:12px;font-size:clamp(15px,1.3vw,20px);font-weight:700}
-.track figcaption i{font-style:normal;font-size:12px;color:var(--mute);margin-right:10px}
+.track figcaption i{font-style:normal;font-size:clamp(12px,.75vw,15px);color:var(--mute);margin-right:10px}
 
 /* 작업 순서 */
 .flow{list-style:none;padding:0;counter-reset:f}
@@ -207,14 +210,14 @@ img{display:block}
 /* 고정 화면 + 흐르는 글 */
 .split{display:grid;grid-template-columns:1.15fr 1fr;gap:clamp(28px,5vw,88px);padding:0 var(--gut)}
 .split .view{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;justify-content:center}
-.view .note{margin-top:12px;font-size:12px;color:var(--mute)}
+.view .note{margin-top:12px;font-size:clamp(12px,.75vw,15px);color:var(--mute)}
 .shots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%}
 .shots figure{position:relative;margin:0;overflow:hidden;border-radius:4px;background:#0e1013;aspect-ratio:16/10}
 .shots img{width:100%;height:100%;object-fit:cover}
-.shots figcaption{position:absolute;left:6px;top:6px;padding:3px 8px;border-radius:4px;background:rgba(8,9,11,.82);color:var(--ink);font-size:13px;font-weight:600;line-height:1.4}
+.shots figcaption{position:absolute;left:6px;top:6px;padding:3px 8px;border-radius:4px;background:rgba(8,9,11,.82);color:var(--ink);font-size:clamp(13px,.8vw,16px);font-weight:600;line-height:1.4}
 .step{min-height:64svh;display:flex;flex-direction:column;justify-content:center;opacity:.28;transition:opacity .4s}
 .step.on{opacity:1}
-.step .k,.row .k{font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--mute)}
+.step .k,.row .k{font-size:clamp(13px,.8vw,16px);font-weight:700;letter-spacing:.14em;color:var(--mute)}
 .step .k b,.row .k b{color:var(--ink);font-size:clamp(40px,5vw,76px);font-weight:900;letter-spacing:-.04em;display:block;line-height:1.1;margin-top:6px}
 .step p,.row .txt p{font-size:clamp(18px,1.75vw,27px);line-height:1.6;color:#b9bec6;margin-top:22px;letter-spacing:-.01em}
 .step p b,.row .txt p b{color:var(--ink);font-weight:700}
@@ -235,7 +238,7 @@ img{display:block}
 .row .txt p.sub{font-size:clamp(15px,1.2vw,18px);color:var(--mute);margin-top:16px}
 .pts{list-style:none;padding:0;margin-top:clamp(18px,3vh,30px)}
 .pts li{display:grid;grid-template-columns:7.5em 1fr;align-items:baseline;padding:11px 0;border-top:1px solid var(--line);font-size:clamp(15px,1.25vw,19px);color:#b9bec6}
-.pts b{font:500 12px ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--pass)}
+.pts b{font:500 clamp(12px,.75vw,15px) ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--pass)}
 /* 숫자 세 개를 한 줄로 */
 .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3.4vw,60px);align-items:start;padding:clamp(30px,6vh,80px) var(--gut)}
 .trio .big{font-size:clamp(64px,10vw,168px);margin-top:10px}
@@ -271,7 +274,7 @@ img{display:block}
 .nextp{display:block;margin-top:14vh;color:var(--mute);transition:color .3s}
 .nextp:hover{color:var(--ink)}
 .nextp h2{font-size:clamp(40px,6vw,100px);font-weight:900;letter-spacing:-.04em;line-height:1.1;margin-top:8px}
-.next{border-top:1px solid var(--line);margin:0 var(--gut);padding:28px 0 64px;color:var(--mute);font-size:14px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.next{border-top:1px solid var(--line);margin:0 var(--gut);padding:28px 0 64px;color:var(--mute);font-size:clamp(14px,.9vw,17px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
 @media (max-width:800px),(max-aspect-ratio:5/4){
   .hero{padding-top:calc(56px + 56.25vw)}
@@ -456,7 +459,7 @@ img{display:block}
 .ex-swap .tag{position:absolute;left:14px;top:14px;z-index:3;max-width:calc(100% - 28px);width:max-content;padding:8px 13px;border-radius:6px;background:rgba(8,9,11,.85);border:1px solid var(--line)}
 .ex-auto .tag{font-size:clamp(15px,1.25vw,20px);font-weight:700}
 .ex-auto .ex-tag-b{color:var(--pass)}
-.ex-file{margin-top:10px;font-size:13px;color:var(--mute)}
+.ex-file{margin-top:10px;font-size:clamp(13px,.8vw,16px);color:var(--mute)}
 .ex-note{margin-top:12px;font-size:clamp(14px,1.15vw,17px);color:var(--mute)}
 
 /* E4 · 적용 전/후: 자동 반복 (왼→오 2.4초, 1.6초 멈춤, 오→왼 2.4초, 1.6초 멈춤) */
@@ -556,7 +559,7 @@ img{display:block}
 /* G6 왼쪽 작은 이미지 */
 .gf-mini{margin:20px 0 0}
 .gf-mini img{width:min(220px,100%);height:auto;border-radius:6px;border:1px solid var(--line)}
-.gf-mini figcaption{margin-top:8px;font-size:13px;color:#aab0b8}
+.gf-mini figcaption{margin-top:8px;font-size:clamp(13px,.8vw,16px);color:#aab0b8}
 
 /* G8 무기 화면: 확인 표시 끄기, 아래 작은 계층 창 */
 .row .media > img.gf-hier{width:min(340px,100%);height:auto;margin-top:10px;border-radius:4px;border:1px solid var(--line)}
@@ -604,10 +607,10 @@ img{display:block}
   <p class="say">설계·결정·검증은 제가 맡고, 조사·작성·반복 작업은 AI에 단계별로 맡겼습니다.</p>
   <p class="lead">DirectX 11로 프레임워크와 툴을 만들던 때부터 Unity 팀 프로젝트까지, AI에게 무엇을 맡기고 무엇을 직접 확인할지를 프로젝트마다 다시 정해 왔습니다.</p>
   <div class="index">
-    <a href="#do"><i class="mono">2026.11 · 9일 · Unity 3인 팀</i><strong>Destiny Overclock</strong></a>
-    <a href="#sp"><i class="mono">2026.08 · 5일 · Unity 2인 팀</i><strong>SinkPoint</strong></a>
-    <a href="#ex"><i class="mono">2026.05–07 · DirectX 11 · 8인 팀</i><strong>Expedition 33 모작</strong></a>
-    <a href="#gf"><i class="mono">2026.01–04 · DirectX 11 · 개인</i><strong>Gunfire Reborn 모작</strong></a>
+    <div><a href="#do"><i class="mono">2026.11 · 9일 · Unity 3인 팀</i><strong>Destiny Overclock</strong></a><p class="ext"><a href="https://ru-vin.itch.io/destiny-overclock" target="_blank" rel="noopener">itch.io ↗</a></p></div>
+    <div><a href="#sp"><i class="mono">2026.08 · 5일 · Unity 2인 팀</i><strong>SinkPoint</strong></a><p class="ext"><a href="https://ziofs1031.itch.io/sink" target="_blank" rel="noopener">itch.io ↗</a><a href="https://youtu.be/ACLhexzNJnM" target="_blank" rel="noopener">YouTube ↗</a><a href="https://github.com/JiyeonJeong01/SinkPoint" target="_blank" rel="noopener">GitHub ↗</a></p></div>
+    <div><a href="#ex"><i class="mono">2026.05–07 · DirectX 11 · 8인 팀</i><strong>Expedition 33 모작</strong></a><p class="ext"><a href="https://youtu.be/JBuVAdqzew8" target="_blank" rel="noopener">YouTube ↗</a><a href="https://github.com/shKim-33/Expedition_158_Effect" target="_blank" rel="noopener">GitHub ↗</a></p></div>
+    <div><a href="#gf"><i class="mono">2026.01–04 · DirectX 11 · 개인</i><strong>Gunfire Reborn 모작</strong></a><p class="ext"><a href="https://youtu.be/Jpvrbx4RoCE" target="_blank" rel="noopener">YouTube ↗</a></p></div>
   </div>
 </section>
 
