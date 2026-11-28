@@ -371,6 +371,58 @@ img{display:block}
 .row .txt.story .k{white-space:nowrap}
 .row .txt.story .k b{white-space:normal;min-width:0}
 </style>
+<style data-part="sp">
+/* S2 · 중력 축 전환: 층이 정해진 가장자리에서 이동해 들어오고, 이전 층은 반대쪽으로 밀려 나간다 */
+.layer.sp-ax{opacity:1;background:var(--bg);align-items:center;justify-content:flex-start;text-align:left;padding:72px var(--gut) 0;
+  --sp-w:min(100%,calc((100svh - 268px)*16/9));transition:transform .7s cubic-bezier(.2,.7,.2,1),opacity .7s cubic-bezier(.2,.7,.2,1)}
+/* 게임 화면은 자르지 않고 통째로, 글은 그 아래 한 줄 */
+.sp-ax > img{width:var(--sp-w);aspect-ratio:16/9;object-fit:cover;border-radius:6px;flex:none}
+.sp-band{display:flex;align-items:flex-end;gap:clamp(16px,3vw,56px);width:var(--sp-w);margin-top:18px}
+.sp-band > div{flex:none}
+.sp-band .cap{margin:0 0 .35em;font-size:clamp(15px,1.45vw,22px);max-width:27em}
+.layer.sp-ax.sp-from-top{transform:translateY(-100%)}
+.layer.sp-ax.sp-from-right{transform:translateX(100%)}
+.layer.sp-ax.sp-from-bottom{transform:translateY(100%)}
+.layer.sp-ax.sp-from-none{opacity:0;transform:none}
+.layer.sp-ax.on{opacity:1;transform:none}
+.layer.sp-ax.sp-past.sp-out-down{opacity:1;transform:translateY(100%)}
+.layer.sp-ax.sp-past.sp-out-left{opacity:1;transform:translateX(-100%)}
+.layer.sp-ax.sp-past.sp-out-up{opacity:1;transform:translateY(-100%)}
+.layer.sp-ax.sp-past.sp-out-fade{opacity:0;transform:none}
+.big.sp-name{font-size:clamp(34px,4.6vw,72px);line-height:1.05;letter-spacing:-.045em;margin:4px 0 0 -.03em;white-space:nowrap}
+.rail.sp-rail{grid-template-columns:repeat(5,1fr);z-index:3}
+/* 축 표시: 세로 선(위·아래) / 가로 선(오른쪽) / 점(무중력) */
+.sp-mark{position:absolute;z-index:3;right:var(--gut);bottom:84px;width:2px;height:44px;background:var(--pass);border-radius:1px}
+.sp-mark.sp-h{width:44px;height:2px;bottom:105px}
+.sp-mark.sp-dot{width:6px;height:6px;border-radius:50%;bottom:103px;margin-right:-2px}
+.sp-mark.sp-go{animation:sp-grow .7s cubic-bezier(.2,.7,.2,1)}
+@keyframes sp-grow{from{transform:scale(0)}to{transform:scale(1)}}
+
+/* S3 · 작업 화면 칸 옆 기록 항목 세 줄, 아래 큰 단어 (고정 없음) */
+.row .txt p.sp-trio{margin-top:clamp(20px,3.4vh,36px)}
+.sp-trio span{display:block;font-size:clamp(26px,2.9vw,48px);font-weight:900;line-height:1.15;letter-spacing:-.035em;color:var(--ink)}
+.sp-trio span + span{margin-top:clamp(6px,1.2vh,14px)}
+/* S4 · 코드 두 장: 코드 칸을 넓은 쪽에 */
+.row.sp-wide-r{grid-template-columns:1fr 1.7fr}
+.row .media > .code.sp-code{font-size:clamp(11px,.95vw,17px)}
+.sp-solo{padding:clamp(32px,6vh,80px) var(--gut) clamp(56px,10vh,120px)}
+.big.sp-word{font-size:clamp(110px,22vw,340px)}
+.sp-note{color:var(--mute);font-size:clamp(15px,1.3vw,19px);margin-top:clamp(14px,2.4vh,28px);max-width:40em}
+
+@media (max-width:800px){
+  .layer.sp-ax{--sp-w:100%;justify-content:center;padding-bottom:110px}
+  .sp-band{flex-direction:column;align-items:flex-start;gap:10px}
+  .rail.sp-rail{gap:6px;font-size:12px}
+  .row.sp-wide-r{grid-template-columns:1fr}
+  /* 모바일 밀어서 넘기기(m-swipe): 축 방향 이동 대신 옆으로 한 장씩, 축 표시는 숨긴다 */
+  .m-swipe .m-track .layer.sp-ax{transform:none;opacity:1;padding:0 var(--gut);justify-content:flex-start;transition:none}
+  .m-swipe .sp-mark{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .layer.sp-ax{transition:none}
+  .sp-mark.sp-go{animation:none}
+}
+</style>
 <style data-part="ex">
 /* E1 · 첫 장면: 배경 이미지 왼쪽(행성·인물)을 눌러 글자를 읽히게 */
 .proj > .ex-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(8,9,11,.88) 0%,rgba(8,9,11,.55) 38%,rgba(8,9,11,0) 66%)}
@@ -454,58 +506,6 @@ img{display:block}
   .ex-auto .ex-line{display:none}
 }
 </style>
-<style data-part="sp">
-/* S2 · 중력 축 전환: 층이 정해진 가장자리에서 이동해 들어오고, 이전 층은 반대쪽으로 밀려 나간다 */
-.layer.sp-ax{opacity:1;background:var(--bg);align-items:center;justify-content:flex-start;text-align:left;padding:72px var(--gut) 0;
-  --sp-w:min(100%,calc((100svh - 268px)*16/9));transition:transform .7s cubic-bezier(.2,.7,.2,1),opacity .7s cubic-bezier(.2,.7,.2,1)}
-/* 게임 화면은 자르지 않고 통째로, 글은 그 아래 한 줄 */
-.sp-ax > img{width:var(--sp-w);aspect-ratio:16/9;object-fit:cover;border-radius:6px;flex:none}
-.sp-band{display:flex;align-items:flex-end;gap:clamp(16px,3vw,56px);width:var(--sp-w);margin-top:18px}
-.sp-band > div{flex:none}
-.sp-band .cap{margin:0 0 .35em;font-size:clamp(15px,1.45vw,22px);max-width:27em}
-.layer.sp-ax.sp-from-top{transform:translateY(-100%)}
-.layer.sp-ax.sp-from-right{transform:translateX(100%)}
-.layer.sp-ax.sp-from-bottom{transform:translateY(100%)}
-.layer.sp-ax.sp-from-none{opacity:0;transform:none}
-.layer.sp-ax.on{opacity:1;transform:none}
-.layer.sp-ax.sp-past.sp-out-down{opacity:1;transform:translateY(100%)}
-.layer.sp-ax.sp-past.sp-out-left{opacity:1;transform:translateX(-100%)}
-.layer.sp-ax.sp-past.sp-out-up{opacity:1;transform:translateY(-100%)}
-.layer.sp-ax.sp-past.sp-out-fade{opacity:0;transform:none}
-.big.sp-name{font-size:clamp(34px,4.6vw,72px);line-height:1.05;letter-spacing:-.045em;margin:4px 0 0 -.03em;white-space:nowrap}
-.rail.sp-rail{grid-template-columns:repeat(5,1fr);z-index:3}
-/* 축 표시: 세로 선(위·아래) / 가로 선(오른쪽) / 점(무중력) */
-.sp-mark{position:absolute;z-index:3;right:var(--gut);bottom:84px;width:2px;height:44px;background:var(--pass);border-radius:1px}
-.sp-mark.sp-h{width:44px;height:2px;bottom:105px}
-.sp-mark.sp-dot{width:6px;height:6px;border-radius:50%;bottom:103px;margin-right:-2px}
-.sp-mark.sp-go{animation:sp-grow .7s cubic-bezier(.2,.7,.2,1)}
-@keyframes sp-grow{from{transform:scale(0)}to{transform:scale(1)}}
-
-/* S3 · 작업 화면 칸 옆 기록 항목 세 줄, 아래 큰 단어 (고정 없음) */
-.row .txt p.sp-trio{margin-top:clamp(20px,3.4vh,36px)}
-.sp-trio span{display:block;font-size:clamp(26px,2.9vw,48px);font-weight:900;line-height:1.15;letter-spacing:-.035em;color:var(--ink)}
-.sp-trio span + span{margin-top:clamp(6px,1.2vh,14px)}
-/* S4 · 코드 두 장: 코드 칸을 넓은 쪽에 */
-.row.sp-wide-r{grid-template-columns:1fr 1.7fr}
-.row .media > .code.sp-code{font-size:clamp(11px,.95vw,17px)}
-.sp-solo{padding:clamp(32px,6vh,80px) var(--gut) clamp(56px,10vh,120px)}
-.big.sp-word{font-size:clamp(110px,22vw,340px)}
-.sp-note{color:var(--mute);font-size:clamp(15px,1.3vw,19px);margin-top:clamp(14px,2.4vh,28px);max-width:40em}
-
-@media (max-width:800px){
-  .layer.sp-ax{--sp-w:100%;justify-content:center;padding-bottom:110px}
-  .sp-band{flex-direction:column;align-items:flex-start;gap:10px}
-  .rail.sp-rail{gap:6px;font-size:12px}
-  .row.sp-wide-r{grid-template-columns:1fr}
-  /* 모바일 밀어서 넘기기(m-swipe): 축 방향 이동 대신 옆으로 한 장씩, 축 표시는 숨긴다 */
-  .m-swipe .m-track .layer.sp-ax{transform:none;opacity:1;padding:0 var(--gut);justify-content:flex-start;transition:none}
-  .m-swipe .sp-mark{display:none}
-}
-@media (prefers-reduced-motion:reduce){
-  .layer.sp-ax{transition:none}
-  .sp-mark.sp-go{animation:none}
-}
-</style>
 <style data-part="gf">
 /* G1: 배경 이미지 폭 상한(원본 폭 1282), 제목의 작은 글자 */
 .proj .ov.gf-ov{width:min(78vw,150svh,1300px)}
@@ -577,8 +577,8 @@ img{display:block}
   <nav>
     <a href="#ai">AI 협업 방식</a>
     <a href="#do">Destiny Overclock</a>
-    <a href="#ex">Expedition 33</a>
     <a href="#sp">SinkPoint</a>
+    <a href="#ex">Expedition 33</a>
     <a href="#gf">Gunfire Reborn</a>
   </nav>
 </header>
@@ -599,8 +599,8 @@ img{display:block}
   <p class="lead">DirectX 11로 프레임워크와 툴을 만들던 때부터 Unity 팀 프로젝트까지, AI에게 무엇을 맡기고 무엇을 직접 확인할지를 프로젝트마다 다시 정해 왔습니다.</p>
   <div class="index">
     <a href="#do"><i class="mono">2026.11 · 9일 · Unity 3인 팀</i><strong>Destiny Overclock</strong></a>
-    <a href="#ex"><i class="mono">2026.05–07 · DirectX 11 · 8인 팀</i><strong>Expedition 33 모작</strong></a>
     <a href="#sp"><i class="mono">2026.08 · 5일 · Unity 2인 팀</i><strong>SinkPoint</strong></a>
+    <a href="#ex"><i class="mono">2026.05–07 · DirectX 11 · 8인 팀</i><strong>Expedition 33 모작</strong></a>
     <a href="#gf"><i class="mono">2026.01–04 · DirectX 11 · 개인</i><strong>Gunfire Reborn 모작</strong></a>
   </div>
 </section>
@@ -879,175 +879,12 @@ player_attack_ray_execution_plan.md
     <a class="go" href="https://ru-vin.itch.io/destiny-overclock" target="_blank" rel="noopener">itch.io에서 플레이 ↗</a>
     <span>플레이 영상 · 준비 중</span>
   </div>
-  <a class="nextp" href="#ex">
-    <div class="eyebrow">다음 프로젝트</div>
-    <h2>Expedition 33 모작 →</h2>
-  </a>
-</section>
-<!-- PARTS -->
-<!-- PART ex -->
-<!-- E1 · 첫 장면 -->
-<section class="proj" id="ex" data-p="ex">
-  <img class="ov" src="assets/img/ex/main_sword_sun.webp" alt="" loading="lazy">
-  <div class="ex-shade"></div>
-  <div class="eyebrow">Clair Obscur: Expedition 33 모작 · 2026.05–07 · 프로그래밍 8인 팀 · C++ · DirectX 11 · HLSL(Compute Shader)</div>
-  <h2 class="ex-title">Expedition<br>33 모작</h2>
-  <p class="say">프로그래머 8명이 함께 만든 모작에서 이펙트를 혼자 맡았습니다. 이펙트를 만드는 툴(EffectEditor)부터 게임 안 전투 이펙트까지 직접 만들었습니다.</p>
-  <dl class="who">
-    <div class="goal"><dt>목적</dt><dd>팀이 요구하는 전투 VFX를 팀원도 직접 만들 수 있게 이펙트 시스템과 툴을 갖추는 것이 목적이었고, 8인 팀 코드를 지키려고 AI 작업은 계획서 승인과 hook 안에서 진행했습니다.</dd></div>
-    <div><dt>맡은 것</dt><dd>독립 EffectEditor · 이펙트 런타임 · 메인 전투 VFX · 일부 화면 후처리 효과(흑백 연출·Flash)</dd></div>
-    <div><dt>팀원이 맡은 것</dt><dd>화면 효과 틀 · Stencil bit0 · 디퍼드·MRT</dd></div>
-  </dl>
-  <div class="acts">
-    <a class="go" href="https://youtu.be/JBuVAdqzew8" target="_blank" rel="noopener">YouTube에서 영상 보기 ↗</a>
-    <a href="https://github.com/shKim-33/Expedition_158_Effect" target="_blank" rel="noopener">GitHub 코드 ↗</a>
-  </div>
-</section>
-
-<!-- E2~E3 · 빛 컷: 이미터를 조합한 VFX 쇼케이스 4장 (기술소개서 4차 18쪽) -->
-<section class="stage" data-p="ex" style="height:320vh">
-  <div class="pin">
-    <div class="layer shot ex-light">
-      <video data-auto muted loop playsinline preload="none" poster="assets/video/ex_stendhal.webp" src="assets/video/ex_stendhal.mp4"></video>
-      <span class="tag k-game"><b>게임 화면</b>스탕달</span>
-      <p class="cap">검 여섯 자루를 자루마다 Mesh 이미터 다섯 개와 Ribbon 하나로 쌓았습니다. Mesh 이미터는 살아 있는 검을 인스턴싱으로 한 번에 그립니다.</p>
-      <p class="ex-emit"><b>이미터 40개</b><span>Mesh ×30</span><span>Ribbon ×6</span><span>Sprite ×4</span></p>
-    </div>
-    <div class="layer shot ex-light">
-      <video data-auto muted loop playsinline preload="none" poster="assets/video/ex_skybreak.webp" src="assets/video/ex_skybreak.mp4"></video>
-      <span class="tag k-game"><b>게임 화면</b>하늘 파괴</span>
-      <p class="cap">시작·충전·유성·빔·최종 폭발, 다섯 파일이 애니메이션의 정해진 시점에 차례로 재생됩니다. 불꽃과 빛은 Sprite, 유성과 폭발 파편은 Mesh, 하늘에서 내리는 광선은 Beam이 맡았습니다.</p>
-      <p class="ex-emit"><b>이미터 45개</b><span>Sprite ×28</span><span>Mesh ×16</span><span>Beam ×1</span></p>
-    </div>
-    <div class="layer shot ex-light">
-      <video data-auto muted loop playsinline preload="none" poster="assets/video/ex_overcharge.webp" src="assets/video/ex_overcharge.mp4"></video>
-      <span class="tag k-game"><b>게임 화면</b>과충전</span>
-      <p class="cap">손 소켓과 발사체가 지나간 자리를 SpriteTrail이 따라가며 번개 꼬리를 남깁니다. 손과 궤적은 애니메이션 노티파이 구간 내내 유지되고, 그 안에서 해방 이펙트가 터집니다.</p>
-      <p class="ex-emit"><b>이미터 16개</b><span>Sprite ×11</span><span>SpriteTrail ×5</span></p>
-    </div>
-    <div class="layer shot ex-light">
-      <video data-auto muted loop playsinline preload="none" poster="assets/video/ex_trail.webp" src="assets/video/ex_trail.mp4"></video>
-      <span class="tag k-game"><b>게임 화면</b>검의 발레</span>
-      <p class="cap">Trail 네 개가 검을 따라 띠를 그리고, SpriteTrail이 그 궤적 위에 입자를 흩뿌리고, Ribbon이 꼬리를 붙입니다. 같은 구성을 색만 바꿔 13가지로 썼습니다.</p>
-      <p class="ex-emit"><b>이미터 6개</b><span>Trail ×4</span><span>SpriteTrail ×1</span><span>Ribbon ×1</span></p>
-    </div>
-    <div class="eyebrow ex-show-h">이미터를 조합한 VFX</div>
-    <div class="rail ex-rail"><span>스탕달</span><span>하늘 파괴</span><span>과충전</span><span>검의 발레</span></div>
-  </div>
-</section>
-
-<!-- E4 · 적용 전/후 (도구 화면, 맞바꿈 자동 반복) -->
-<section class="ex-tool" data-p="ex">
-  <div class="ex-col">
-    <div class="eyebrow">EffectEditor</div>
-    <div class="ex-swap ex-auto">
-      <img src="assets/img/ex/distortion_before.webp" alt="" loading="lazy">
-      <img class="ex-b" src="assets/img/ex/distortion_after.webp" alt="" loading="lazy">
-      <span class="ex-line" aria-hidden="true"></span>
-      <span class="tag ex-tag-a">적용 전</span>
-      <span class="tag k-game ex-tag-b">적용 후</span>
-    </div>
-    <p class="ex-file">Player_Counter.effect.json</p>
-    <p class="cap">입자 설정, 곡선, 무작위 분포, 머티리얼을 고치고, 같은 툴의 미리보기로 바로 확인하며 다듬을 수 있습니다.</p>
-    <p class="ex-note">쓰는 법은 문서로 정리하고 직접 설명해 안내했고, 팀원 4명이 이 툴로 직접 이펙트를 만들었습니다.</p>
-  </div>
-</section>
-
-<!-- E5 · 사례 01: 계획서 반려·승인 -->
-<section class="intro two" data-p="ex">
-  <div>
-    <div class="eyebrow cs">사례 01 · 계획 검토와 승인 범위</div>
-    <h2>계획은 구현 전에 <u>방향부터 거듭 검토해 고쳤고</u>, 글로 안 지켜지는 규칙은 hook으로 옮겼습니다</h2>
-  </div>
-  <div>
-    <div class="eyebrow" style="margin-bottom:14px">작업 한 건이 흘러가는 순서</div>
-    <ol class="flow">
-      <li><span>계획서 작성<b>Codex</b></span></li>
-      <li><span>검토 · 수정<b>나</b></span></li>
-      <li><span>승인<b>나</b></span></li>
-      <li><span>구현<b>Codex</b></span></li>
-    </ol>
-    <p>AI가 쓴 계획서를 그대로 승인하지 않았습니다. 범위, 하지 않을 것, 검증 기준이 분명한지, 방향이 팀 구조와 맞는지 보고 고쳐 쓰게 한 뒤 승인했습니다. 엔진 모듈이나 공용 API를 건드리는 일, 새 패턴을 들이는 일은 먼저 제 승인을 받게 했습니다. 계획서에는 이번에 승인하는 범위와 승인에 넣지 않는 범위를 나눠 적게 해, 구현 중에 그 밖의 변경이 필요해지면 멈추고 다시 승인을 받게 했습니다.</p>
-    <p class="ex-more">원작 이펙트 자료를 찾고 분석하는 일과 툴 UI의 뼈대는 AI에 맡겼습니다.</p>
-    <p class="tag k-ed ex-plan-tag"><b>계획서</b>승인하는 범위와 승인 밖 범위를 나눠 적은 Phase 3 계획서</p>
-    <figure class="paper ex-plan"><div class="paper-h">docs/tasks/03_completed/cascade_distortion_phase3_sprite_runtime_prototype_plan.md</div><h5>Approval Boundary</h5><p>Phase 3 구현은 아래 surface를 건드릴 수 있으므로 승인 후 진행한다.</p><ul><li><code>Client</code> runtime code</li><li>shader file</li><li>resource binding path</li></ul><p>아래는 이번 Phase 3 구현 승인에 포함하지 않는다.</p><ul><li><code>Engine/Public</code> type 추가 / 변경</li><li>renderer frame order 변경</li><li>EffectEditor UI 변경 <u>…</u></li></ul><mark>만약 구현 중 <code>Engine/Public</code> type이나 renderer frame order 변경이 추가로 필요해지면, Phase 3 범위를 멈추고 별도 승인으로 전환한다.</mark><h5>Phase Plan</h5><p>1. Runtime path audit <u>…</u></p><p>verify: <code>SpriteDistortion</code> branch가 desc 적용 이후 안정적으로 판단 가능한 위치를 찾는다.</p></figure>
-  </div>
-</section>
-
-<!-- E6 · 사례 02: hook -->
-<section class="row flip" data-p="ex">
-  <div class="media ex-hookmedia"><pre class="code ex-code"><b>if</b> <i>tool_writes_engine_shader</i>(tool_name, tool_text):
-    missing = <i>get_missing_engine_shader_reads</i>(state, targets)
-    <b>if</b> missing:<mark>        <b>return</b> <i>deny</i>(<s>"원본·대응 셰이더를 읽기 전 수정 금지"</s>)</mark></pre><figure class="paper mono"><div class="paper-h">.codex/hooks/pre_tool_use.py · permissionDecision: "deny"</div><p><u>…</u> <code>Do not write those DT_* files directly.</code> <u>…</u></p><p><code>Destructive git reset is blocked by the Expedition_158 project hook.</code></p><p><code>Recursive force Remove-Item is blocked by the Expedition_158 project hook.</code></p></figure></div>
-  <div class="txt">
-    <div class="big pass ex-hook">hook</div>
-    <p>그래도 글로 적은 규칙이 지켜지지 않는 곳이 세 군데 있었습니다. 이 셋은 hook으로 옮겨, AI가 명령을 실행하기 직전에 막았습니다.</p>
-    <p class="ex-note">막은 것: 원본 셰이더를 읽기 전 수정 · 데이터 테이블 보호 · 되돌릴 수 없는 git 명령</p>
-  </div>
-</section>
-
-<!-- E7 · 난관 도입 -->
-<section class="intro head" data-p="ex">
-  <div class="eyebrow hard">난관과 해결</div>
-  <h2>AI와 의견이 갈린 곳은 <u>직접 정했습니다</u></h2>
-</section>
-
-<section class="trio t3" data-p="ex">
-  <div>
-    <div class="k bad">인스턴싱<b>전면 적용 대 최소 적용</b></div>
-    <p class="cap">저는 전면 적용을, Codex는 최소 적용을 주장했습니다. 조율 끝에 Sprite부터 적극 적용했습니다.</p>
-  </div>
-  <div>
-    <div class="k bad">왜곡 효과<b>Sprite에서 Mesh로</b></div>
-    <p class="cap">Sprite에 입히니 어색했습니다. 피드백을 거쳐 Mesh로 옮겼습니다.</p>
-  </div>
-  <div>
-    <div class="k">버그<b>현상은 내가, 원인은 AI가</b></div>
-    <p class="cap">현상은 제가 설명하고, 원인과 해결책은 AI가 냈습니다.</p>
-  </div>
-</section>
-
-<!-- E7b · 팀이 쓰는 툴 -->
-<section class="intro head" data-p="ex">
-  <div class="eyebrow">팀이 쓰는 툴</div>
-  <h2>EffectEditor 저작 데이터와 게임 Runtime 연결</h2>
-  <p>툴에서 본 이펙트와 게임에서 나오는 이펙트가 다르면 툴을 믿을 수 없습니다. 그래서 툴과 게임이 같은 데이터를 읽게 해야 했습니다.</p>
-</section>
-
-<!-- E8 · 난관 해결: 툴 화면 ↔ 게임 화면 맞바꿈 (스크롤) -->
-<section class="stage" data-p="ex" style="height:240vh" data-m-steps="0,1" data-m-labels="에디터|게임 화면">
-  <div class="pin">
-    <div class="layer ex-pair">
-      <div class="ex-col">
-        <div class="ex-swap ex-scroll">
-          <img src="assets/img/ex/effect_editor_overview.webp" alt="" loading="lazy">
-          <img class="ex-b" src="assets/img/ex/ingame_skill_effect.webp" alt="" loading="lazy">
-          <span class="ex-line" aria-hidden="true"></span>
-          <span class="tag k-ed ex-tag-a"><b>에디터</b>EffectEditor에서 만든 유성 이펙트</span>
-          <span class="tag k-game ex-tag-b"><b>게임 화면</b>같은 파일을 게임에서 재생</span>
-        </div>
-        <div class="ex-txt">
-          <p class="cap ex-cap-a">툴은 만들고 저장하는 일만, 게임은 불러오는 일만 맡기고, 재생 정의(EffectDefinition)는 엔진에 하나만 두었습니다.</p>
-          <p class="cap ex-cap-b">게임은 툴에서 저장한 JSON을 불러와, 툴 미리보기와 같은 EffectDefinition으로 재생합니다.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- E9 · 마무리 -->
-<section class="end" data-p="ex">
-  <div class="acts">
-    <span>Expedition 33 모작</span>
-    <a class="go" href="https://youtu.be/JBuVAdqzew8" target="_blank" rel="noopener">YouTube에서 영상 보기 ↗</a>
-    <a href="https://github.com/shKim-33/Expedition_158_Effect" target="_blank" rel="noopener">GitHub 코드 ↗</a>
-  </div>
   <a class="nextp" href="#sp">
     <div class="eyebrow">다음 프로젝트</div>
     <h2>SinkPoint →</h2>
   </a>
 </section>
-<!-- /PART ex -->
+<!-- PARTS -->
 <!-- PART sp -->
 <!-- S1 · 프로젝트 첫 장면 -->
 <section class="proj" id="sp" data-p="sp">
@@ -1197,12 +1034,175 @@ TransitionProgress = transitionDuration &lt;= Mathf.Epsilon
     <a href="https://youtu.be/ACLhexzNJnM" target="_blank" rel="noopener">YouTube 영상 ↗</a>
     <a href="https://github.com/JiyeonJeong01/SinkPoint" target="_blank" rel="noopener">GitHub 팀 저장소 ↗</a>
   </div>
+  <a class="nextp" href="#ex">
+    <div class="eyebrow">다음 프로젝트</div>
+    <h2>Expedition 33 모작 →</h2>
+  </a>
+</section>
+<!-- /PART sp -->
+<!-- PART ex -->
+<!-- E1 · 첫 장면 -->
+<section class="proj" id="ex" data-p="ex">
+  <img class="ov" src="assets/img/ex/main_sword_sun.webp" alt="" loading="lazy">
+  <div class="ex-shade"></div>
+  <div class="eyebrow">Clair Obscur: Expedition 33 모작 · 2026.05–07 · 프로그래밍 8인 팀 · C++ · DirectX 11 · HLSL(Compute Shader)</div>
+  <h2 class="ex-title">Expedition<br>33 모작</h2>
+  <p class="say">프로그래머 8명이 함께 만든 모작에서 이펙트를 혼자 맡았습니다. 이펙트를 만드는 툴(EffectEditor)부터 게임 안 전투 이펙트까지 직접 만들었습니다.</p>
+  <dl class="who">
+    <div class="goal"><dt>목적</dt><dd>팀이 요구하는 전투 VFX를 팀원도 직접 만들 수 있게 이펙트 시스템과 툴을 갖추는 것이 목적이었고, 8인 팀 코드를 지키려고 AI 작업은 계획서 승인과 hook 안에서 진행했습니다.</dd></div>
+    <div><dt>맡은 것</dt><dd>독립 EffectEditor · 이펙트 런타임 · 메인 전투 VFX · 일부 화면 후처리 효과(흑백 연출·Flash)</dd></div>
+    <div><dt>팀원이 맡은 것</dt><dd>화면 효과 틀 · Stencil bit0 · 디퍼드·MRT</dd></div>
+  </dl>
+  <div class="acts">
+    <a class="go" href="https://youtu.be/JBuVAdqzew8" target="_blank" rel="noopener">YouTube에서 영상 보기 ↗</a>
+    <a href="https://github.com/shKim-33/Expedition_158_Effect" target="_blank" rel="noopener">GitHub 코드 ↗</a>
+  </div>
+</section>
+
+<!-- E5 · 사례 01: 계획서 반려·승인 -->
+<section class="intro two" data-p="ex">
+  <div>
+    <div class="eyebrow cs">AI 활용 01 · 계획 검토와 승인 범위</div>
+    <h2>계획은 구현 전에 <u>방향부터 거듭 검토해 고쳤고</u>, 글로 안 지켜지는 규칙은 hook으로 옮겼습니다</h2>
+  </div>
+  <div>
+    <div class="eyebrow" style="margin-bottom:14px">작업 한 건이 흘러가는 순서</div>
+    <ol class="flow">
+      <li><span>계획서 작성<b>Codex</b></span></li>
+      <li><span>검토 · 수정<b>나</b></span></li>
+      <li><span>승인<b>나</b></span></li>
+      <li><span>구현<b>Codex</b></span></li>
+    </ol>
+    <p>AI가 쓴 계획서를 그대로 승인하지 않았습니다. 범위, 하지 않을 것, 검증 기준이 분명한지, 방향이 팀 구조와 맞는지 보고 고쳐 쓰게 한 뒤 승인했습니다. 엔진 모듈이나 공용 API를 건드리는 일, 새 패턴을 들이는 일은 먼저 제 승인을 받게 했습니다. 계획서에는 이번에 승인하는 범위와 승인에 넣지 않는 범위를 나눠 적게 해, 구현 중에 그 밖의 변경이 필요해지면 멈추고 다시 승인을 받게 했습니다.</p>
+    <p class="ex-more">원작 이펙트 자료를 찾고 분석하는 일과 툴 UI의 뼈대는 AI에 맡겼습니다.</p>
+    <p class="tag k-ed ex-plan-tag"><b>계획서</b>승인하는 범위와 승인 밖 범위를 나눠 적은 Phase 3 계획서</p>
+    <figure class="paper ex-plan"><div class="paper-h">docs/tasks/03_completed/cascade_distortion_phase3_sprite_runtime_prototype_plan.md</div><h5>Approval Boundary</h5><p>Phase 3 구현은 아래 surface를 건드릴 수 있으므로 승인 후 진행한다.</p><ul><li><code>Client</code> runtime code</li><li>shader file</li><li>resource binding path</li></ul><p>아래는 이번 Phase 3 구현 승인에 포함하지 않는다.</p><ul><li><code>Engine/Public</code> type 추가 / 변경</li><li>renderer frame order 변경</li><li>EffectEditor UI 변경 <u>…</u></li></ul><mark>만약 구현 중 <code>Engine/Public</code> type이나 renderer frame order 변경이 추가로 필요해지면, Phase 3 범위를 멈추고 별도 승인으로 전환한다.</mark><h5>Phase Plan</h5><p>1. Runtime path audit <u>…</u></p><p>verify: <code>SpriteDistortion</code> branch가 desc 적용 이후 안정적으로 판단 가능한 위치를 찾는다.</p></figure>
+  </div>
+</section>
+
+<!-- E6 · 사례 02: hook -->
+<section class="row flip" data-p="ex">
+  <div class="media ex-hookmedia"><pre class="code ex-code"><b>if</b> <i>tool_writes_engine_shader</i>(tool_name, tool_text):
+    missing = <i>get_missing_engine_shader_reads</i>(state, targets)
+    <b>if</b> missing:<mark>        <b>return</b> <i>deny</i>(<s>"원본·대응 셰이더를 읽기 전 수정 금지"</s>)</mark></pre><figure class="paper mono"><div class="paper-h">.codex/hooks/pre_tool_use.py · permissionDecision: "deny"</div><p><u>…</u> <code>Do not write those DT_* files directly.</code> <u>…</u></p><p><code>Destructive git reset is blocked by the Expedition_158 project hook.</code></p><p><code>Recursive force Remove-Item is blocked by the Expedition_158 project hook.</code></p></figure></div>
+  <div class="txt">
+    <div class="big pass ex-hook">hook</div>
+    <p>그래도 글로 적은 규칙이 지켜지지 않는 곳이 세 군데 있었습니다. 이 셋은 hook으로 옮겨, AI가 명령을 실행하기 직전에 막았습니다.</p>
+    <p class="ex-note">막은 것: 원본 셰이더를 읽기 전 수정 · 데이터 테이블 보호 · 되돌릴 수 없는 git 명령</p>
+  </div>
+</section>
+
+<!-- E7 · 난관 도입 -->
+<section class="intro head" data-p="ex">
+  <div class="eyebrow">AI 활용 02 · 의견 조율과 역할 분담</div>
+  <h2>AI와 의견이 갈린 곳은 <u>조율해서 정했고</u>, 버그는 역할을 나눠 잡았습니다</h2>
+</section>
+
+<section class="trio t3" data-p="ex">
+  <div>
+    <div class="k bad">인스턴싱<b>전면 적용 대 최소 적용</b></div>
+    <p class="cap">저는 전면 적용을, Codex는 최소 적용을 주장했습니다. 조율 끝에 Sprite부터 적극 적용했습니다.</p>
+  </div>
+  <div>
+    <div class="k bad">왜곡 효과<b>Sprite에서 Mesh로</b></div>
+    <p class="cap">Sprite에 입힌 결과가 어색해, AI 제안과 비교한 끝에 Mesh로 옮겼습니다.</p>
+  </div>
+  <div>
+    <div class="k">버그<b>현상은 내가, 원인은 AI가</b></div>
+    <p class="cap">현상은 제가 설명하고, 원인과 해결책은 AI가 냈습니다.</p>
+  </div>
+</section>
+
+<!-- E2~E3 · 빛 컷: 이미터를 조합한 VFX 쇼케이스 4장 (기술소개서 4차 18쪽) -->
+<section class="stage" data-p="ex" style="height:320vh">
+  <div class="pin">
+    <div class="layer shot ex-light">
+      <video data-auto muted loop playsinline preload="none" poster="assets/video/ex_stendhal.webp" src="assets/video/ex_stendhal.mp4"></video>
+      <span class="tag k-game"><b>게임 화면</b>스탕달</span>
+      <p class="cap">검 여섯 자루를 자루마다 Mesh 이미터 다섯 개와 Ribbon 하나로 쌓았습니다. Mesh 이미터는 살아 있는 검을 인스턴싱으로 한 번에 그립니다.</p>
+      <p class="ex-emit"><b>이미터 40개</b><span>Mesh ×30</span><span>Ribbon ×6</span><span>Sprite ×4</span></p>
+    </div>
+    <div class="layer shot ex-light">
+      <video data-auto muted loop playsinline preload="none" poster="assets/video/ex_skybreak.webp" src="assets/video/ex_skybreak.mp4"></video>
+      <span class="tag k-game"><b>게임 화면</b>하늘 파괴</span>
+      <p class="cap">시작·충전·유성·빔·최종 폭발, 다섯 파일이 애니메이션의 정해진 시점에 차례로 재생됩니다. 불꽃과 빛은 Sprite, 유성과 폭발 파편은 Mesh, 하늘에서 내리는 광선은 Beam이 맡았습니다.</p>
+      <p class="ex-emit"><b>이미터 45개</b><span>Sprite ×28</span><span>Mesh ×16</span><span>Beam ×1</span></p>
+    </div>
+    <div class="layer shot ex-light">
+      <video data-auto muted loop playsinline preload="none" poster="assets/video/ex_overcharge.webp" src="assets/video/ex_overcharge.mp4"></video>
+      <span class="tag k-game"><b>게임 화면</b>과충전</span>
+      <p class="cap">손 소켓과 발사체가 지나간 자리를 SpriteTrail이 따라가며 번개 꼬리를 남깁니다. 손과 궤적은 애니메이션 노티파이 구간 내내 유지되고, 그 안에서 해방 이펙트가 터집니다.</p>
+      <p class="ex-emit"><b>이미터 16개</b><span>Sprite ×11</span><span>SpriteTrail ×5</span></p>
+    </div>
+    <div class="layer shot ex-light">
+      <video data-auto muted loop playsinline preload="none" poster="assets/video/ex_trail.webp" src="assets/video/ex_trail.mp4"></video>
+      <span class="tag k-game"><b>게임 화면</b>검의 발레</span>
+      <p class="cap">Trail 네 개가 검을 따라 띠를 그리고, SpriteTrail이 그 궤적 위에 입자를 흩뿌리고, Ribbon이 꼬리를 붙입니다. 같은 구성을 색만 바꿔 13가지로 썼습니다.</p>
+      <p class="ex-emit"><b>이미터 6개</b><span>Trail ×4</span><span>SpriteTrail ×1</span><span>Ribbon ×1</span></p>
+    </div>
+    <div class="eyebrow ex-show-h">구현 · 이미터를 조합한 VFX</div>
+    <div class="rail ex-rail"><span>스탕달</span><span>하늘 파괴</span><span>과충전</span><span>검의 발레</span></div>
+  </div>
+</section>
+
+<!-- E4 · 적용 전/후 (도구 화면, 맞바꿈 자동 반복) -->
+<section class="ex-tool" data-p="ex">
+  <div class="ex-col">
+    <div class="eyebrow">구현 · EffectEditor</div>
+    <div class="ex-swap ex-auto">
+      <img src="assets/img/ex/distortion_before.webp" alt="" loading="lazy">
+      <img class="ex-b" src="assets/img/ex/distortion_after.webp" alt="" loading="lazy">
+      <span class="ex-line" aria-hidden="true"></span>
+      <span class="tag ex-tag-a">적용 전</span>
+      <span class="tag k-game ex-tag-b">적용 후</span>
+    </div>
+    <p class="ex-file">Player_Counter.effect.json</p>
+    <p class="cap">입자 설정, 곡선, 무작위 분포, 머티리얼을 고치고, 같은 툴의 미리보기로 바로 확인하며 다듬을 수 있습니다.</p>
+    <p class="ex-note">쓰는 법은 문서로 정리하고 직접 설명해 안내했고, 팀원 4명이 이 툴로 직접 이펙트를 만들었습니다.</p>
+  </div>
+</section>
+
+<!-- E7b · 팀이 쓰는 툴 -->
+<section class="intro head" data-p="ex">
+  <div class="eyebrow">구현 · 팀이 쓰는 툴</div>
+  <h2>EffectEditor 저작 데이터와 게임 Runtime 연결</h2>
+  <p>툴에서 본 이펙트와 게임에서 나오는 이펙트가 다르면 툴을 믿을 수 없습니다. 그래서 툴과 게임이 같은 데이터를 읽게 해야 했습니다.</p>
+</section>
+
+<!-- E8 · 난관 해결: 툴 화면 ↔ 게임 화면 맞바꿈 (스크롤) -->
+<section class="stage" data-p="ex" style="height:240vh" data-m-steps="0,1" data-m-labels="에디터|게임 화면">
+  <div class="pin">
+    <div class="layer ex-pair">
+      <div class="ex-col">
+        <div class="ex-swap ex-scroll">
+          <img src="assets/img/ex/effect_editor_overview.webp" alt="" loading="lazy">
+          <img class="ex-b" src="assets/img/ex/ingame_skill_effect.webp" alt="" loading="lazy">
+          <span class="ex-line" aria-hidden="true"></span>
+          <span class="tag k-ed ex-tag-a"><b>에디터</b>EffectEditor에서 만든 유성 이펙트</span>
+          <span class="tag k-game ex-tag-b"><b>게임 화면</b>같은 파일을 게임에서 재생</span>
+        </div>
+        <div class="ex-txt">
+          <p class="cap ex-cap-a">툴은 만들고 저장하는 일만, 게임은 불러오는 일만 맡기고, 재생 정의(EffectDefinition)는 엔진에 하나만 두었습니다.</p>
+          <p class="cap ex-cap-b">게임은 툴에서 저장한 JSON을 불러와, 툴 미리보기와 같은 EffectDefinition으로 재생합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- E9 · 마무리 -->
+<section class="end" data-p="ex">
+  <div class="acts">
+    <span>Expedition 33 모작</span>
+    <a class="go" href="https://youtu.be/JBuVAdqzew8" target="_blank" rel="noopener">YouTube에서 영상 보기 ↗</a>
+    <a href="https://github.com/shKim-33/Expedition_158_Effect" target="_blank" rel="noopener">GitHub 코드 ↗</a>
+  </div>
   <a class="nextp" href="#gf">
     <div class="eyebrow">다음 프로젝트</div>
     <h2>Gunfire Reborn 모작 →</h2>
   </a>
 </section>
-<!-- /PART sp -->
+<!-- /PART ex -->
 <!-- PART gf -->
 <!-- G1 · 프로젝트 첫 장면 -->
 <section class="proj" id="gf" data-p="gf">
@@ -1219,6 +1219,52 @@ TransitionProgress = transitionDuration &lt;= Mathf.Epsilon
     <a class="go" href="https://youtu.be/Jpvrbx4RoCE" target="_blank" rel="noopener">YouTube에서 영상 보기 ↗</a>
   </div>
   <span class="tagr">보스 전투</span>
+</section>
+
+<!-- G4 · 사례 01: 맡긴 범위와 남긴 기록 (고정 없음) -->
+<section class="row flip" data-p="gf">
+  <div class="media gf-slots"><figure class="paper"><div class="paper-h">AGENTS.md</div><h5>문서 목적</h5><ul><li>이 문서는 솔루션 루트에서 가장 먼저 읽는 구조 탐색 인덱스다.</li></ul><h5>정본 판단 규칙</h5><ul><li>테이블은 <code>csv = authoring 정본</code>, <code>json = 런타임 입력</code>으로 읽는다.</li><li>새 기능을 읽을 때는 먼저 <code>authoring source</code>, <code>runtime input</code>, <code>mutable runtime owner</code>를 분리해서 본다.</li></ul><h5>기록 깊이 규칙</h5><ul><li>문서에는 <code>소유권</code>, <code>진입점</code>, <code>정책 분기</code>, <code>시간축</code>, <code>수정 시작점</code>만 남긴다.</li><li>미확정 항목은 <code>docs/questions/architecture_open_questions_now.md</code>에만 적는다.</li></ul></figure><figure class="paper ls"><div class="paper-h">docs/FINISHED · 100개 &nbsp; docs/DEPRECATED · 26개</div>[PLAN] gamelogic_implementation.md
+collider_foundation_import_plan.md
+monster_sword_weak_point_execution_plan.md
+player_attack_ray_execution_plan.md
+shadow_and_single_pass_outline_execution_plan_v1.md
+boss_3909_laser_execution_plan_v1.md
+<u>…</u></figure></div>
+  <div class="txt">
+    <div class="eyebrow">AI 활용 01 · 맡긴 범위 · Codex</div>
+    <div class="big gf-num">100<small>개</small></div>
+    <p class="cap gf-cap">AI에게 줄 작업 규칙은 저장소의 AGENTS.md 한 파일에 모았고, 계획은 끝낸 것과 버린 것까지 문서로 남겼습니다.</p>
+    <p class="sub">완료 100개 · 폐기 26개 (Post_Project 폴더 제외)</p>
+  </div>
+</section>
+
+<!-- G7 · 난관과 해결 -->
+<section class="intro head" data-p="gf">
+  <div class="eyebrow">AI 활용 02 · 계획을 다시 쓴 과정</div>
+  <h2>AI와 쓴 계획 두 개를 접고, <u>세 번째 방향에서 풀었습니다</u></h2>
+</section>
+
+<!-- G8 · 난관: 해결과 결과 (고정 없음) -->
+<section class="row" data-p="gf">
+  <div class="media">
+    <div class="shots">
+      <figure><img src="assets/img/gf/GF_10_weapon_foundry.webp" alt="" loading="lazy"><figcaption>파운드리</figcaption></figure>
+      <figure><img src="assets/img/gf/GF_11_weapon_thunder_gauntlet.webp" alt="" loading="lazy"><figcaption>썬더 건틀릿</figcaption></figure>
+      <figure><img src="assets/img/gf/GF_12_weapon_justice.webp" alt="" loading="lazy"><figcaption>저스티스</figcaption></figure>
+    </div>
+    <p class="tag k-ed"><b>에디터</b>무기마다 팔과 무기를 한 모델로 묶은 계층</p>
+    <img class="gf-hier" src="assets/img/gf/GF_13_body_hierarchy_1.webp" alt="" loading="lazy">
+  </div>
+  <div class="txt story">
+    <div class="k bad">증상<b>팔과 무기의 뼈대가 다름</b></div>
+    <p>무기 애니메이션에는 팔 움직임이 같이 들어 있는데, 팔은 플레이어 몸통 모델의 뼈대라 몸통이 그 움직임을 받을 길이 없었습니다.</p>
+    <div class="k">계획 1 · 2<b>런타임 포즈 전달 → 상체 클립 분리</b></div>
+    <p>상황 정리 노트로 후보 셋을 먼저 나란히 놓았습니다. 런타임 포즈 전달은 실험까지 해 보고 접었고, 상체 클립만 따로 뽑는 계획도 방향을 바꿨습니다.</p>
+    <div class="k">계획 3<b>제작 단계에서 합침</b></div>
+    <p><b>Unity에서 팔과 무기를 한 모델로 묶어 내보내고, 직접 만든 변환 툴(Assimp)로 게임용 데이터로 바꿨습니다.</b> 게임은 무기마다 그 무기용 몸통 모델을 두고, 무기를 바꿀 때 팔을 내리고 드는 모션에 맞춰 갈아 끼웁니다.</p>
+    <div class="k">남긴 것<b>접은 계획 문서</b></div>
+    <p>접은 계획 두 개와 상황 정리 노트는 지우지 않고 폐기 문서(전체 26개)에 모아 두었습니다. 뼈대 사이에서 포즈를 넘기는 런타임 계층은 필요 없어졌습니다.</p>
+  </div>
 </section>
 
 <!-- G2 · 플레이 화면 -->
@@ -1247,7 +1293,7 @@ TransitionProgress = transitionDuration &lt;= Mathf.Epsilon
 };</pre>
       <img class="gf-ed" src="assets/img/gf/GF_06_level_editor_overview.webp" alt="" loading="lazy">
       <div class="gf-left">
-        <div class="eyebrow">사례 01 · 직접 정한 구조</div>
+        <div class="eyebrow">구현 01 · 직접 정한 구조</div>
         <h2 class="gf-h">Engine → GameLogic → Client·Editor, 의존 방향을 고정했습니다.</h2>
         <div class="gf-swap">
           <span class="tag k-code gf-t1"><b>코드</b>CGameInstance</span>
@@ -1263,26 +1309,9 @@ TransitionProgress = transitionDuration &lt;= Mathf.Epsilon
   </div>
 </section>
 
-<!-- G4 · 사례 01: 맡긴 범위와 남긴 기록 (고정 없음) -->
-<section class="row flip" data-p="gf">
-  <div class="media gf-slots"><figure class="paper"><div class="paper-h">AGENTS.md</div><h5>문서 목적</h5><ul><li>이 문서는 솔루션 루트에서 가장 먼저 읽는 구조 탐색 인덱스다.</li></ul><h5>정본 판단 규칙</h5><ul><li>테이블은 <code>csv = authoring 정본</code>, <code>json = 런타임 입력</code>으로 읽는다.</li><li>새 기능을 읽을 때는 먼저 <code>authoring source</code>, <code>runtime input</code>, <code>mutable runtime owner</code>를 분리해서 본다.</li></ul><h5>기록 깊이 규칙</h5><ul><li>문서에는 <code>소유권</code>, <code>진입점</code>, <code>정책 분기</code>, <code>시간축</code>, <code>수정 시작점</code>만 남긴다.</li><li>미확정 항목은 <code>docs/questions/architecture_open_questions_now.md</code>에만 적는다.</li></ul></figure><figure class="paper ls"><div class="paper-h">docs/FINISHED · 100개 &nbsp; docs/DEPRECATED · 26개</div>[PLAN] gamelogic_implementation.md
-collider_foundation_import_plan.md
-monster_sword_weak_point_execution_plan.md
-player_attack_ray_execution_plan.md
-shadow_and_single_pass_outline_execution_plan_v1.md
-boss_3909_laser_execution_plan_v1.md
-<u>…</u></figure></div>
-  <div class="txt">
-    <div class="eyebrow">AI에 맡긴 범위 · Codex</div>
-    <div class="big gf-num">100<small>개</small></div>
-    <p class="cap gf-cap">AI에게 줄 작업 규칙은 저장소의 AGENTS.md 한 파일에 모았고, 계획은 끝낸 것과 버린 것까지 문서로 남겼습니다.</p>
-    <p class="sub">완료 100개 · 폐기 26개 (Post_Project 폴더 제외)</p>
-  </div>
-</section>
-
 <!-- G5 · 사례 02: 몸체와 머리를 나눈 판정 (세 화면을 한 줄로) -->
 <section class="intro head" data-p="gf">
-  <div class="eyebrow">사례 02 · 직접 구현</div>
+  <div class="eyebrow">구현 02 · 부위별 판정</div>
   <h2>몬스터를 몸체와 머리 파츠로 나눠, 어디를 맞혔는지 따로 판정합니다.</h2>
 </section>
 
@@ -1321,35 +1350,6 @@ boss_3909_laser_execution_plan_v1.md
       <img src="assets/img/gf/GF_21_ranged_parts_hierarchy.webp" alt="" loading="lazy">
       <figcaption>원거리 몬스터의 파츠 계층</figcaption>
     </figure>
-  </div>
-</section>
-
-<!-- G7 · 난관과 해결 -->
-<section class="intro head" data-p="gf">
-  <div class="eyebrow hard">난관과 해결</div>
-  <h2>AI와 쓴 계획을 세 번 고쳤고, <u>앞의 두 방향은 접었습니다</u></h2>
-</section>
-
-<!-- G8 · 난관: 해결과 결과 (고정 없음) -->
-<section class="row" data-p="gf">
-  <div class="media">
-    <div class="shots">
-      <figure><img src="assets/img/gf/GF_10_weapon_foundry.webp" alt="" loading="lazy"><figcaption>파운드리</figcaption></figure>
-      <figure><img src="assets/img/gf/GF_11_weapon_thunder_gauntlet.webp" alt="" loading="lazy"><figcaption>썬더 건틀릿</figcaption></figure>
-      <figure><img src="assets/img/gf/GF_12_weapon_justice.webp" alt="" loading="lazy"><figcaption>저스티스</figcaption></figure>
-    </div>
-    <p class="tag k-ed"><b>에디터</b>무기마다 팔과 무기를 한 모델로 묶은 계층</p>
-    <img class="gf-hier" src="assets/img/gf/GF_13_body_hierarchy_1.webp" alt="" loading="lazy">
-  </div>
-  <div class="txt story">
-    <div class="k bad">증상<b>팔과 무기의 뼈대가 다름</b></div>
-    <p>무기 애니메이션에는 팔 움직임이 같이 들어 있는데, 팔은 플레이어 몸통 모델의 뼈대라 몸통이 그 움직임을 받을 길이 없었습니다.</p>
-    <div class="k">계획 1 · 2<b>런타임 포즈 전달 → 상체 클립 분리</b></div>
-    <p>상황 정리 노트로 후보 셋을 먼저 나란히 놓았습니다. 런타임 포즈 전달은 실험까지 해 보고 접었고, 상체 클립만 따로 뽑는 계획도 방향을 바꿨습니다.</p>
-    <div class="k">계획 3<b>제작 단계에서 합침</b></div>
-    <p><b>Unity에서 팔과 무기를 한 모델로 묶어 내보내고, 직접 만든 변환 툴(Assimp)로 게임용 데이터로 바꿨습니다.</b> 게임은 무기마다 그 무기용 몸통 모델을 두고, 무기를 바꿀 때 팔을 내리고 드는 모션에 맞춰 갈아 끼웁니다.</p>
-    <div class="k">남긴 것<b>폐기 문서 26개</b></div>
-    <p>접은 계획은 지우지 않고 따로 모아 두었습니다. 뼈대 사이에서 포즈를 넘기는 런타임 계층은 필요 없어졌습니다.</p>
   </div>
 </section>
 
@@ -1528,26 +1528,6 @@ boss_3909_laser_execution_plan_v1.md
   document.addEventListener('visibilitychange',sync);
 })();
 </script>
-<script data-part="ex">
-(function(){
-  // E8 맞바꿈: 진행도 0~0.25 A만, 0.25~0.75 경계선 이동, 0.75 이후 B만. 반을 넘으면 글을 B용으로.
-  var cuts=[].slice.call(document.querySelectorAll('[data-p="ex"] .ex-scroll')).map(function(sw){
-    return {stage:sw.closest('.stage'),b:sw.querySelector('.ex-b'),line:sw.querySelector('.ex-line'),layer:sw.closest('.layer')};
-  });
-  if(!cuts.length)return;
-  function prog(el){if(el._mp!=null)return el._mp;var r=el.getBoundingClientRect();return Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)))}
-  function onScroll(){
-    cuts.forEach(function(c){
-      var r=Math.min(1,Math.max(0,(prog(c.stage)-0.25)/0.5));
-      c.b.style.clipPath='inset(0 '+((1-r)*100)+'% 0 0)';
-      c.line.style.left=(r*100)+'%';
-      c.line.style.opacity=(r>0&&r<1)?1:0;
-      c.layer.classList.toggle('ex-past',r>=0.5);
-    });
-  }
-  addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onScroll();
-})();
-</script>
 <script data-part="sp">
 (function(){
   // 중력 축 전환: 현재 층(.on은 공용 스크립트)의 앞쪽 층에 sp-past, 축 표시 갱신
@@ -1567,6 +1547,26 @@ boss_3909_laser_execution_plan_v1.md
     }
     addEventListener('scroll',update,{passive:true});addEventListener('resize',update);update();
   });
+})();
+</script>
+<script data-part="ex">
+(function(){
+  // E8 맞바꿈: 진행도 0~0.25 A만, 0.25~0.75 경계선 이동, 0.75 이후 B만. 반을 넘으면 글을 B용으로.
+  var cuts=[].slice.call(document.querySelectorAll('[data-p="ex"] .ex-scroll')).map(function(sw){
+    return {stage:sw.closest('.stage'),b:sw.querySelector('.ex-b'),line:sw.querySelector('.ex-line'),layer:sw.closest('.layer')};
+  });
+  if(!cuts.length)return;
+  function prog(el){if(el._mp!=null)return el._mp;var r=el.getBoundingClientRect();return Math.min(1,Math.max(0,-r.top/(r.height-innerHeight)))}
+  function onScroll(){
+    cuts.forEach(function(c){
+      var r=Math.min(1,Math.max(0,(prog(c.stage)-0.25)/0.5));
+      c.b.style.clipPath='inset(0 '+((1-r)*100)+'% 0 0)';
+      c.line.style.left=(r*100)+'%';
+      c.line.style.opacity=(r>0&&r<1)?1:0;
+      c.layer.classList.toggle('ex-past',r>=0.5);
+    });
+  }
+  addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onScroll();
 })();
 </script>
 <script data-part="gf">
