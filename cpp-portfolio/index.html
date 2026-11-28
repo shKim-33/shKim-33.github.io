@@ -435,7 +435,7 @@ img{display:block}
 .intro.head > .eyebrow + h2,.eyebrow.cs + h2{margin-top:clamp(14px,2.2vh,24px)}
 /* 난관 본문: 증상 · 시도 · 해결 · 결과 표시를 또렷하게 */
 .row .txt.story .k{display:flex;align-items:baseline;gap:.9em;font-size:clamp(14px,1.05vw,17px);letter-spacing:.06em;color:var(--pass)}
-.row .txt.story p + .k{margin-top:clamp(22px,3.6vh,40px);padding-top:clamp(18px,3vh,32px);border-top:1px solid var(--line)}
+.row .txt.story p + .k{margin-top:clamp(16px,2.6vh,28px);padding-top:clamp(14px,2.2vh,24px);border-top:1px solid var(--line)}
 .row .txt.story .k.bad{color:var(--fail)}
 .row .txt.story .k b{margin-top:0;font-size:clamp(20px,1.9vw,30px);letter-spacing:-.02em;line-height:1.3}
 .row .txt.story p{margin-top:10px;font-size:clamp(15px,1.25vw,19px)}
@@ -464,6 +464,30 @@ img{display:block}
 .index .ext{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;font-size:clamp(13px,.8vw,16px)}
 .index .ext a{color:var(--mute);border-bottom:1px solid var(--line);padding-bottom:1px}
 .index .ext a:hover{color:var(--ink);border-color:currentColor}
+/* 긴 제목 칸: 제목을 한 줄로, 설명을 넓게 펴서 아래 내용과 한 화면에 들어오게 한다 */
+.intro.head.long h2{max-width:none;font-size:clamp(30px,3.6vw,64px)}
+.intro.head.long > p{max-width:62em}
+/* 낮은 화면 맞춤: 제목 칸과 그 아래 내용이 한 화면에 들어오도록, 폭으로만 정하던 크기에 화면 높이 상한을 더한다 */
+@media (min-width:801px){
+  .intro.head h2{font-size:clamp(30px,min(4vw,6.2vh),64px)}
+  .intro.head.long h2{font-size:clamp(30px,min(3.6vw,6.2vh),64px)}
+  .intro.head + .row,.intro.head + .trio{padding-top:clamp(14px,2.4vh,48px)}
+  .trio .big{font-size:clamp(64px,min(10vw,15vh),168px)}
+  .intro.head + .trio:not(.gf-three) img{max-height:32svh;object-position:top}
+  .row .k b{font-size:clamp(40px,min(5vw,7.5vh),76px)}
+  .row .txt p{font-size:clamp(18px,min(1.75vw,2.6vh),27px)}
+  .row .txt.story .k b{font-size:clamp(20px,min(1.9vw,3.2vh),30px)}
+  .row .txt.story p{font-size:clamp(15px,min(1.25vw,2.1vh),19px)}
+  #etc + .row .media > img{width:auto;max-width:100%;max-height:48svh}
+}
+@media (min-width:801px) and (max-height:880px){
+  .row:has(.txt.story){grid-template-columns:1fr 1.2fr}
+  .row .txt.story p + .k{margin-top:14px;padding-top:12px}
+  .intro.head > p{margin-top:12px}
+  .trio .cap{margin-top:10px}
+  .trio img,.trio .paper{margin-top:14px}
+  #etc + .row .media > img{max-height:42svh}
+}
 </style>
 <style data-part="ex">
 /* E1 · 첫 장면: 배경 이미지 왼쪽(행성·인물)을 눌러 글자를 읽히게 */
@@ -766,6 +790,7 @@ img{display:block}
   .gf-cmp .gf-lab-off{animation:none;opacity:0}
 }
 .gf-mini figcaption,.gf-axes-h span,.gf-proj figcaption,.gf-shrink > div{font-size:clamp(13px,.8vw,16px)}
+@media (min-width:801px){.row .media > .code.gf-code-s{font-size:clamp(10px,min(.78vw,1.35vh),14px)}}
 </style>
 </head>
 <body>
@@ -1530,7 +1555,7 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
 </section>
 
 <!-- D4 · 협업: 주인 하나 + 접점 인터페이스 (PPT 22장) -->
-<section class="intro head">
+<section class="intro head long">
   <div class="eyebrow">팀 작업 구조 <span class="sk">협업</span><span class="sk">구조 설계</span></div>
   <h2>행운과 시간은 <u>주인을 하나로</u>, 나머지는 인터페이스로 잇는다</h2>
   <p>행운 값은 PlayerLuck, 숫자 판정은 LuckRules, 게임 상태와 Time.timeScale은 GameManager 하나만 바꿉니다. 적 · 기믹 · 미니게임은 인터페이스와 이벤트로만 이 셋에 닿게 해, 세 사람이 영역을 나눠 동시에 작업했습니다.</p>
@@ -1597,7 +1622,7 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
 </section>
 
 <!-- D4b · 팀과 공유: 아티팩트 24개 (PPT 25장) -->
-<section class="intro head">
+<section class="intro head long">
   <div class="eyebrow">팀과 공유 <span class="sk">새 기술 적용</span><span class="sk">협업</span></div>
   <h2>AI가 반복해서 읽는 건 마크다운, <u>사람이 보는 건 아티팩트</u></h2>
   <p>Claude가 만드는 공유 가능한 웹 페이지(아티팩트) 24개를 결정 · 확인 · 공유 용도로 나눠 썼습니다. 기준은 누가 몇 번 읽느냐였습니다. 사람이 보고 판단하는 시안 · 보고서 · 가이드는 아티팩트로 만들어 팀과 함께 보는 방식으로, 팀 작업의 효율성을 올렸습니다.</p>
@@ -1738,7 +1763,7 @@ out.selectedEndPointWorld = monsterHit.hitPositionWorld;
 </section>
 
 <!-- 그 밖의 프로젝트 (PPT 29·30장) -->
-<section class="intro head" id="etc">
+<section class="intro head long" id="etc">
   <div class="eyebrow">그 밖의 프로젝트</div>
   <h2>SinkPoint</h2>
   <p>OpenAI Game Builders Seoul 2026 온라인 예선 제출작 · Unity 3D 액션 어드벤처 · 2026.08.22 – 08.26 (5일) · 2인 팀 · Unity 6.3 (C#, URP), WebGL</p>
